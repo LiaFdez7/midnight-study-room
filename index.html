@@ -874,6 +874,16 @@ var DAY_MS = 86400000;
 var KINDS = { task: 'Task', study: 'Study', assignment: 'Assignment', exam: 'Exam', quiz: 'Quiz', reminder: 'Reminder' };
 var TESTS = { exam: true, quiz: true };
 var PRIO_TEXT = { high: 'High priority. ', normal: '', low: 'Low priority. ' };
+var SHEET_NAME_OF = { text: 'title', doneOn: 'done_on' };            // local field → sheet column (others match)
+var EDITABLE = ['title', 'course', 'priority', 'day', 'due', 'context', 'minutes'];   // fields that count as a manual edit
+function sheetName(k) { return SHEET_NAME_OF[k] || k; }
+function fieldList(v, allowed) {
+  var a = Array.isArray(v) ? v : String(v || '').split(',');
+  var out = [];
+  a.forEach(function (x) { x = String(x).trim(); if (allowed.indexOf(x) >= 0 && out.indexOf(x) < 0) out.push(x); });
+  return out;
+}
+function union(a, b) { var out = (a || []).slice(); (b || []).forEach(function (x) { if (out.indexOf(x) < 0) out.push(x); }); return out; }
 var SYNC_URL_RE = /^https:\/\/script\.google\.com\/(a\/macros\/[^\/\s]+|macros)\/s\/[A-Za-z0-9_-]+\/exec$/;
 
 function pad(n) { return (n < 10 ? '0' : '') + n; }
@@ -930,12 +940,17 @@ function normTask(t) {
     doneOn: status === 'done' ? doneOn : '',
     updated: String(t.updated || ''), updatedBy: String(t.updatedBy || t.updated_by || 'room'),
     created: String(t.created || ''), briefDate: asDay(t.briefDate) || asDay(t.brief_date),
+    edited: fieldList(t.edited, EDITABLE),
+    changed: fieldList(t.changed, EDITABLE.concat(['status', 'studied', 'done_on', 'kind', 'edited'])),
     dirty: !!t.dirty, synced: !!t.synced, rev: Number(t.rev) || 0
   };
 }
 function toRow(t) {
-  return { id: t.id, status: t.status, title: t.text, course: t.course, kind: t.kind, day: t.day, due: t.due, context: t.context, priority: t.priority,
-    minutes: t.minutes || '', studied: t.studied || 0, source: t.source, done_on: t.doneOn, updated: t.updated, updated_by: t.updatedBy, created: t.created, brief_date: t.briefDate };
+  var row = { id: t.id, status: t.status, title: t.text, course: t.course, kind: t.kind, day: t.day, due: t.due, context: t.context, priority: t.priority,
+    minutes: t.minutes || '', studied: t.studied || 0, source: t.source, done_on: t.doneOn, updated: t.updated, updated_by: t.updatedBy, created: t.created, brief_date: t.briefDate,
+    edited: t.edited.join(',') };
+  if (t.synced && t.changed.length) row.changed = t.changed.slice();   // the sheet already has this task: send only what changed here
+  return row;
 }
 /* Where a task belongs in the notebook today: 'today', 'upcoming', 'completed' or '' (hidden). */
 function placeOf(t, today) {
@@ -1107,7 +1122,7 @@ class Component extends DCLogic {
   backupJson() {
     var d = this.exportData();
     delete d.timer; delete d.sync; delete d.lastSync;
-    d.tasks = d.tasks.map(function (t) { var c = Object.assign({}, t); delete c.dirty; delete c.synced; delete c.rev; return c; });
+    d.tasks = d.tasks.map(function (t) { var c = Object.assign({}, t); delete c.dirty; delete c.synced; delete c.rev; delete c.changed; return c; });
     d.app = 'midnight-study-room'; d.exportedAt = new Date().toISOString();
     return JSON.stringify(d);
   }
@@ -1302,14 +1317,18 @@ class Component extends DCLogic {
 
   /* ---------- tasks ---------- */
   findTask(id) { return this.state.tasks.filter(function (t) { return t.id === id; })[0] || null; }
-  withTask(id, patch) {
+  withTask(id, patch, manual) {
     return this.state.tasks.map(function (t) {
       if (t.id !== id) return t;
-      return Object.assign({}, t, patch, { updated: isoNow(), updatedBy: 'room', dirty: true, rev: (t.rev || 0) + 1 });
+      var changed = union(t.changed, Object.keys(patch).map(sheetName));
+      var edited = manual && manual.length ? union(t.edited, manual) : t.edited;
+      if (edited.length !== t.edited.length) changed = union(changed, ['edited']);
+      return Object.assign({}, t, patch, { edited: edited, changed: changed, updated: isoNow(), updatedBy: 'room', dirty: true, rev: (t.rev || 0) + 1 });
     });
   }
-  changeTask(id, patch, extra) {
-    this.setState(Object.assign({ tasks: this.withTask(id, patch) }, extra || {}));
+  /* manual = the sheet fields Lia changed by hand (only from the editor or "Move to tomorrow"). */
+  changeTask(id, patch, extra, manual) {
+    this.setState(Object.assign({ tasks: this.withTask(id, patch, manual) }, extra || {}));
     this.scheduleSync();
   }
   addTask(e) {
@@ -1347,14 +1366,18 @@ class Component extends DCLogic {
     var ed = this.state.edit; if (!ed) return;
     var text = (ed.text || '').trim();
     if (!text) { this.setState({ editErr: 'A task needs a few words.' }); return; }
-    this.changeTask(ed.id, { text: text.slice(0, 160), course: BOOK[ed.course] ? ed.course : '', priority: (ed.priority === 'high' || ed.priority === 'low') ? ed.priority : 'normal',
-      day: asDay(ed.day), due: asDay(ed.due), minutes: clampInt(ed.minutes, 0, 600, 0), context: String(ed.context || '').trim().slice(0, 120) }, { edit: null });
+    var next = { text: text.slice(0, 160), course: BOOK[ed.course] ? ed.course : '', priority: (ed.priority === 'high' || ed.priority === 'low') ? ed.priority : 'normal',
+      day: asDay(ed.day), due: asDay(ed.due), minutes: clampInt(ed.minutes, 0, 600, 0), context: String(ed.context || '').trim().slice(0, 120) };
+    var cur = this.findTask(ed.id) || {}, patch = {};
+    Object.keys(next).forEach(function (k) { if (next[k] !== cur[k]) patch[k] = next[k]; });
+    if (!Object.keys(patch).length) { this.setState({ edit: null, editErr: '' }); return; }   // nothing changed: the task stays untouched
+    this.changeTask(ed.id, patch, { edit: null }, Object.keys(patch).map(sheetName));
   }
   moveTomorrow() {
     var ed = this.state.edit; if (!ed) return;
     var t = this.findTask(ed.id); if (!t) return;
     var base = t.day && t.day > dayKey() ? t.day : dayKey();
-    this.changeTask(ed.id, { day: addDays(base, 1) }, { edit: null, status: '“' + t.text + '” moved to ' + shortDay(addDays(base, 1), dayKey()) + '.' });
+    this.changeTask(ed.id, { day: addDays(base, 1) }, { edit: null, status: '“' + t.text + '” moved to ' + shortDay(addDays(base, 1), dayKey()) + '.' }, ['day']);
   }
 
   /* ---------- Morning Brief sync (Google Sheet through your Apps Script connector) ---------- */
@@ -1410,7 +1433,7 @@ class Component extends DCLogic {
       seen[rt.id] = true;
       var lt = local[rt.id];
       if (lt && lt.dirty && revs[lt.id] !== lt.rev) { out.push(lt); return; }
-      rt.synced = true; rt.dirty = false; rt.rev = lt ? lt.rev : 0;
+      rt.synced = true; rt.dirty = false; rt.changed = []; rt.rev = lt ? lt.rev : 0;
       out.push(rt);
     });
     cur.forEach(function (lt) { if (!seen[lt.id] && (lt.dirty || !lt.synced)) out.push(lt); });
