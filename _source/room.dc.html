@@ -1,0 +1,1636 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Midnight Study Room</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,500;0,600;1,500&amp;family=DM+Sans:opsz,wght@9..40,400;9..40,500;9..40,600&amp;family=JetBrains+Mono:wght@500&amp;display=swap">
+<style>
+body{margin:0;background:#141A33}
+.room *{box-sizing:border-box}
+.room button,.room input{font-family:'DM Sans',system-ui,sans-serif}
+.room button{cursor:pointer}
+.eyebrow{margin:0;font:500 11.5px/1.3 'DM Sans',system-ui,sans-serif;letter-spacing:.14em;text-transform:uppercase}
+.room :focus-visible{outline:2px solid #E9D9A8;outline-offset:2px}
+.paper :focus-visible{outline-color:#3E3870}
+.sr-only{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}
+
+/* light: the lamp drives these */
+.veil{position:absolute;left:0;top:0;width:1440px;height:1000px;z-index:1;pointer-events:none;background:#060818;opacity:0;transition:opacity .8s ease}
+.room[data-light="dim"] .veil{opacity:.3}
+.wash{position:absolute;left:0;top:0;width:1440px;height:1000px;z-index:1;pointer-events:none;background:radial-gradient(ellipse 560px 400px at 474px 560px,rgba(242,205,140,.13),rgba(242,205,140,0));transition:opacity .8s ease}
+.room[data-light="dim"] .wash,.room[data-light="dim"] .lamp-light{opacity:0}
+.lamp-light{transition:opacity .8s ease}
+.bulb{transition:background .6s ease}
+.room[data-light="dim"] .bulb{background:#6F6888!important;animation:none!important}
+.desk-top{transition:background .8s ease}
+.room[data-light="warm"] .desk-top{background:#443A6B!important}
+.nb-paper{transition:background .8s ease}
+.room[data-light="dim"] .nb-paper{background:#F1EADC!important}
+
+/* discoverable objects */
+.obj{position:absolute}
+.tip{position:absolute;left:50%;bottom:calc(100% + 8px);transform:translate(-50%,4px);padding:5px 9px;border-radius:4px;background:#F6EEDC;color:#1A2140;border:1px solid rgba(185,154,97,.8);font:500 12.5px/1.2 'DM Sans',system-ui,sans-serif;letter-spacing:0;text-transform:none;writing-mode:horizontal-tb;white-space:nowrap;opacity:0;pointer-events:none;transition:opacity .18s ease,transform .18s ease;box-shadow:0 6px 14px rgba(5,8,20,.35);z-index:3}
+.tip.below{bottom:auto;top:calc(100% + 8px);transform:translate(-50%,-4px)}
+.tip.inside{bottom:16px}
+.obj:hover .tip,.obj:focus-visible .tip{opacity:1;transform:translate(-50%,0)}
+.glowable{transition:filter .25s ease}
+.glowable:hover,.glowable:focus-visible{filter:drop-shadow(0 0 8px rgba(233,217,168,.35))}
+
+/* books */
+.spine{position:relative;flex:none;border:0;padding:18px 0;display:flex;align-items:center;justify-content:center;text-decoration:none;border-radius:3px 3px 2px 2px;box-shadow:inset -6px 0 0 rgba(0,0,0,.14),inset 2px 0 0 rgba(255,255,255,.12);transition:transform .45s cubic-bezier(.2,.7,.2,1),box-shadow .3s ease}
+.spine::before,.spine::after{content:"";position:absolute;left:7px;right:7px;height:2px;background:currentColor;opacity:.5}
+.spine::before{top:10px}
+.spine::after{bottom:10px}
+.spine:hover{transform:translateY(-6px)}
+.spine[data-open="true"]{transform:translateY(-22px) scale(1.03);box-shadow:inset -6px 0 0 rgba(0,0,0,.14),0 0 0 2px #E9D9A8,0 12px 18px rgba(5,8,20,.5)}
+.spine-text{writing-mode:vertical-rl;font:600 13px/1.15 'DM Sans',system-ui,sans-serif;letter-spacing:.1em;text-transform:uppercase;text-align:center}
+
+/* timer controls */
+.seg{flex:1;height:44px;border-radius:6px;border:1px solid #6A6294;background:transparent;color:#D6CCEB;font-size:13px;font-weight:500;transition:background .15s ease,color .15s ease}
+.seg:hover{background:rgba(183,169,214,.12)}
+.seg[aria-pressed="true"]{background:#B7A9D6;border-color:#B7A9D6;color:#1A2140}
+.btn-gold{height:44px;border:0;border-radius:6px;background:#B99A61;color:#1A2140;font-size:15px;font-weight:600;transition:background .15s ease}
+.btn-gold:hover{background:#C9AC75}
+.btn-line{height:44px;border:1px solid #8C83B3;border-radius:6px;background:transparent;color:#F3EAD7;font-size:15px;font-weight:500;transition:background .15s ease}
+.btn-line:hover{background:rgba(243,234,215,.08)}
+
+/* paper controls */
+.btn-ink{height:44px;padding:0 16px;display:inline-flex;align-items:center;justify-content:center;border:1.5px solid #1A2140;border-radius:6px;background:transparent;color:#1A2140;font-size:14px;font-weight:500;text-decoration:none;white-space:nowrap}
+.btn-ink:hover{background:rgba(26,33,64,.06)}
+.btn-solid{height:44px;padding:0 18px;border:0;border-radius:6px;background:#2E2A4A;color:#F6EEDC;font-size:15px;font-weight:600;white-space:nowrap}
+.btn-solid:hover{background:#3E3866}
+.text-btn{min-height:44px;padding:0 4px;border:0;background:transparent;color:#3E3870;font-size:14px;font-weight:500;text-decoration:underline;text-underline-offset:3px;text-decoration-color:rgba(62,56,112,.4)}
+.icon-btn{width:44px;height:44px;flex:none;border:0;border-radius:6px;background:transparent;display:inline-flex;align-items:center;justify-content:center;color:#4A4475}
+.icon-btn:hover{background:rgba(62,56,112,.09)}
+.field{width:100%;min-width:0;height:44px;padding:0 12px;border:1.5px solid #8077A6;border-radius:6px;background:#FFFBF2;font:400 15px 'DM Sans',system-ui,sans-serif;color:#1A2140}
+.field[aria-invalid="true"]{border-color:#8A3A48;background:#FFF6F3}
+.f-label{font-size:13px;font-weight:500;color:#3A3760}
+.f-err{margin:0;font-size:13px;color:#8A3A48}
+
+/* notebook tasks */
+.task{display:flex;align-items:center;gap:2px;min-height:44px;margin:0}
+.task-label{flex:1;min-width:0;display:flex;align-items:center;gap:12px;min-height:44px;cursor:pointer}
+.task-label input{width:20px;height:20px;margin:0;flex:none;accent-color:#3E3870;cursor:pointer}
+.task-text{font:400 16px/22px 'DM Sans',system-ui,sans-serif;color:#1A2140;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;overflow-wrap:anywhere}
+.task[data-done="true"] .task-text{text-decoration:line-through;text-decoration-color:#8C83B3;color:#5E5785}
+.edit-form{flex:1;display:flex;align-items:center;gap:2px;margin:0}
+.nb-open{display:inline-flex;align-items:center;gap:10px;min-height:44px;padding:0;border:0;background:transparent;color:#1A2140;font:600 34px/1.05 'Cormorant Garamond',Georgia,serif;text-align:left}
+.nb-open svg{opacity:.55;transition:opacity .2s ease}
+.nb-open:hover svg,.nb-open:focus-visible svg{opacity:1}
+.ruled{background:repeating-linear-gradient(180deg,transparent 0 43px,#DCD2E6 43px 44px);background-attachment:local}
+
+/* drawers, trays, dialogs */
+.drawer{position:absolute;border:1px solid rgba(185,154,97,.45);border-radius:3px;transition:transform .5s cubic-bezier(.2,.7,.2,1),box-shadow .5s ease,background .5s ease}
+.drawer[data-open="true"]{transform:translateY(10px) scale(1.05);background:#3A3462;box-shadow:0 -10px 0 0 #120F26,0 14px 18px rgba(5,8,20,.55)}
+.handle{width:64px;height:44px;border:0;border-radius:6px;background:transparent;display:flex;align-items:center;justify-content:center}
+.handle:hover .knob,.handle:focus-visible .knob{background:#D6B97C;box-shadow:0 0 8px rgba(233,217,168,.45)}
+.knob{display:block;width:20px;height:8px;border-radius:4px;background:#B99A61;transition:background .2s ease,box-shadow .2s ease}
+.tray{position:absolute;z-index:6;background:#F6EEDC;color:#1A2140;border-radius:6px;padding:12px 16px 16px;box-shadow:0 0 0 8px #3E3766,0 0 0 9px rgba(185,154,97,.6),0 22px 34px rgba(5,8,20,.6);animation:trayIn .5s cubic-bezier(.2,.7,.2,1);transform-origin:top center}
+@keyframes trayIn{from{opacity:0;transform:translateY(-22px) scaleY(.94)}to{opacity:1;transform:none}}
+.scrim{position:absolute;left:0;top:0;width:1440px;height:1000px;z-index:20;background:rgba(9,11,28,.58);animation:fadein .3s ease}
+.dlg{position:absolute;z-index:21;background:#F6EEDC;color:#1A2140;border-radius:8px;box-shadow:0 0 0 1px rgba(185,154,97,.7),0 30px 60px rgba(5,8,20,.6);animation:dlgIn .35s cubic-bezier(.2,.7,.2,1)}
+@keyframes dlgIn{from{opacity:0;transform:translateY(14px) scale(.98)}to{opacity:1;transform:none}}
+.card-link{display:flex;flex-direction:column;justify-content:center;gap:2px;min-height:60px;padding:8px 12px;border-radius:4px;background:#FFFBF2;border:1px solid #D9CDB4;color:#1A2140;text-decoration:none;box-shadow:0 2px 0 #E4D8C0;transition:transform .2s ease,border-color .2s ease}
+.card-link:hover{transform:translateY(-2px);border-color:#B99A61}
+.card-name{font:600 18px/1.1 'Cormorant Garamond',Georgia,serif}
+.card-sub{font:500 11.5px/1.2 'JetBrains Mono',ui-monospace,monospace;color:#5E5785;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.link-row{display:flex;align-items:center;gap:4px;min-height:44px;border-bottom:1px solid #E1D6C0}
+.link-row a{flex:1;min-width:0;color:#1A2140;text-decoration:underline;text-decoration-color:rgba(62,56,112,.35);text-underline-offset:3px;font-size:15px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.bar{width:22px;border-radius:2px 2px 0 0;background:#6E6496}
+.toast{animation:dlgIn .4s cubic-bezier(.2,.7,.2,1)}
+
+/* notebook rows (Stage 2) */
+.task2{display:flex;align-items:flex-start;gap:8px;padding:6px 0;border-bottom:1px solid #DCD2E6;margin:0}
+.task2[data-active="true"]{background:linear-gradient(90deg,rgba(185,154,97,.16),rgba(185,154,97,0));box-shadow:inset 3px 0 0 #B99A61}
+.t-check{width:20px;height:20px;margin:12px 2px 0 0;flex:none;accent-color:#3E3870;cursor:pointer}
+.t-body{flex:1;min-width:0}
+.t-title{display:block;width:100%;min-height:44px;padding:4px 0;border:0;background:transparent;text-align:left;color:#1A2140;font:400 16px/22px 'DM Sans',system-ui,sans-serif;cursor:pointer;overflow-wrap:anywhere}
+.t-title:hover .t-text{text-decoration:underline;text-decoration-color:rgba(62,56,112,.35);text-underline-offset:3px}
+.task2[data-done="true"] .t-text{text-decoration:line-through;text-decoration-color:#8C83B3;color:#5E5785}
+.t-meta{margin:-6px 0 2px;font:400 12.5px/1.4 'DM Sans',system-ui,sans-serif;color:#4F4A78}
+.t-dot{display:inline-block;width:8px;height:8px;border-radius:50%;margin-right:6px;vertical-align:1px}
+.t-check-space{flex:none;width:22px}
+.t-date{flex:none;width:76px;padding-top:13px;font:500 12px/1.2 'JetBrains Mono',ui-monospace,monospace;color:#4F4A78;text-transform:capitalize}
+.prio{display:inline-block;width:7px;height:7px;margin:0 8px 2px 0;transform:rotate(45deg);vertical-align:middle;background:transparent}
+.prio[data-p="high"]{background:#8A3A48}
+.prio[data-p="low"]{width:6px;height:6px;border:1px solid #8C83B3;transform:none;border-radius:50%}
+.task2[data-done="true"] .prio{opacity:.4}
+.nb-h{display:flex;align-items:baseline;gap:10px;margin:18px 0 4px;font:600 24px/1.1 'Cormorant Garamond',Georgia,serif;color:#1A2140}
+.nb-h span{font:500 12px 'JetBrains Mono',ui-monospace,monospace;color:#4F4A78}
+.nb-h:first-child{margin-top:4px}
+.nb-empty{min-height:40px;display:flex;align-items:center;font:italic 500 18px 'Cormorant Garamond',Georgia,serif;color:#5E5785;border-bottom:1px solid #DCD2E6}
+.t-editor{display:flex;flex-direction:column;gap:8px;margin:14px 0 4px;padding:14px 16px;border-radius:6px;background:#FFFBF2;border:1px solid #D9CDB4}
+.t-editor select.field{padding:0 8px}
+.danger{color:#8A3A48;text-decoration-color:rgba(138,58,72,.4)}
+
+.pip{width:7px;height:7px;border-radius:50%;border:1.5px solid #6E6496}
+.pip[data-on="true"]{background:#6E6496}
+
+/* sky + plant motion */
+.tw{animation:tw 4s ease-in-out infinite}
+@keyframes tw{0%,100%{opacity:.3}50%{opacity:1}}
+.drift{animation:drift 90s linear infinite}
+@keyframes drift{from{transform:translateX(-160px)}to{transform:translateX(420px)}}
+.shoot{animation:shoot 15s ease-in infinite;opacity:0}
+@keyframes shoot{0%,90%{opacity:0;transform:translate(0,0) rotate(-22deg)}92%{opacity:.9}100%{opacity:0;transform:translate(170px,70px) rotate(-22deg)}}
+.glow{animation:glow 7s ease-in-out infinite}
+@keyframes glow{0%,100%{opacity:.85}50%{opacity:1}}
+.shimmer{animation:shimmer 3.6s ease-in-out infinite}
+@keyframes shimmer{0%,100%{opacity:.25}50%{opacity:.8}}
+.fadein{animation:fadein 1.4s ease}
+@keyframes fadein{from{opacity:0}to{opacity:1}}
+.leaf{transform-box:fill-box;transform-origin:50% 100%}
+.plant[data-sway="a"] .leaf{animation:swayA 2.8s ease-in-out}
+.plant[data-sway="b"] .leaf{animation:swayB 2.8s ease-in-out}
+.plant .leaf.l2{animation-delay:.12s}
+.plant .leaf.l3{animation-delay:.24s}
+@keyframes swayA{0%,100%{transform:rotate(0)}18%{transform:rotate(6deg)}42%{transform:rotate(-4deg)}66%{transform:rotate(2deg)}84%{transform:rotate(-1deg)}}
+@keyframes swayB{0%,100%{transform:rotate(0)}18%{transform:rotate(6deg)}42%{transform:rotate(-4deg)}66%{transform:rotate(2deg)}84%{transform:rotate(-1deg)}}
+.win-btn{border:0;background:transparent;border-radius:178px 178px 4px 4px;transition:box-shadow .25s ease}
+.win-btn:hover,.win-btn:focus-visible{box-shadow:inset 0 0 0 2px rgba(233,217,168,.5)}
+@media (prefers-reduced-motion: reduce){.tw,.drift,.glow,.shimmer,.fadein,.leaf,.tray,.dlg,.scrim,.toast{animation:none!important}.spine,.drawer,.veil,.wash{transition:none!important}.shoot{display:none}}
+</style>
+</helmet>
+
+<div class="room" data-light="{{light}}" style="position: relative; width: 1440px; height: 1000px; overflow: hidden; background: #1C2346; font-family: 'DM Sans', system-ui, sans-serif; color: #F3EAD7;">
+
+  <!-- Wall, wainscot, floor -->
+  <div aria-hidden="true" style="position: absolute; left: 0; top: 0; width: 1440px; height: 1000px; background: repeating-linear-gradient(90deg, rgba(183,169,214,0.04) 0 2px, transparent 2px 56px);"></div>
+  <div aria-hidden="true" style="position: absolute; left: 0; top: 700px; width: 1440px; height: 130px; background: #19203F; border-top: 2px solid #2E3561;"></div>
+  <div aria-hidden="true" style="position: absolute; left: 0; top: 818px; width: 1440px; height: 12px; background: #2E2A4A; border-top: 1px solid rgba(185,154,97,0.35);"></div>
+  <div aria-hidden="true" style="position: absolute; left: 0; top: 830px; width: 1440px; height: 170px; background: repeating-linear-gradient(90deg, transparent 0 178px, rgba(0,0,0,0.25) 178px 180px), repeating-linear-gradient(180deg, #141A33 0 40px, #121730 40px 42px);"></div>
+  <div aria-hidden="true" style="position: absolute; left: 560px; top: 936px; width: 780px; height: 54px; border-radius: 50%; background: #262650; box-shadow: inset 0 0 0 2px #4A4475, inset 0 0 0 8px #262650, inset 0 0 0 9px rgba(185,154,97,0.4);"></div>
+
+  <!-- Header -->
+  <header style="position: absolute; left: 40px; top: 34px; width: 400px;">
+    <p class="eyebrow" style="color: #B7A9D6;">Biomedical Engineering · FIU</p>
+    <h1 style="margin: 6px 0 0; font-family: 'Cormorant Garamond', Georgia, serif; font-weight: 600; font-size: 42px; line-height: 1.05; color: #F6EEDC;">The Midnight Study Room</h1>
+  </header>
+
+  <!-- ===================== BOOKSHELF ===================== -->
+  <div aria-hidden="true" style="position: absolute; left: 30px; top: 140px; width: 380px; height: 28px; background: #3E3766; border-radius: 4px 4px 0 0; border-bottom: 2px solid #B99A61; box-shadow: 0 4px 0 #2E2A4A;"></div>
+  <div aria-hidden="true" style="position: absolute; left: 40px; top: 170px; width: 360px; height: 770px; background: #2E2A4A; box-shadow: 14px 18px 30px rgba(5,8,20,0.45);"></div>
+  <div aria-hidden="true" style="position: absolute; left: 56px; top: 170px; width: 328px; height: 730px; background: #1E1C3A; box-shadow: inset 0 14px 18px rgba(0,0,0,0.35);"></div>
+  <div aria-hidden="true" style="position: absolute; left: 40px; top: 380px; width: 360px; height: 14px; background: #3E3766; border-top: 1px solid rgba(185,154,97,0.5);"></div>
+  <div aria-hidden="true" style="position: absolute; left: 40px; top: 560px; width: 360px; height: 14px; background: #3E3766; border-top: 1px solid rgba(185,154,97,0.5);"></div>
+  <div aria-hidden="true" style="position: absolute; left: 34px; top: 900px; width: 372px; height: 46px; background: #3E3766; border-top: 2px solid #B99A61;"></div>
+
+  <!-- Shelf 1: the six course books -->
+  <nav aria-label="Course bookshelf" style="position: absolute; left: 64px; top: 176px; width: 312px; height: 204px; display: flex; align-items: flex-end; gap: 4px;">
+    <sc-for list="{{books}}" as="b" hint-placeholder-count="6">
+      <sc-if value="{{b.href}}" hint-placeholder-val="{{ false }}">
+        <a class="spine obj" href="{{b.href}}" target="_blank" rel="noopener noreferrer" data-open="{{b.open}}" aria-current="{{b.current}}" aria-label="{{b.name}}: open course in Canvas (new tab)" onClick="{{b.pick}}" style="width: {{b.w}}px; height: {{b.h}}px; background: {{b.bg}}; color: {{b.fg}};"><span class="spine-text">{{b.name}}</span><span class="tip" aria-hidden="true">Open in Canvas</span></a>
+      </sc-if>
+      <sc-if value="{{b.noHref}}" hint-placeholder-val="{{ true }}">
+        <button type="button" class="spine obj" data-open="{{b.open}}" aria-current="{{b.current}}" aria-label="{{b.name}}: add a Canvas link" onClick="{{b.pick}}" style="width: {{b.w}}px; height: {{b.h}}px; background: {{b.bg}}; color: {{b.fg}};"><span class="spine-text">{{b.name}}</span><span class="tip" aria-hidden="true">Add Canvas link</span></button>
+      </sc-if>
+    </sc-for>
+  </nav>
+
+  <!-- Shelf 2: quiet decor -->
+  <svg aria-hidden="true" width="100" height="140" viewBox="0 0 100 140" style="position: absolute; left: 84px; top: 420px;" fill="none" stroke="#B99A61" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+    <path d="M18 136 H82"></path>
+    <path d="M30 136 C30 124 36 118 48 118 H58"></path>
+    <path d="M60 136 V96 C60 82 70 70 70 56"></path>
+    <path d="M34 104 H72"></path>
+    <path d="M44 14 L58 10 L76 66 L62 70 Z"></path>
+    <path d="M48 8 L60 4"></path>
+    <path d="M62 70 L64 82"></path>
+    <circle cx="70" cy="56" r="4"></circle>
+  </svg>
+  <div aria-hidden="true" style="position: absolute; left: 236px; top: 538px; width: 128px; height: 22px; background: #4E6489; border-radius: 2px; box-shadow: inset 0 -3px 0 rgba(0,0,0,0.18);"></div>
+  <div aria-hidden="true" style="position: absolute; left: 246px; top: 518px; width: 108px; height: 20px; background: #EDE2CB; border-radius: 2px; box-shadow: inset 0 -3px 0 rgba(0,0,0,0.12);"></div>
+  <div aria-hidden="true" style="position: absolute; left: 258px; top: 496px; width: 84px; height: 22px; background: #8A5560; border-radius: 2px; box-shadow: inset 0 -3px 0 rgba(0,0,0,0.18);"></div>
+
+  <!-- Shelf 3: library card -->
+  <section aria-labelledby="card-title" class="paper" style="position: absolute; left: 64px; top: 586px; width: 312px; height: 300px; padding: 20px 22px; background: #F6EEDC; border-radius: 6px; color: #1A2140; box-shadow: 0 10px 22px rgba(5,8,20,0.45); display: flex; flex-direction: column; gap: 10px;">
+    <div style="display: flex; align-items: center; gap: 10px;">
+      <p class="eyebrow" style="color: #5E5785;">Library card</p>
+      <div aria-hidden="true" style="flex: 1; height: 1px; background: #CFC2A6;"></div>
+    </div>
+    <sc-if value="{{noBook}}" hint-placeholder-val="{{ true }}">
+      <h2 id="card-title" style="margin: 2px 0 0; font-family: 'Cormorant Garamond', Georgia, serif; font-weight: 600; font-size: 28px; line-height: 1.1;">Choose a book</h2>
+      <p style="margin: 0; font-size: 15px; line-height: 1.5; color: #3A3760;">Pick a course from the top shelf, or a task in the notebook. The desk timer counts your focus blocks for it.</p>
+      <button type="button" class="btn-ink" style="margin-top: auto; align-self: flex-start;" onClick="{{openSettingsPlain}}">Canvas links</button>
+    </sc-if>
+    <sc-if value="{{cardShow}}" hint-placeholder-val="{{ false }}">
+      <div style="display: flex; align-items: flex-start; gap: 10px;">
+        <span aria-hidden="true" style="width: 12px; height: 12px; margin-top: 9px; border-radius: 50%; flex: none; background: {{cardBg}}; box-shadow: 0 0 0 1.5px #1A2140;"></span>
+        <h2 id="card-title" style="margin: 0; font-family: 'Cormorant Garamond', Georgia, serif; font-weight: 600; font-size: 26px; line-height: 1.1;">{{cardName}}</h2>
+      </div>
+      <sc-if value="{{activeTask}}" hint-placeholder-val="{{ false }}">
+        <p style="margin: -4px 0 0; font-family: 'Cormorant Garamond', Georgia, serif; font-style: italic; font-weight: 500; font-size: 18px; line-height: 1.2; color: #3A3760; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">{{activeTask.text}}</p>
+      </sc-if>
+      <dl style="margin: 0; display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 12px; padding: 10px 0; border-top: 1px solid #E1D6C0; border-bottom: 1px solid #E1D6C0;">
+        <div style="display: flex; flex-direction: column-reverse; gap: 2px;">
+          <dt style="font-size: 13px; color: #3A3760;">{{cardLeftLabel}}</dt>
+          <dd style="margin: 0; font-family: 'Cormorant Garamond', Georgia, serif; font-weight: 600; font-size: 34px; line-height: 1; font-variant-numeric: lining-nums;">{{cardLeft}}</dd>
+        </div>
+        <div style="display: flex; flex-direction: column-reverse; gap: 2px;">
+          <dt style="font-size: 13px; color: #3A3760;">total study time</dt>
+          <dd style="margin: 0; font-family: 'Cormorant Garamond', Georgia, serif; font-weight: 600; font-size: 34px; line-height: 1; font-variant-numeric: lining-nums;">{{cardTotal}}</dd>
+        </div>
+      </dl>
+      <div style="margin-top: auto; display: flex; gap: 8px; flex-wrap: wrap;">
+        <sc-if value="{{bookHref}}" hint-placeholder-val="{{ false }}">
+          <a class="btn-ink" href="{{bookHref}}" target="_blank" rel="noopener noreferrer">Open Canvas</a>
+        </sc-if>
+        <sc-if value="{{bookNoHref}}" hint-placeholder-val="{{ true }}">
+          <button type="button" class="btn-ink" onClick="{{addLinkForBook}}">Add Canvas link</button>
+        </sc-if>
+        <button type="button" class="text-btn" onClick="{{closeBook}}">Return to shelf</button>
+      </div>
+    </sc-if>
+  </section>
+
+  <!-- ===================== WINDOW ===================== -->
+  <div aria-hidden="true" style="position: absolute; left: 480px; top: 28px; width: 480px; height: 6px; border-radius: 3px; background: #B99A61;"></div>
+  <div aria-hidden="true" style="position: absolute; left: 472px; top: 24px; width: 14px; height: 14px; border-radius: 50%; background: #B99A61;"></div>
+  <div aria-hidden="true" style="position: absolute; left: 954px; top: 24px; width: 14px; height: 14px; border-radius: 50%; background: #B99A61;"></div>
+
+  <div aria-hidden="true" style="position: absolute; left: 530px; top: 44px; width: 380px; height: 340px; padding: 12px; background: #2E2A4A; border-radius: 190px 190px 8px 8px; box-shadow: inset 0 0 0 1px rgba(185,154,97,0.55), 0 14px 30px rgba(5,8,20,0.4);">
+    <div style="position: relative; width: 100%; height: 100%; overflow: hidden; border-radius: 178px 178px 4px 4px; background: #0E1431;">
+      <sc-if value="{{skyClear}}" hint-placeholder-val="{{ true }}">
+        <div class="fadein" style="position: absolute; left: 0; top: 0; width: 100%; height: 100%; background: linear-gradient(180deg, #0E1431 0%, #1A2050 55%, #34356A 100%);">
+          <sc-for list="{{stars}}" as="s" hint-placeholder-count="0">
+            <span class="tw" style="position: absolute; left: {{s.x}}%; top: {{s.y}}%; width: {{s.r}}px; height: {{s.r}}px; border-radius: 50%; background: #F6EEDC; animation-delay: {{s.d}}s; animation-duration: {{s.t}}s;"></span>
+          </sc-for>
+          <span class="shoot" style="position: absolute; left: 14%; top: 16%; width: 80px; height: 2px; border-radius: 2px; background: linear-gradient(90deg, rgba(246,238,220,0), #F6EEDC);"></span>
+          <div class="glow" style="position: absolute; right: 22%; top: 15%; width: 48px; height: 48px; border-radius: 50%; box-shadow: inset -13px 5px 0 1px #F3E6C8, 0 0 34px rgba(243,230,200,0.18);"></div>
+          <div class="drift" style="position: absolute; left: 0; top: 34%; width: 140px; height: 34px;">
+            <div style="position: absolute; left: 0; top: 12px; width: 140px; height: 22px; border-radius: 11px; background: rgba(183,169,214,0.16);"></div>
+            <div style="position: absolute; left: 30px; top: 0; width: 56px; height: 32px; border-radius: 50%; background: rgba(183,169,214,0.16);"></div>
+          </div>
+          <div class="drift" style="position: absolute; left: 0; top: 54%; width: 110px; height: 26px; animation-duration: 130s; animation-delay: -70s;">
+            <div style="position: absolute; left: 0; top: 10px; width: 110px; height: 16px; border-radius: 8px; background: rgba(183,169,214,0.12);"></div>
+            <div style="position: absolute; left: 50px; top: 0; width: 40px; height: 24px; border-radius: 50%; background: rgba(183,169,214,0.12);"></div>
+          </div>
+          <svg width="356" height="80" viewBox="0 0 356 80" preserveAspectRatio="none" style="position: absolute; left: 0; bottom: 0; width: 100%;">
+            <path d="M0 44 C40 30 80 34 120 42 C160 50 190 28 236 30 C280 32 310 44 356 36 V80 H0 Z" fill="#202452"></path>
+            <path d="M0 62 C50 52 90 58 140 60 C180 62 220 50 270 54 C310 57 330 60 356 56 V80 H0 Z" fill="#141938"></path>
+            <path d="M250 54 V40 M244 54 L250 34 L256 54" stroke="#141938" stroke-width="3" fill="#141938"></path>
+            <rect x="250" y="47" width="3" height="3" fill="#E9D9A8"></rect>
+          </svg>
+        </div>
+      </sc-if>
+      <sc-if value="{{skyLake}}" hint-placeholder-val="{{ false }}">
+        <div class="fadein" style="position: absolute; left: 0; top: 0; width: 100%; height: 100%; background: linear-gradient(180deg, #111A3D 0%, #262A5C 50%, #48437D 63%, #1B2050 63.4%, #131735 100%);">
+          <sc-for list="{{starsLake}}" as="s" hint-placeholder-count="0">
+            <span class="tw" style="position: absolute; left: {{s.x}}%; top: {{s.y}}%; width: {{s.r}}px; height: {{s.r}}px; border-radius: 50%; background: #F6EEDC; animation-delay: {{s.d}}s; animation-duration: {{s.t}}s;"></span>
+          </sc-for>
+          <div class="glow" style="position: absolute; left: 27%; top: 24%; width: 42px; height: 42px; border-radius: 50%; background: #F3E6C8; box-shadow: 0 0 30px rgba(243,230,200,0.3), 0 0 80px rgba(183,169,214,0.18);"></div>
+          <div style="position: absolute; left: 0; top: 52%; width: 100%; height: 30px; background: radial-gradient(ellipse 60% 50% at 50% 50%, rgba(183,169,214,0.2), rgba(183,169,214,0));"></div>
+          <svg width="356" height="24" viewBox="0 0 356 24" preserveAspectRatio="none" style="position: absolute; left: 0; top: calc(63% - 18px); width: 100%;">
+            <path d="M0 24 V16 C30 12 50 6 80 10 C110 14 120 18 150 16 C200 12 230 4 270 8 C300 11 330 16 356 14 V24 Z" fill="#161A3C"></path>
+          </svg>
+          <span class="shimmer" style="position: absolute; left: calc(27% - 4px); top: 67%; width: 50px; height: 3px; border-radius: 2px; background: #F3E6C8;"></span>
+          <span class="shimmer" style="position: absolute; left: calc(27% + 2px); top: 72%; width: 38px; height: 2px; border-radius: 2px; background: #F3E6C8; animation-delay: .6s;"></span>
+          <span class="shimmer" style="position: absolute; left: calc(27% - 2px); top: 77%; width: 46px; height: 2px; border-radius: 2px; background: #E9D9A8; animation-delay: 1.2s;"></span>
+          <span class="shimmer" style="position: absolute; left: calc(27% + 6px); top: 82%; width: 30px; height: 2px; border-radius: 2px; background: #E9D9A8; animation-delay: 1.8s;"></span>
+          <span class="shimmer" style="position: absolute; left: calc(27% + 1px); top: 87%; width: 40px; height: 2px; border-radius: 2px; background: #D6CCEB; animation-delay: 2.4s;"></span>
+          <span class="shimmer" style="position: absolute; left: calc(27% + 8px); top: 92%; width: 24px; height: 2px; border-radius: 2px; background: #D6CCEB; animation-delay: 3s;"></span>
+        </div>
+      </sc-if>
+      <div style="position: absolute; left: 50%; top: 0; width: 8px; height: 100%; margin-left: -4px; background: #2E2A4A;"></div>
+      <div style="position: absolute; left: 0; top: 58%; width: 100%; height: 8px; background: #2E2A4A;"></div>
+    </div>
+  </div>
+  <button type="button" class="obj win-btn" aria-label="{{skyLabel}}" onClick="{{toggleSky}}" style="left: 542px; top: 56px; width: 356px; height: 316px;"><span class="tip inside" aria-hidden="true">Change the sky</span></button>
+
+  <div aria-hidden="true" style="position: absolute; left: 492px; top: 34px; width: 66px; height: 360px; border-radius: 0 0 26px 6px; background: repeating-linear-gradient(90deg, #8F82B5 0 10px, #7C6FA4 10px 18px, #8F82B5 18px 22px); box-shadow: 6px 0 14px rgba(5,8,20,0.3);"></div>
+  <div aria-hidden="true" style="position: absolute; left: 882px; top: 34px; width: 66px; height: 360px; border-radius: 0 0 6px 26px; background: repeating-linear-gradient(90deg, #8F82B5 0 10px, #7C6FA4 10px 18px, #8F82B5 18px 22px); box-shadow: -6px 0 14px rgba(5,8,20,0.3);"></div>
+  <div aria-hidden="true" style="position: absolute; left: 512px; top: 384px; width: 416px; height: 16px; border-radius: 3px; background: #3E3766; border-top: 2px solid #B99A61;"></div>
+
+  <!-- Plant on the sill -->
+  <button type="button" class="obj plant glowable" data-sway="{{sway}}" aria-label="Plant: brush the leaves" onClick="{{swayPlant}}" style="left: 826px; top: 290px; width: 76px; height: 96px; padding: 0; border: 0; background: transparent; border-radius: 8px;">
+    <svg aria-hidden="true" width="76" height="96" viewBox="0 0 76 96" style="display: block; overflow: visible;">
+      <g class="leaf l1"><path d="M38 66 C36 48 30 36 18 28 C26 26 36 32 39 46" fill="#7E9A86"></path><path d="M38 66 C36 50 30 38 20 30" stroke="#5F7D69" stroke-width="1.2" fill="none"></path></g>
+      <g class="leaf l2"><path d="M39 66 C40 42 46 26 58 16 C60 28 52 44 41 52" fill="#6F8C78"></path><path d="M39 64 C41 44 47 30 56 20" stroke="#55705E" stroke-width="1.2" fill="none"></path></g>
+      <g class="leaf l3"><path d="M38 66 C38 50 38 36 36 20 C44 28 46 44 40 56" fill="#8BA893"></path><path d="M38 64 C38 48 38 36 37 24" stroke="#5F7D69" stroke-width="1.2" fill="none"></path></g>
+      <g class="leaf l2"><path d="M30 70 C22 72 14 80 12 90 C20 86 26 80 31 74" fill="#7E9A86"></path></g>
+      <path d="M22 66 H54 L50 94 H26 Z" fill="#EDE2CB"></path>
+      <path d="M20 62 H56 V68 H20 Z" fill="#B99A61"></path>
+      <path d="M28 76 H48" stroke="#CFC2A6" stroke-width="1.5"></path>
+    </svg>
+    <span class="tip" aria-hidden="true">Brush the leaves</span>
+  </button>
+
+  <!-- Framed femur: biomedical reference -->
+  <button type="button" class="obj glowable" aria-label="Femur engraving: open biomedical reference links" onClick="{{openRefs}}" style="left: 1114px; top: 34px; width: 132px; height: 128px; padding: 10px; border: 0; background: #B99A61; border-radius: 3px; box-shadow: 0 10px 20px rgba(5,8,20,0.45);">
+    <span style="width: 100%; height: 100%; background: #F3EAD7; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 2px;">
+      <svg aria-hidden="true" width="44" height="76" viewBox="0 0 60 100" fill="none" stroke="#2E2A4A" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+        <circle cx="21" cy="15" r="7"></circle>
+        <path d="M27 18 L32 18 C33 13 37 11 39 15 C41 20 38 24 34 26"></path>
+        <path d="M26 21 C25 34 24 60 25 78"></path>
+        <path d="M34 26 C35 40 36 62 35 78"></path>
+        <path d="M25 78 C19 80 17 88 21 92 C24 95 28 93 30 90 C32 93 36 95 39 92 C43 88 41 80 35 78"></path>
+      </svg>
+      <span style="font-family: 'Cormorant Garamond', Georgia, serif; font-style: italic; font-size: 13px; color: #2E2A4A;">Os femoris</span>
+    </span>
+    <span class="tip below" aria-hidden="true">Reference links</span>
+  </button>
+
+  <!-- ===================== DESK ===================== -->
+  <div class="lamp-light" aria-hidden="true" style="position: absolute; left: 340px; top: 400px; width: 260px; height: 260px; border-radius: 50%; background: radial-gradient(closest-side, rgba(240,210,150,0.16), rgba(240,210,150,0));"></div>
+
+  <!-- Left pedestal: Apps + Study log -->
+  <div style="position: absolute; left: 452px; top: 646px; width: 220px; height: 272px; background: #2E2A4A; box-shadow: inset -10px 0 0 rgba(0,0,0,0.15);">
+    <div class="drawer" data-open="{{drawerOpen.apps}}" style="left: 14px; top: 16px; width: 192px; height: 112px; background: #2E2A4A;">
+      <button type="button" id="h-apps" class="handle obj" aria-expanded="{{drawerOpen.apps}}" aria-label="Apps drawer" onClick="{{openApps}}" style="left: 63px; top: 34px;"><span class="knob"></span><span class="tip" aria-hidden="true">Apps</span></button>
+    </div>
+    <div class="drawer" data-open="{{drawerOpen.history}}" style="left: 14px; top: 142px; width: 192px; height: 112px; background: #2E2A4A;">
+      <button type="button" id="h-history" class="handle obj" aria-expanded="{{drawerOpen.history}}" aria-label="Study log drawer" onClick="{{openHistory}}" style="left: 63px; top: 34px;"><span class="knob"></span><span class="tip" aria-hidden="true">Study log</span></button>
+    </div>
+  </div>
+  <!-- Right pedestal: Resources + Settings -->
+  <div style="position: absolute; left: 1168px; top: 646px; width: 220px; height: 272px; background: #2E2A4A; box-shadow: inset -10px 0 0 rgba(0,0,0,0.15);">
+    <div class="drawer" data-open="{{drawerOpen.resources}}" style="left: 14px; top: 16px; width: 192px; height: 112px; background: #2E2A4A;">
+      <button type="button" id="h-resources" class="handle obj" aria-expanded="{{drawerOpen.resources}}" aria-label="Study resources drawer" onClick="{{openResources}}" style="left: 63px; top: 34px;"><span class="knob"></span><span class="tip" aria-hidden="true">Study resources</span></button>
+    </div>
+    <div class="drawer" data-open="{{drawerOpen.settings}}" style="left: 14px; top: 142px; width: 192px; height: 112px; background: #2E2A4A;">
+      <button type="button" id="h-settings" class="handle obj" aria-haspopup="dialog" aria-label="Settings drawer" onClick="{{openSettingsPlain}}" style="left: 63px; top: 34px;"><span class="knob"></span><span class="tip" aria-hidden="true">Settings</span></button>
+    </div>
+  </div>
+  <div aria-hidden="true" style="position: absolute; left: 672px; top: 646px; width: 496px; height: 58px; background: #2A2645; box-shadow: inset 0 -8px 12px rgba(0,0,0,0.25);"></div>
+  <div class="desk-top" aria-hidden="true" style="position: absolute; left: 420px; top: 618px; width: 1000px; height: 30px; border-radius: 4px; background: #3E3766; border-top: 2px solid rgba(185,154,97,0.7); box-shadow: 0 8px 14px rgba(5,8,20,0.45);"></div>
+
+  <!-- Lamp -->
+  <div class="lamp-light" aria-hidden="true" style="position: absolute; left: 400px; top: 606px; width: 150px; height: 20px; border-radius: 50%; background: radial-gradient(closest-side, rgba(240,210,150,0.22), rgba(240,210,150,0));"></div>
+  <button type="button" class="obj glowable" aria-label="Desk lamp" aria-pressed="{{lampOn}}" onClick="{{toggleLight}}" style="left: 424px; top: 418px; width: 100px; height: 204px; padding: 0; border: 0; background: transparent; border-radius: 8px;">
+    <span aria-hidden="true" style="position: absolute; left: 20px; top: 188px; width: 60px; height: 14px; border-radius: 50%; background: #B99A61; box-shadow: inset 0 -3px 0 #8F7542;"></span>
+    <span aria-hidden="true" style="position: absolute; left: 47px; top: 52px; width: 6px; height: 140px; background: #B99A61;"></span>
+    <span aria-hidden="true" style="position: absolute; left: 8px; top: 8px; width: 84px; height: 52px; background: #6E6496; clip-path: polygon(22% 0, 78% 0, 100% 100%, 0 100%); box-shadow: inset 0 -4px 0 #B99A61;"></span>
+    <span aria-hidden="true" style="position: absolute; left: 8px; top: 56px; width: 84px; height: 4px; background: #B99A61;"></span>
+    <span class="glow bulb" aria-hidden="true" style="position: absolute; left: 38px; top: 56px; width: 24px; height: 12px; border-radius: 0 0 12px 12px; background: #F6E3B4;"></span>
+    <span class="tip" aria-hidden="true">{{lampTip}}</span>
+  </button>
+
+  <!-- Focus timer instrument -->
+  <section aria-labelledby="timer-title" style="position: absolute; left: 520px; top: 404px; width: 424px; height: 214px; padding: 15px; display: flex; gap: 16px; align-items: center; background: #2E2A4A; border: 1px solid #5A527E; border-radius: 12px; box-shadow: 0 8px 0 -3px #221F3B, 0 18px 30px rgba(5,8,20,0.45);">
+    <div style="position: relative; width: 184px; height: 184px; flex: none;">
+      <svg aria-hidden="true" width="184" height="184" viewBox="0 0 184 184" style="position: absolute; left: 0; top: 0;">
+        <circle cx="92" cy="92" r="91" fill="#B99A61"></circle>
+        <circle cx="92" cy="92" r="85" fill="#F6EEDC"></circle>
+        <circle cx="92" cy="92" r="76" fill="none" stroke="#E4D8C0" stroke-width="6"></circle>
+        <circle cx="92" cy="92" r="76" fill="none" stroke="#6E6496" stroke-width="6" stroke-linecap="round" stroke-dasharray="477.5" stroke-dashoffset="{{dashOffset}}" transform="rotate(-90 92 92)" style="transition: stroke-dashoffset .4s linear;"></circle>
+        <g stroke="#B9AD94" stroke-width="1.5" stroke-linecap="round">
+          <line x1="92" y1="22" x2="92" y2="28"></line>
+          <line x1="92" y1="22" x2="92" y2="28" transform="rotate(30 92 92)"></line>
+          <line x1="92" y1="22" x2="92" y2="28" transform="rotate(60 92 92)"></line>
+          <line x1="92" y1="22" x2="92" y2="28" transform="rotate(90 92 92)"></line>
+          <line x1="92" y1="22" x2="92" y2="28" transform="rotate(120 92 92)"></line>
+          <line x1="92" y1="22" x2="92" y2="28" transform="rotate(150 92 92)"></line>
+          <line x1="92" y1="22" x2="92" y2="28" transform="rotate(180 92 92)"></line>
+          <line x1="92" y1="22" x2="92" y2="28" transform="rotate(210 92 92)"></line>
+          <line x1="92" y1="22" x2="92" y2="28" transform="rotate(240 92 92)"></line>
+          <line x1="92" y1="22" x2="92" y2="28" transform="rotate(270 92 92)"></line>
+          <line x1="92" y1="22" x2="92" y2="28" transform="rotate(300 92 92)"></line>
+          <line x1="92" y1="22" x2="92" y2="28" transform="rotate(330 92 92)"></line>
+        </g>
+      </svg>
+      <div style="position: absolute; left: 0; top: 0; width: 184px; height: 184px; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 3px; color: #1A2140;">
+        <p class="eyebrow" style="color: #5E5785;">{{modeLabel}}</p>
+        <p role="timer" aria-label="Time remaining {{timeText}}" style="margin: 0; font-family: 'JetBrains Mono', ui-monospace, monospace; font-weight: 500; font-size: 36px; line-height: 1.1; letter-spacing: -0.02em;">{{timeText}}</p>
+        <p style="margin: 0; max-width: 120px; font-family: 'Cormorant Garamond', Georgia, serif; font-style: italic; font-weight: 500; font-size: 16px; line-height: 1.15; text-align: center; color: #3A3760;">{{subjectLabel}}</p>
+        <div role="img" aria-label="{{pipLabel}}" style="display: flex; gap: 5px; margin-top: 4px;">
+          <sc-for list="{{pips}}" as="p" hint-placeholder-count="4">
+            <span class="pip" data-on="{{p.on}}"></span>
+          </sc-for>
+        </div>
+      </div>
+    </div>
+
+    <div style="flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 10px;">
+      <h2 id="timer-title" class="eyebrow" style="color: #C9AC75;">Focus timer</h2>
+      <div role="group" aria-label="Timer mode" style="display: flex; gap: 4px;">
+        <button type="button" class="seg" aria-pressed="{{isFocus}}" onClick="{{setFocus}}">Focus</button>
+        <button type="button" class="seg" aria-pressed="{{isShort}}" onClick="{{setShort}}">Break</button>
+        <button type="button" class="seg" aria-pressed="{{isLong}}" onClick="{{setLong}}">Long</button>
+      </div>
+      <div style="display: flex; gap: 8px;">
+        <button type="button" class="btn-gold" style="flex: 1.4;" onClick="{{toggle}}">{{toggleLabel}}</button>
+        <button type="button" class="btn-line" style="flex: 1;" onClick="{{reset}}">Reset</button>
+      </div>
+      <p aria-live="polite" style="margin: 0; min-height: 36px; font-size: 13px; line-height: 18px; color: #D6CCEB;">{{status}}</p>
+    </div>
+  </section>
+
+  <!-- ===================== NOTEBOOK ===================== -->
+  <section class="paper" aria-labelledby="nb-title" style="position: absolute; left: 964px; top: 178px; width: 436px; height: 472px; color: #1A2140;">
+    <div aria-hidden="true" style="position: absolute; left: 8px; top: 10px; width: 436px; height: 472px; border-radius: 6px; background: #D9CDB4;"></div>
+    <div class="nb-paper" style="position: absolute; left: 0; top: 0; width: 436px; height: 472px; padding: 30px 18px 10px 60px; border-radius: 6px; background: #F6EEDC; box-shadow: 0 16px 28px rgba(5,8,20,0.5); display: flex; flex-direction: column;">
+      <div aria-hidden="true" style="position: absolute; left: 44px; top: 0; width: 1.5px; height: 100%; background: #CDB0C0;"></div>
+      <div aria-hidden="true" style="position: absolute; left: 30px; top: -10px; width: 380px; height: 22px; display: flex; justify-content: space-between;">
+        <span style="width: 12px; height: 22px; border-radius: 6px; border: 2.5px solid #B99A61;"></span><span style="width: 12px; height: 22px; border-radius: 6px; border: 2.5px solid #B99A61;"></span><span style="width: 12px; height: 22px; border-radius: 6px; border: 2.5px solid #B99A61;"></span><span style="width: 12px; height: 22px; border-radius: 6px; border: 2.5px solid #B99A61;"></span><span style="width: 12px; height: 22px; border-radius: 6px; border: 2.5px solid #B99A61;"></span><span style="width: 12px; height: 22px; border-radius: 6px; border: 2.5px solid #B99A61;"></span><span style="width: 12px; height: 22px; border-radius: 6px; border: 2.5px solid #B99A61;"></span><span style="width: 12px; height: 22px; border-radius: 6px; border: 2.5px solid #B99A61;"></span><span style="width: 12px; height: 22px; border-radius: 6px; border: 2.5px solid #B99A61;"></span><span style="width: 12px; height: 22px; border-radius: 6px; border: 2.5px solid #B99A61;"></span>
+      </div>
+
+      <p class="eyebrow" style="color: #5E5785;">{{dateText}}</p>
+      <h2 id="nb-title" style="margin: 2px 0 6px;">
+        <button type="button" class="nb-open obj" aria-haspopup="dialog" onClick="{{openNotebook}}" style="position: relative;">Today’s tasks
+          <svg aria-hidden="true" width="18" height="18" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"><path d="M9 3 H13 V7 M7 13 H3 V9 M13 3 L9 7 M3 13 L7 9"></path></svg>
+          <span class="tip" aria-hidden="true">Open the notebook</span>
+        </button>
+      </h2>
+
+      <form onSubmit="{{addTask}}" style="display: flex; gap: 8px; margin: 0 0 6px;">
+        <label for="task-input" class="sr-only">Add a task</label>
+        <input id="task-input" class="field" type="text" autocomplete="off" maxlength="160" placeholder="Add a task…" value="{{draft}}" onChange="{{onDraft}}" style="flex: 1;">
+        <button type="submit" class="btn-solid">Add</button>
+      </form>
+
+      <ul aria-label="Today’s tasks" style="flex: 1; min-height: 0; margin: 0; padding: 0 2px 0 0; list-style: none; overflow-y: auto;">
+        <sc-for list="{{deskTasks}}" as="t" hint-placeholder-count="0">
+          <li class="task2" data-done="{{t.done}}" data-active="{{t.active}}">
+            <input type="checkbox" class="t-check" checked="{{t.done}}" onChange="{{t.toggle}}" aria-label="Done: {{t.text}}">
+            <div class="t-body">
+              <button type="button" class="t-title" aria-pressed="{{t.active}}" aria-label="{{t.prioText}}{{t.studyLabel}}" onClick="{{t.study}}"><span class="prio" data-p="{{t.priority}}"></span><span class="t-text">{{t.text}}</span></button>
+              <p class="t-meta"><span class="t-dot" aria-hidden="true" style="background: {{t.courseBg}};"></span>{{t.meta}}</p>
+            </div>
+            <button type="button" class="icon-btn" aria-label="Edit task: {{t.text}}" onClick="{{t.edit}}"><svg aria-hidden="true" width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round"><path d="M3 13 L3.6 10.4 L10.6 3.4 L12.6 5.4 L5.6 12.4 Z"></path></svg></button>
+          </li>
+        </sc-for>
+        <sc-if value="{{noTasks}}" hint-placeholder-val="{{ true }}">
+          <li class="nb-empty">A fresh page. Add a task, or let the Morning Brief fill it.</li>
+        </sc-if>
+      </ul>
+
+      <div style="display: flex; align-items: center; justify-content: space-between; gap: 8px; margin-top: 4px; min-height: 44px;">
+        <p style="margin: 0; flex: none; white-space: nowrap; font-family: 'JetBrains Mono', ui-monospace, monospace; font-size: 12px; color: #4F4A78;">{{progressText}}</p>
+        <sc-if value="{{nextDeadline}}" hint-placeholder-val="{{ false }}">
+          <button type="button" class="text-btn" style="font-size: 13px; max-width: 190px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;" onClick="{{openNotebook}}">{{nextDeadline}}</button>
+        </sc-if>
+      </div>
+    </div>
+  </section>
+
+  <!-- Completion note: slides onto the desk apron -->
+  <sc-if value="{{toast}}" hint-placeholder-val="{{ false }}">
+    <div class="toast paper" style="position: absolute; left: 690px; top: 652px; width: 460px; z-index: 7; display: flex; align-items: center; gap: 10px; padding: 4px 4px 4px 14px; border-radius: 6px; background: #F6EEDC; color: #1A2140; box-shadow: 0 0 0 1px rgba(185,154,97,0.8), 0 12px 24px rgba(5,8,20,0.55);">
+      <svg aria-hidden="true" width="18" height="18" viewBox="0 0 16 16" fill="none" stroke="#76582E" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M4 11 V7.5 A4 4 0 0 1 12 7.5 V11 L13 12.5 H3 Z"></path><path d="M6.8 14 A1.4 1.4 0 0 0 9.2 14"></path></svg>
+      <p style="margin: 0; flex: 1; font-size: 14px; line-height: 1.35;">{{toast.text}}</p>
+      <button type="button" class="icon-btn" aria-label="Dismiss note" onClick="{{dismissToast}}"><svg aria-hidden="true" width="14" height="14" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round"><path d="M4 4 L12 12 M12 4 L4 12"></path></svg></button>
+    </div>
+  </sc-if>
+
+  <!-- ===================== DRAWER TRAYS ===================== -->
+  <sc-if value="{{drawerOpen.apps}}" hint-placeholder-val="{{ false }}">
+    <section class="tray paper" aria-labelledby="tray-apps-t" onKeyDown="{{trayKey}}" style="left: 684px; top: 716px; width: 320px;">
+      <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 6px;">
+        <h2 id="tray-apps-t" class="eyebrow" style="color: #5E5785;">Apps drawer</h2>
+        <button type="button" class="icon-btn" aria-label="Close drawer" onClick="{{closeDrawer}}"><svg aria-hidden="true" width="14" height="14" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round"><path d="M4 4 L12 12 M12 4 L4 12"></path></svg></button>
+      </div>
+      <div style="display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 8px;">
+        <sc-for list="{{apps}}" as="a" hint-placeholder-count="4">
+          <a class="card-link" href="{{a.href}}" target="_blank" rel="noopener noreferrer" aria-label="{{a.name}} (opens in a new tab)"><span class="card-name">{{a.name}}</span><span class="card-sub">{{a.host}}</span></a>
+        </sc-for>
+      </div>
+      <button type="button" class="text-btn" style="margin-top: 6px;" onClick="{{openSettingsPlain}}">Edit shortcuts</button>
+    </section>
+  </sc-if>
+
+  <sc-if value="{{drawerOpen.history}}" hint-placeholder-val="{{ false }}">
+    <section class="tray paper" aria-labelledby="tray-hist-t" onKeyDown="{{trayKey}}" style="left: 684px; top: 700px; width: 320px; max-height: 292px; overflow-y: auto;">
+      <div style="display: flex; align-items: center; justify-content: space-between;">
+        <h2 id="tray-hist-t" class="eyebrow" style="color: #5E5785;">Study log</h2>
+        <button type="button" class="icon-btn" aria-label="Close drawer" onClick="{{closeDrawer}}"><svg aria-hidden="true" width="14" height="14" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round"><path d="M4 4 L12 12 M12 4 L4 12"></path></svg></button>
+      </div>
+      <p style="margin: 0 0 10px; font-size: 14px; color: #3A3760;">Today <strong style="color: #1A2140;">{{todayMinText}}</strong> · {{todayBlocksText}} · This week <strong style="color: #1A2140;">{{weekMinText}}</strong></p>
+      <div role="img" aria-label="{{weekLabel}}" style="display: flex; align-items: flex-end; justify-content: space-between; height: 64px; padding: 0 4px; border-bottom: 1px solid #CFC2A6;">
+        <sc-for list="{{week}}" as="w" hint-placeholder-count="7">
+          <div style="display: flex; flex-direction: column; align-items: center; gap: 3px;">
+            <span class="bar" style="height: {{w.h}}px;"></span>
+          </div>
+        </sc-for>
+      </div>
+      <div aria-hidden="true" style="display: flex; justify-content: space-between; padding: 3px 4px 0; font: 500 11.5px 'JetBrains Mono', ui-monospace, monospace; color: #5E5785;">
+        <sc-for list="{{week}}" as="w" hint-placeholder-count="7"><span style="width: 22px; text-align: center;">{{w.label}}</span></sc-for>
+      </div>
+      <sc-if value="{{hasTaskProgress}}" hint-placeholder-val="{{ false }}">
+        <h3 class="eyebrow" style="margin-top: 12px; color: #5E5785;">Task progress</h3>
+        <ul style="margin: 4px 0 0; padding: 0; list-style: none;">
+          <sc-for list="{{taskProgress}}" as="q" hint-placeholder-count="0">
+            <li style="display: flex; align-items: center; gap: 8px; min-height: 28px; font-size: 14px;">
+              <span aria-hidden="true" style="width: 9px; height: 9px; border-radius: 50%; flex: none; background: {{q.bg}}; box-shadow: 0 0 0 1px #1A2140;"></span>
+              <span style="flex: 1; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">{{q.text}}</span>
+              <span style="font-family: 'JetBrains Mono', ui-monospace, monospace; font-size: 13px;">{{q.progress}}</span>
+            </li>
+          </sc-for>
+        </ul>
+      </sc-if>
+      <h3 class="eyebrow" style="margin-top: 12px; color: #5E5785;">All time, by course</h3>
+      <ul style="margin: 4px 0 0; padding: 0; list-style: none;">
+        <sc-for list="{{courseTotals}}" as="c" hint-placeholder-count="0">
+          <li style="display: flex; align-items: center; gap: 8px; min-height: 28px; font-size: 14px;">
+            <span aria-hidden="true" style="width: 9px; height: 9px; border-radius: 50%; flex: none; background: {{c.bg}}; box-shadow: 0 0 0 1px #1A2140;"></span>
+            <span style="flex: 1;">{{c.name}}</span>
+            <span style="font-family: 'JetBrains Mono', ui-monospace, monospace; font-size: 13px;">{{c.text}}</span>
+          </li>
+        </sc-for>
+        <sc-if value="{{noHistory}}" hint-placeholder-val="{{ true }}">
+          <li style="font-family: 'Cormorant Garamond', Georgia, serif; font-style: italic; font-size: 17px; color: #5E5785; padding: 4px 0;">Finished focus blocks will be logged here.</li>
+        </sc-if>
+      </ul>
+    </section>
+  </sc-if>
+
+  <sc-if value="{{drawerOpen.resources}}" hint-placeholder-val="{{ false }}">
+    <section class="tray paper" aria-labelledby="tray-res-t" onKeyDown="{{trayKey}}" style="left: 836px; top: 700px; width: 320px; max-height: 292px; overflow-y: auto;">
+      <div style="display: flex; align-items: center; justify-content: space-between;">
+        <h2 id="tray-res-t" class="eyebrow" style="color: #5E5785;">Study resources</h2>
+        <button type="button" class="icon-btn" aria-label="Close drawer" onClick="{{closeDrawer}}"><svg aria-hidden="true" width="14" height="14" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round"><path d="M4 4 L12 12 M12 4 L4 12"></path></svg></button>
+      </div>
+      <ul style="margin: 0 0 8px; padding: 0; list-style: none;">
+        <sc-for list="{{resources}}" as="r" hint-placeholder-count="0">
+          <li class="link-row"><a href="{{r.href}}" target="_blank" rel="noopener noreferrer">{{r.label}}</a><button type="button" class="icon-btn" aria-label="Remove {{r.label}}" onClick="{{r.remove}}"><svg aria-hidden="true" width="14" height="14" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round"><path d="M4 4 L12 12 M12 4 L4 12"></path></svg></button></li>
+        </sc-for>
+        <sc-if value="{{noResources}}" hint-placeholder-val="{{ true }}">
+          <li style="font-family: 'Cormorant Garamond', Georgia, serif; font-style: italic; font-size: 17px; color: #5E5785; padding: 2px 0 6px;">Empty for now. Keep your textbook, slides or practice sites here.</li>
+        </sc-if>
+      </ul>
+      <form onSubmit="{{addResource}}" style="display: flex; flex-direction: column; gap: 6px; margin: 0;">
+        <label for="res-label" class="f-label">Name</label>
+        <input id="res-label" class="field" type="text" maxlength="80" value="{{resDraft.label}}" onChange="{{onResLabel}}">
+        <label for="res-url" class="f-label">Link</label>
+        <div style="display: flex; gap: 8px;">
+          <input id="res-url" class="field" type="text" inputmode="url" value="{{resDraft.url}}" onChange="{{onResUrl}}" aria-invalid="{{resDraft.invalid}}" aria-describedby="res-err">
+          <button type="submit" class="btn-solid">Add</button>
+        </div>
+        <sc-if value="{{resDraft.error}}" hint-placeholder-val="{{ false }}"><p id="res-err" class="f-err">{{resDraft.error}}</p></sc-if>
+      </form>
+    </section>
+  </sc-if>
+
+  <!-- Lamp-driven light layers (above the room, under trays and dialogs) -->
+  <div class="wash" aria-hidden="true"></div>
+  <div class="veil" aria-hidden="true"></div>
+
+  <!-- ===================== DIALOGS ===================== -->
+  <sc-if value="{{anyDialog}}" hint-placeholder-val="{{ false }}">
+    <div class="scrim" aria-hidden="true"></div>
+  </sc-if>
+
+  <!-- Settings -->
+  <sc-if value="{{dlgSettings}}" hint-placeholder-val="{{ false }}">
+    <section class="dlg paper" role="dialog" aria-modal="true" aria-labelledby="set-title" onKeyDown="{{dialogKey}}" style="left: 270px; top: 56px; width: 900px; max-height: 888px; overflow-y: auto; padding: 26px 32px 24px;">
+      <div style="display: flex; align-items: flex-start; justify-content: space-between; gap: 16px;">
+        <div>
+          <p class="eyebrow" style="color: #5E5785;">Settings drawer</p>
+          <h2 id="set-title" style="margin: 4px 0 0; font-family: 'Cormorant Garamond', Georgia, serif; font-weight: 600; font-size: 36px; line-height: 1.05;">Room settings</h2>
+        </div>
+        <button type="button" class="icon-btn" aria-label="Close settings" onClick="{{closeDialog}}"><svg aria-hidden="true" width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round"><path d="M4 4 L12 12 M12 4 L4 12"></path></svg></button>
+      </div>
+      <sc-if value="{{settingsNotice}}" hint-placeholder-val="{{ false }}">
+        <p role="status" style="margin: 14px 0 0; padding: 10px 14px; border-radius: 6px; background: #EFE6F7; color: #2E2A4A; font-size: 15px; border: 1px solid #C9BEE3;">{{settingsNotice}}</p>
+      </sc-if>
+      <form onSubmit="{{saveSettings}}" style="margin: 18px 0 0;">
+        <div style="display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 32px;">
+          <fieldset style="margin: 0; padding: 0; border: 0; display: flex; flex-direction: column; gap: 12px; min-width: 0;">
+            <legend class="eyebrow" style="padding: 0; margin-bottom: 4px; color: #5E5785;">Canvas course links</legend>
+            <p style="margin: 0; font-size: 14px; line-height: 1.5; color: #3A3760;">Open each course in Canvas and paste its address here. Leave a field empty if you don’t have it yet.</p>
+            <sc-for list="{{courseFields}}" as="c" hint-placeholder-count="6">
+              <div style="display: flex; flex-direction: column; gap: 5px;">
+                <label for="{{c.inputId}}" class="f-label" style="display: flex; align-items: center; gap: 8px;"><span aria-hidden="true" style="width: 9px; height: 9px; border-radius: 50%; background: {{c.bg}}; box-shadow: 0 0 0 1px #1A2140;"></span>{{c.name}}</label>
+                <input id="{{c.inputId}}" class="field" type="text" inputmode="url" autocomplete="off" placeholder="Paste the course link from Canvas" value="{{c.value}}" onChange="{{c.onInput}}" aria-invalid="{{c.invalid}}" aria-describedby="{{c.errId}}">
+                <sc-if value="{{c.error}}" hint-placeholder-val="{{ false }}"><p id="{{c.errId}}" class="f-err">{{c.error}}</p></sc-if>
+              </div>
+            </sc-for>
+          </fieldset>
+          <div style="display: flex; flex-direction: column; gap: 24px; min-width: 0;">
+            <fieldset style="margin: 0; padding: 0; border: 0; display: flex; flex-direction: column; gap: 12px; min-width: 0;">
+              <legend class="eyebrow" style="padding: 0; margin-bottom: 4px; color: #5E5785;">Apps drawer shortcuts</legend>
+              <sc-for list="{{appFields}}" as="a" hint-placeholder-count="4">
+                <div style="display: flex; flex-direction: column; gap: 5px;">
+                  <label for="{{a.inputId}}" class="f-label">{{a.name}}</label>
+                  <input id="{{a.inputId}}" class="field" type="text" inputmode="url" autocomplete="off" value="{{a.value}}" onChange="{{a.onInput}}" aria-invalid="{{a.invalid}}" aria-describedby="{{a.errId}}">
+                  <sc-if value="{{a.error}}" hint-placeholder-val="{{ false }}"><p id="{{a.errId}}" class="f-err">{{a.error}}</p></sc-if>
+                </div>
+              </sc-for>
+            </fieldset>
+            <fieldset style="margin: 0; padding: 0; border: 0; display: flex; flex-direction: column; gap: 12px; min-width: 0;">
+              <legend class="eyebrow" style="padding: 0; margin-bottom: 4px; color: #5E5785;">Focus timer</legend>
+              <div style="display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 10px;">
+                <div style="display: flex; flex-direction: column; gap: 5px;"><label for="min-focus" class="f-label">Focus (min)</label><input id="min-focus" class="field" type="number" min="1" max="180" value="{{sd.focus}}" onChange="{{onFocusMin}}"></div>
+                <div style="display: flex; flex-direction: column; gap: 5px;"><label for="min-short" class="f-label">Break (min)</label><input id="min-short" class="field" type="number" min="1" max="60" value="{{sd.short}}" onChange="{{onShortMin}}"></div>
+                <div style="display: flex; flex-direction: column; gap: 5px;"><label for="min-long" class="f-label">Long (min)</label><input id="min-long" class="field" type="number" min="1" max="90" value="{{sd.long}}" onChange="{{onLongMin}}"></div>
+              </div>
+              <div style="display: flex; align-items: center; justify-content: space-between; gap: 12px;">
+                <label class="task-label" style="flex: 1;"><input type="checkbox" checked="{{sd.sound}}" onChange="{{onSound}}"><span style="font-size: 15px;">Play a soft chime when a block ends</span></label>
+                <button type="button" class="text-btn" onClick="{{testChime}}">Test chime</button>
+              </div>
+              <p style="margin: 0; font-size: 13px; line-height: 1.5; color: #3A3760;">New lengths apply the next time the timer starts fresh.</p>
+            </fieldset>
+          </div>
+        </div>
+        <fieldset style="margin: 22px 0 0; padding: 16px 0 0; border: 0; border-top: 1px solid #E1D6C0; display: flex; flex-direction: column; gap: 10px; min-width: 0;">
+          <legend class="eyebrow" style="padding: 0; color: #5E5785;">Morning Brief connection</legend>
+          <p style="margin: 6px 0 0; font-size: 14px; line-height: 1.5; color: #3A3760;">Links the notebook to your private “Midnight Study Room · Tasks” sheet, so tasks from your Morning Brief appear here and your check-offs go back. The setup guide shows where both values come from.</p>
+          <div style="display: grid; grid-template-columns: minmax(0, 3fr) minmax(0, 2fr); gap: 16px;">
+            <div style="display: flex; flex-direction: column; gap: 5px;"><label for="sync-url" class="f-label">Room connector link</label><input id="sync-url" class="field" type="text" inputmode="url" autocomplete="off" spellcheck="false" placeholder="https://script.google.com/macros/s/…/exec" value="{{sd.syncUrl}}" onChange="{{onSyncUrl}}" aria-invalid="{{syncInvalid}}" aria-describedby="sync-err"></div>
+            <div style="display: flex; flex-direction: column; gap: 5px;"><label for="sync-key" class="f-label">Room key</label><input id="sync-key" class="field" type="password" autocomplete="off" spellcheck="false" value="{{sd.syncKey}}" onChange="{{onSyncKey}}" aria-invalid="{{syncInvalid}}" aria-describedby="sync-err"></div>
+          </div>
+          <sc-if value="{{syncErr}}" hint-placeholder-val="{{ false }}"><p id="sync-err" class="f-err">{{syncErr}}</p></sc-if>
+          <div style="display: flex; align-items: center; gap: 14px;">
+            <button type="button" class="btn-ink" onClick="{{testSync}}">Test connection</button>
+            <p role="status" style="margin: 0; font-size: 14px; color: #2E2A4A;">{{syncTestMsg}}</p>
+          </div>
+        </fieldset>
+        <div style="display: flex; align-items: center; justify-content: space-between; gap: 16px; margin-top: 22px; padding-top: 16px; border-top: 1px solid #E1D6C0;">
+          <div style="display: flex; flex-direction: column; gap: 2px; max-width: 470px;">
+            <p style="margin: 0; font-size: 13px; line-height: 1.5; color: #3A3760;">{{storageText}}</p>
+            <button type="button" class="text-btn" style="align-self: flex-start;" onClick="{{openBackup}}">Backup &amp; restore (unsaved changes here are discarded)</button>
+          </div>
+          <div style="display: flex; gap: 10px; flex: none;">
+            <button type="button" class="btn-ink" onClick="{{closeDialog}}">Cancel</button>
+            <button type="submit" class="btn-solid">Save settings</button>
+          </div>
+        </div>
+      </form>
+    </section>
+  </sc-if>
+
+  <!-- Femur: biomedical reference links -->
+  <sc-if value="{{dlgRefs}}" hint-placeholder-val="{{ false }}">
+    <section class="dlg paper" role="dialog" aria-modal="true" aria-labelledby="ref-title" onKeyDown="{{dialogKey}}" style="left: 460px; top: 120px; width: 520px; max-height: 760px; overflow-y: auto; padding: 26px 30px 24px;">
+      <div style="display: flex; align-items: flex-start; justify-content: space-between; gap: 16px;">
+        <div>
+          <p class="eyebrow" style="color: #5E5785;">Os femoris · Reference</p>
+          <h2 id="ref-title" style="margin: 4px 0 0; font-family: 'Cormorant Garamond', Georgia, serif; font-weight: 600; font-size: 34px; line-height: 1.05;">Biomedical reference</h2>
+        </div>
+        <button type="button" class="icon-btn" aria-label="Close reference" onClick="{{closeDialog}}"><svg aria-hidden="true" width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round"><path d="M4 4 L12 12 M12 4 L4 12"></path></svg></button>
+      </div>
+      <p style="margin: 10px 0 14px; font-size: 15px; line-height: 1.5; color: #3A3760;">Keep the papers, standards, datasheets and explainers you come back to.</p>
+      <ul style="margin: 0 0 16px; padding: 0; list-style: none;">
+        <sc-for list="{{refs}}" as="r" hint-placeholder-count="0">
+          <li class="link-row"><a href="{{r.href}}" target="_blank" rel="noopener noreferrer">{{r.label}}</a><button type="button" class="icon-btn" aria-label="Remove {{r.label}}" onClick="{{r.remove}}"><svg aria-hidden="true" width="14" height="14" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round"><path d="M4 4 L12 12 M12 4 L4 12"></path></svg></button></li>
+        </sc-for>
+        <sc-if value="{{noRefs}}" hint-placeholder-val="{{ true }}">
+          <li style="font-family: 'Cormorant Garamond', Georgia, serif; font-style: italic; font-size: 18px; color: #5E5785; padding: 4px 0;">No links saved yet.</li>
+        </sc-if>
+      </ul>
+      <form onSubmit="{{addRef}}" style="display: flex; flex-direction: column; gap: 6px; margin: 0;">
+        <label for="ref-label" class="f-label">Name</label>
+        <input id="ref-label" class="field" type="text" maxlength="80" value="{{refDraft.label}}" onChange="{{onRefLabel}}" data-autofocus="true">
+        <label for="ref-url" class="f-label">Link</label>
+        <div style="display: flex; gap: 8px;">
+          <input id="ref-url" class="field" type="text" inputmode="url" value="{{refDraft.url}}" onChange="{{onRefUrl}}" aria-invalid="{{refDraft.invalid}}" aria-describedby="ref-err">
+          <button type="submit" class="btn-solid">Save link</button>
+        </div>
+        <sc-if value="{{refDraft.error}}" hint-placeholder-val="{{ false }}"><p id="ref-err" class="f-err">{{refDraft.error}}</p></sc-if>
+      </form>
+    </section>
+  </sc-if>
+
+  <!-- Notebook, opened -->
+  <sc-if value="{{dlgNotebook}}" hint-placeholder-val="{{ false }}">
+    <section class="dlg paper nb-paper" role="dialog" aria-modal="true" aria-labelledby="nbx-title" onKeyDown="{{dialogKey}}" style="left: 320px; top: 34px; width: 800px; height: 932px; padding: 26px 32px 18px 76px; display: flex; flex-direction: column;">
+      <div aria-hidden="true" style="position: absolute; left: 56px; top: 0; width: 1.5px; height: 100%; background: #CDB0C0;"></div>
+      <div style="display: flex; align-items: flex-start; justify-content: space-between; gap: 16px;">
+        <div style="min-width: 0;">
+          <p class="eyebrow" style="color: #5E5785;">{{dateText}}</p>
+          <h2 id="nbx-title" style="margin: 4px 0 0; font-family: 'Cormorant Garamond', Georgia, serif; font-weight: 600; font-size: 40px; line-height: 1.05;">Your notebook</h2>
+          <p style="margin: 6px 0 0; font-size: 13px; color: #4F4A78;">{{syncText}}</p>
+          <sc-if value="{{syncError}}" hint-placeholder-val="{{ false }}"><p class="f-err" style="margin-top: 2px;">{{syncError}}</p></sc-if>
+        </div>
+        <div style="display: flex; align-items: center; gap: 4px; flex: none;">
+          <sc-if value="{{canSync}}" hint-placeholder-val="{{ false }}"><button type="button" class="text-btn" onClick="{{syncNow}}">Sync now</button></sc-if>
+          <button type="button" class="icon-btn" aria-label="Close notebook" onClick="{{closeDialog}}"><svg aria-hidden="true" width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round"><path d="M4 4 L12 12 M12 4 L4 12"></path></svg></button>
+        </div>
+      </div>
+
+      <sc-if value="{{editing}}" hint-placeholder-val="{{ false }}">
+        <form class="t-editor" onSubmit="{{saveEdit}}" onKeyDown="{{editKey}}" aria-label="Edit task">
+          <div style="display: flex; flex-direction: column; gap: 5px;">
+            <label for="ed-title" class="f-label">Task</label>
+            <input id="ed-title" class="field" type="text" maxlength="160" value="{{ed.text}}" onChange="{{onEdText}}">
+          </div>
+          <div style="display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 10px;">
+            <div style="display: flex; flex-direction: column; gap: 5px;"><label for="ed-course" class="f-label">Course</label><select id="ed-course" class="field" value="{{ed.course}}" onChange="{{onEdCourse}}"><option value="">No course</option><option value="calc">Calculus</option><option value="bio">Biology</option><option value="lab">Biology Lab</option><option value="bme">Biomedical Engineering</option><option value="wri">Writing</option><option value="com">Communication</option></select></div>
+            <div style="display: flex; flex-direction: column; gap: 5px;"><label for="ed-prio" class="f-label">Priority</label><select id="ed-prio" class="field" value="{{ed.priority}}" onChange="{{onEdPrio}}"><option value="high">High</option><option value="normal">Normal</option><option value="low">Low</option></select></div>
+            <div style="display: flex; flex-direction: column; gap: 5px;"><label for="ed-day" class="f-label">Day</label><input id="ed-day" class="field" type="date" value="{{ed.day}}" onChange="{{onEdDay}}"></div>
+            <div style="display: flex; flex-direction: column; gap: 5px;"><label for="ed-due" class="f-label">Due date</label><input id="ed-due" class="field" type="date" value="{{ed.due}}" onChange="{{onEdDue}}"></div>
+          </div>
+          <div style="display: grid; grid-template-columns: 160px minmax(0, 1fr); gap: 10px;">
+            <div style="display: flex; flex-direction: column; gap: 5px;"><label for="ed-min" class="f-label">Planned minutes</label><input id="ed-min" class="field" type="text" inputmode="numeric" value="{{ed.minutes}}" onChange="{{onEdMin}}"></div>
+            <div style="display: flex; flex-direction: column; gap: 5px;"><label for="ed-ctx" class="f-label">Note</label><input id="ed-ctx" class="field" type="text" maxlength="120" placeholder="e.g. Quiz Thursday" value="{{ed.context}}" onChange="{{onEdCtx}}"></div>
+          </div>
+          <sc-if value="{{editErr}}" hint-placeholder-val="{{ false }}"><p class="f-err" role="alert">{{editErr}}</p></sc-if>
+          <div style="display: flex; align-items: center; gap: 10px; flex-wrap: wrap;">
+            <button type="submit" class="btn-solid">Save</button>
+            <button type="button" class="btn-ink" onClick="{{cancelEdit}}">Cancel</button>
+            <button type="button" class="text-btn" onClick="{{moveTomorrow}}">Move to tomorrow</button>
+            <button type="button" class="text-btn danger" style="margin-left: auto;" onClick="{{dismissEditing}}">Dismiss task</button>
+          </div>
+        </form>
+      </sc-if>
+      <sc-if value="{{notEditing}}" hint-placeholder-val="{{ true }}">
+        <form onSubmit="{{addTask}}" style="display: flex; flex-direction: column; gap: 6px; margin: 16px 0 4px;">
+          <label for="task-input-x" class="f-label">Add a task</label>
+          <div style="display: flex; gap: 8px;">
+            <input id="task-input-x" class="field" type="text" autocomplete="off" maxlength="160" value="{{draft}}" onChange="{{onDraft}}" data-autofocus="true" style="flex: 1;">
+            <label for="task-course-x" class="sr-only">Course for the new task</label>
+            <select id="task-course-x" class="field" value="{{draftCourse}}" onChange="{{onDraftCourse}}" style="width: 190px; flex: none; padding: 0 8px;"><option value="">No course</option><option value="calc">Calculus</option><option value="bio">Biology</option><option value="lab">Biology Lab</option><option value="bme">Biomedical Engineering</option><option value="wri">Writing</option><option value="com">Communication</option></select>
+            <button type="submit" class="btn-solid">Add</button>
+          </div>
+        </form>
+      </sc-if>
+
+      <div style="flex: 1; min-height: 0; overflow-y: auto; margin-top: 8px; padding-right: 4px;">
+        <h3 class="nb-h">Today <span>{{todayCount}}</span></h3>
+        <ul aria-label="Today" style="margin: 0; padding: 0; list-style: none;">
+          <sc-for list="{{todayOpen}}" as="t" hint-placeholder-count="0">
+            <li class="task2" data-done="{{t.done}}" data-active="{{t.active}}">
+              <sc-if value="{{t.dateLabel}}" hint-placeholder-val="{{ false }}"><span class="t-date">{{t.dateLabel}}</span></sc-if>
+              <sc-if value="{{t.checkable}}" hint-placeholder-val="{{ true }}"><input type="checkbox" class="t-check" checked="{{t.done}}" onChange="{{t.toggle}}" aria-label="Done: {{t.text}}"></sc-if>
+              <sc-if value="{{t.notCheckable}}" hint-placeholder-val="{{ false }}"><span class="t-check-space" aria-hidden="true"></span></sc-if>
+              <div class="t-body">
+                <button type="button" class="t-title" aria-pressed="{{t.active}}" aria-label="{{t.prioText}}{{t.studyLabel}}" onClick="{{t.study}}"><span class="prio" data-p="{{t.priority}}"></span><span class="t-text">{{t.text}}</span></button>
+                <p class="t-meta"><span class="t-dot" aria-hidden="true" style="background: {{t.courseBg}};"></span>{{t.meta}}</p>
+              </div>
+              <button type="button" class="icon-btn" aria-label="Edit task: {{t.text}}" onClick="{{t.edit}}"><svg aria-hidden="true" width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round"><path d="M3 13 L3.6 10.4 L10.6 3.4 L12.6 5.4 L5.6 12.4 Z"></path></svg></button>
+              <button type="button" class="icon-btn" aria-label="Dismiss task: {{t.text}}" onClick="{{t.dismiss}}"><svg aria-hidden="true" width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round"><path d="M4 4 L12 12 M12 4 L4 12"></path></svg></button>
+            </li>
+          </sc-for>
+          <sc-if value="{{noTodayOpen}}" hint-placeholder-val="{{ true }}"><li class="nb-empty">{{todayOpenText}}</li></sc-if>
+        </ul>
+        <h3 class="nb-h">Upcoming deadlines</h3>
+        <ul aria-label="Upcoming deadlines" style="margin: 0; padding: 0; list-style: none;">
+          <sc-for list="{{upcoming}}" as="t" hint-placeholder-count="0">
+            <li class="task2" data-done="{{t.done}}" data-active="{{t.active}}">
+              <sc-if value="{{t.dateLabel}}" hint-placeholder-val="{{ false }}"><span class="t-date">{{t.dateLabel}}</span></sc-if>
+              <sc-if value="{{t.checkable}}" hint-placeholder-val="{{ true }}"><input type="checkbox" class="t-check" checked="{{t.done}}" onChange="{{t.toggle}}" aria-label="Done: {{t.text}}"></sc-if>
+              <sc-if value="{{t.notCheckable}}" hint-placeholder-val="{{ false }}"><span class="t-check-space" aria-hidden="true"></span></sc-if>
+              <div class="t-body">
+                <button type="button" class="t-title" aria-pressed="{{t.active}}" aria-label="{{t.prioText}}{{t.studyLabel}}" onClick="{{t.study}}"><span class="prio" data-p="{{t.priority}}"></span><span class="t-text">{{t.text}}</span></button>
+                <p class="t-meta"><span class="t-dot" aria-hidden="true" style="background: {{t.courseBg}};"></span>{{t.meta}}</p>
+              </div>
+              <button type="button" class="icon-btn" aria-label="Edit task: {{t.text}}" onClick="{{t.edit}}"><svg aria-hidden="true" width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round"><path d="M3 13 L3.6 10.4 L10.6 3.4 L12.6 5.4 L5.6 12.4 Z"></path></svg></button>
+              <button type="button" class="icon-btn" aria-label="Dismiss task: {{t.text}}" onClick="{{t.dismiss}}"><svg aria-hidden="true" width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round"><path d="M4 4 L12 12 M12 4 L4 12"></path></svg></button>
+            </li>
+          </sc-for>
+          <sc-if value="{{noUpcoming}}" hint-placeholder-val="{{ true }}"><li class="nb-empty">No deadlines on the horizon.</li></sc-if>
+        </ul>
+        <h3 class="nb-h">Completed <span>last 7 days</span></h3>
+        <ul aria-label="Completed" style="margin: 0; padding: 0; list-style: none;">
+          <sc-for list="{{completed}}" as="t" hint-placeholder-count="0">
+            <li class="task2" data-done="{{t.done}}" data-active="{{t.active}}">
+              <sc-if value="{{t.dateLabel}}" hint-placeholder-val="{{ false }}"><span class="t-date">{{t.dateLabel}}</span></sc-if>
+              <sc-if value="{{t.checkable}}" hint-placeholder-val="{{ true }}"><input type="checkbox" class="t-check" checked="{{t.done}}" onChange="{{t.toggle}}" aria-label="Done: {{t.text}}"></sc-if>
+              <sc-if value="{{t.notCheckable}}" hint-placeholder-val="{{ false }}"><span class="t-check-space" aria-hidden="true"></span></sc-if>
+              <div class="t-body">
+                <button type="button" class="t-title" aria-pressed="{{t.active}}" aria-label="{{t.prioText}}{{t.studyLabel}}" onClick="{{t.study}}"><span class="prio" data-p="{{t.priority}}"></span><span class="t-text">{{t.text}}</span></button>
+                <p class="t-meta"><span class="t-dot" aria-hidden="true" style="background: {{t.courseBg}};"></span>{{t.meta}}</p>
+              </div>
+              <button type="button" class="icon-btn" aria-label="Edit task: {{t.text}}" onClick="{{t.edit}}"><svg aria-hidden="true" width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round"><path d="M3 13 L3.6 10.4 L10.6 3.4 L12.6 5.4 L5.6 12.4 Z"></path></svg></button>
+              <button type="button" class="icon-btn" aria-label="Dismiss task: {{t.text}}" onClick="{{t.dismiss}}"><svg aria-hidden="true" width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round"><path d="M4 4 L12 12 M12 4 L4 12"></path></svg></button>
+            </li>
+          </sc-for>
+          <sc-if value="{{noCompleted}}" hint-placeholder-val="{{ true }}"><li class="nb-empty">Finished tasks will rest here.</li></sc-if>
+        </ul>
+      </div>
+    </section>
+  </sc-if>
+
+  <!-- Backup & restore: moves data safely between the canvas and the standalone room -->
+  <sc-if value="{{dlgBackup}}" hint-placeholder-val="{{ false }}">
+    <section class="dlg paper" role="dialog" aria-modal="true" aria-labelledby="bk-title" onKeyDown="{{dialogKey}}" style="left: 370px; top: 70px; width: 700px; max-height: 860px; overflow-y: auto; padding: 26px 32px 24px;">
+      <div style="display: flex; align-items: flex-start; justify-content: space-between; gap: 16px;">
+        <div>
+          <p class="eyebrow" style="color: #5E5785;">Settings drawer</p>
+          <h2 id="bk-title" style="margin: 4px 0 0; font-family: 'Cormorant Garamond', Georgia, serif; font-weight: 600; font-size: 34px; line-height: 1.05;">Backup &amp; restore</h2>
+        </div>
+        <button type="button" class="icon-btn" aria-label="Close backup" onClick="{{closeDialog}}"><svg aria-hidden="true" width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round"><path d="M4 4 L12 12 M12 4 L4 12"></path></svg></button>
+      </div>
+      <h3 class="eyebrow" style="margin: 18px 0 6px; color: #5E5785;">1 · Make a backup</h3>
+      <p style="margin: 0 0 8px; font-size: 14px; line-height: 1.5; color: #3A3760;">Your tasks, Canvas links, shortcuts, saved links, study history and settings, as one block of text.</p>
+      <label for="bk-out" class="sr-only">Backup text</label>
+      <textarea id="bk-out" class="field" spellcheck="false" value="{{backupText}}" onChange="{{noop}}" style="height: 96px; padding: 8px 10px; resize: none; font: 500 12px/1.4 'JetBrains Mono', ui-monospace, monospace;"></textarea>
+      <div style="display: flex; gap: 10px; margin-top: 8px; flex-wrap: wrap;">
+        <button type="button" class="btn-solid" onClick="{{copyBackup}}">Copy backup</button>
+        <button type="button" class="btn-ink" onClick="{{downloadBackup}}">Download file</button>
+      </div>
+      <h3 class="eyebrow" style="margin: 22px 0 6px; color: #5E5785;">2 · Restore into this room</h3>
+      <p style="margin: 0 0 8px; font-size: 14px; line-height: 1.5; color: #3A3760;">Paste a backup or choose a backup file. Restoring adds what’s missing and never deletes anything already here.</p>
+      <label for="bk-in" class="sr-only">Paste backup text</label>
+      <textarea id="bk-in" class="field" spellcheck="false" placeholder="Paste backup text here" value="{{restoreText}}" onChange="{{onRestoreText}}" style="height: 96px; padding: 8px 10px; resize: none; font: 500 12px/1.4 'JetBrains Mono', ui-monospace, monospace;"></textarea>
+      <div style="display: flex; align-items: center; gap: 12px; margin-top: 8px; flex-wrap: wrap;">
+        <label for="bk-file" class="f-label">Or choose a file</label>
+        <input id="bk-file" type="file" accept=".json,application/json" onChange="{{onRestoreFile}}" style="font-size: 14px; color: #1A2140;">
+        <button type="button" class="btn-solid" style="margin-left: auto;" onClick="{{restoreBackup}}">Restore</button>
+      </div>
+      <p role="status" style="margin: 12px 0 0; min-height: 20px; font-size: 14px; color: #2E2A4A;">{{backupMsg}}</p>
+    </section>
+  </sc-if>
+
+  <!-- Subtle paper grain over the whole illustration -->
+  <svg class="grain" aria-hidden="true" width="1440" height="1000" style="position: absolute; left: 0; top: 0; z-index: 30; pointer-events: none; opacity: 0.09; mix-blend-mode: overlay;">
+    <filter id="grain"><feTurbulence type="fractalNoise" baseFrequency="0.8" numOctaves="2" stitchTiles="stitch"></feTurbulence><feColorMatrix type="saturate" values="0"></feColorMatrix></filter>
+    <rect width="1440" height="1000" filter="url(#grain)"></rect>
+  </svg>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":1440,"height":1000}}'>
+var STORE_KEY = 'midnight-study-room.v1';
+var BOOKS = [
+  { id: 'calc', name: 'Calculus', bg: '#6E6496', fg: '#F6EEDC', w: 48, h: 186 },
+  { id: 'bio', name: 'Biology', bg: '#7E9A86', fg: '#1A2140', w: 46, h: 170 },
+  { id: 'lab', name: 'Biology Lab', bg: '#EDE2CB', fg: '#1A2140', w: 50, h: 178 },
+  { id: 'bme', name: 'Biomedical Engineering', bg: '#B99A61', fg: '#1A2140', w: 54, h: 196 },
+  { id: 'wri', name: 'Writing', bg: '#8A5560', fg: '#F6EEDC', w: 46, h: 166 },
+  { id: 'com', name: 'Communication', bg: '#4E6489', fg: '#F6EEDC', w: 50, h: 188 }
+];
+var BOOK = {};
+BOOKS.forEach(function (b) { BOOK[b.id] = b; });
+var APPS = [
+  { id: 'notion', name: 'Notion', def: 'https://www.notion.so/' },
+  { id: 'gcal', name: 'Google Calendar', def: 'https://calendar.google.com/' },
+  { id: 'gdrive', name: 'Google Drive', def: 'https://drive.google.com/' },
+  { id: 'claude', name: 'Claude', def: 'https://claude.ai/' }
+];
+var MODE_LABEL = { focus: 'Focus', short: 'Short break', long: 'Long break' };
+var CIRC = 477.5;
+var DAY_MS = 86400000;
+var KINDS = { task: 'Task', study: 'Study', assignment: 'Assignment', exam: 'Exam', quiz: 'Quiz', reminder: 'Reminder' };
+var TESTS = { exam: true, quiz: true };
+var PRIO_TEXT = { high: 'High priority. ', normal: '', low: 'Low priority. ' };
+var SYNC_URL_RE = /^https:\/\/script\.google\.com\/(a\/macros\/[^\/\s]+|macros)\/s\/[A-Za-z0-9_-]+\/exec$/;
+
+function pad(n) { return (n < 10 ? '0' : '') + n; }
+function dayKey(d) { d = d || new Date(); return d.getFullYear() + '-' + pad(d.getMonth() + 1) + '-' + pad(d.getDate()); }
+function addDays(key, n) { var p = key.split('-'); var d = new Date(+p[0], +p[1] - 1, +p[2] + n); return dayKey(d); }
+function dayDate(key) { var p = key.split('-'); return new Date(+p[0], +p[1] - 1, +p[2]); }
+function shortDay(key, today) {
+  if (key === today) return 'today';
+  if (key === addDays(today, 1)) return 'tomorrow';
+  if (key === addDays(today, -1)) return 'yesterday';
+  var d = dayDate(key), diff = Math.round((d - dayDate(today)) / DAY_MS);
+  var opts = (diff > 0 && diff < 7) ? { weekday: 'short' } : { weekday: 'short', month: 'short', day: 'numeric' };
+  return d.toLocaleDateString('en-US', opts);
+}
+function isDay(s) { return typeof s === 'string' && /^\d{4}-\d{2}-\d{2}$/.test(s); }
+function asDay(v) { var s = v == null ? '' : String(v).trim().slice(0, 10); return isDay(s) ? s : ''; }
+function clampInt(v, lo, hi, dflt) { var n = Math.round(Number(v)); if (v === '' || v == null || !isFinite(n)) return dflt; return Math.min(hi, Math.max(lo, n)); }
+function uid() { return Date.now().toString(36) + Math.random().toString(36).slice(2, 8); }
+function isoNow() { return new Date().toISOString(); }
+function safeHref(u) { return (typeof u === 'string' && /^https?:\/\/\S+$/i.test(u)) ? u : ''; }
+function normUrl(raw) {
+  var s = (raw == null ? '' : String(raw)).trim();
+  if (!s) return { ok: true, url: '' };
+  if (!/^[a-z][a-z0-9+.\-]*:\/\//i.test(s)) {
+    if (/^[^\s\/]+\.[^\s]+$/.test(s)) s = 'https://' + s; else return { ok: false };
+  }
+  if (!/^https?:\/\//i.test(s)) return { ok: false };
+  try { var u = new URL(s); if (!u.hostname || u.hostname.indexOf('.') < 0) return { ok: false }; return { ok: true, url: u.href }; }
+  catch (e) { return { ok: false }; }
+}
+function hostOf(u) { try { return new URL(u).hostname.replace(/^www\./, ''); } catch (e) { return ''; } }
+function fmtMin(min) { min = Math.round(min || 0); var h = Math.floor(min / 60), m = min % 60; return h ? h + 'h ' + pad(m) + 'm' : m + 'm'; }
+function arr(v) { return Array.isArray(v) ? v : []; }
+function cleanLinks(v) { return arr(v).filter(function (x) { return x && typeof x.label === 'string' && safeHref(x.url); }).slice(0, 40); }
+function timeOf(iso) { var t = Date.parse(iso || ''); return isFinite(t) ? t : 0; }
+
+/* ---------- tasks: one shape for manual tasks, Morning Brief tasks and old saved tasks ---------- */
+function normTask(t) {
+  if (!t || t.id == null || t.id === '') return null;
+  var text = String(t.text != null ? t.text : (t.title != null ? t.title : '')).trim().slice(0, 160);
+  if (!text) return null;
+  var status = (t.status === 'open' || t.status === 'done' || t.status === 'dismissed') ? t.status : (t.done ? 'done' : 'open');
+  var doneOn = asDay(t.doneOn) || asDay(t.done_on) || asDay(t.doneDay);
+  return {
+    id: String(t.id).slice(0, 120), text: text, status: status,
+    course: BOOK[t.course] ? t.course : '',
+    kind: KINDS[t.kind] ? t.kind : 'task',
+    day: asDay(t.day), due: asDay(t.due),
+    context: String(t.context || '').trim().slice(0, 120),
+    priority: (t.priority === 'high' || t.priority === 'low') ? t.priority : 'normal',
+    minutes: clampInt(t.minutes, 0, 600, 0),
+    studied: Math.max(0, Math.round((Number(t.studied) || 0) * 10) / 10),
+    source: (t.source === 'brief') ? 'brief' : 'manual',
+    doneOn: status === 'done' ? doneOn : '',
+    updated: String(t.updated || ''), updatedBy: String(t.updatedBy || t.updated_by || 'room'),
+    created: String(t.created || ''), briefDate: asDay(t.briefDate) || asDay(t.brief_date),
+    dirty: !!t.dirty, synced: !!t.synced, rev: Number(t.rev) || 0
+  };
+}
+function toRow(t) {
+  return { id: t.id, status: t.status, title: t.text, course: t.course, kind: t.kind, day: t.day, due: t.due, context: t.context, priority: t.priority,
+    minutes: t.minutes || '', studied: t.studied || 0, source: t.source, done_on: t.doneOn, updated: t.updated, updated_by: t.updatedBy, created: t.created, brief_date: t.briefDate };
+}
+/* Where a task belongs in the notebook today: 'today', 'upcoming', 'completed' or '' (hidden). */
+function placeOf(t, today) {
+  if (t.status === 'dismissed') return '';
+  if (t.status === 'done') return (t.doneOn && t.doneOn >= addDays(today, -7)) ? 'completed' : '';
+  if (TESTS[t.kind]) { if (!t.due) return t.day && t.day > today ? 'upcoming' : 'today'; return t.due === today ? 'today' : (t.due > today ? 'upcoming' : ''); }
+  var d = t.day || (t.due && t.due > today ? '' : today);
+  if (d && d <= today) return 'today';
+  return 'upcoming';
+}
+var PRIO_RANK = { high: 0, normal: 1, low: 2 };
+
+/* Merge a backup into the current state. Nothing that exists here is deleted or overwritten. */
+function mergeData(s, d) {
+  var have = {}, added = { tasks: 0, links: 0, saved: 0, days: 0 };
+  s.tasks.forEach(function (t) { have[t.id] = true; });
+  var tasks = s.tasks.slice();
+  arr(d.tasks).forEach(function (raw) {
+    var t = normTask(raw);
+    if (t && !have[t.id]) { have[t.id] = true; added.tasks++; t.synced = false; t.dirty = true; t.updated = isoNow(); t.updatedBy = 'room'; if (!t.created) t.created = t.updated; if (!t.day && !t.due && t.status === 'open') t.day = dayKey(); tasks.push(t); }
+  });
+  var links = Object.assign({}, s.links);
+  BOOKS.forEach(function (b) { var u = safeHref((d.links || {})[b.id]); if (!links[b.id] && u) { links[b.id] = u; added.links++; } });
+  var apps = Object.assign({}, s.apps);
+  APPS.forEach(function (a) { var u = safeHref((d.apps || {})[a.id]); if (u && apps[a.id] === a.def) apps[a.id] = u; });
+  var mergeList = function (mine, theirs) {
+    var seen = {}, out = mine.slice();
+    mine.forEach(function (x) { seen[x.url] = true; });
+    cleanLinks(theirs).forEach(function (x) { if (!seen[x.url]) { seen[x.url] = true; added.saved++; out.push({ id: x.id || uid(), label: x.label.slice(0, 80), url: x.url }); } });
+    return out;
+  };
+  var history = JSON.parse(JSON.stringify(s.history || {}));
+  var hist = (d.history && typeof d.history === 'object') ? d.history : {};
+  Object.keys(hist).forEach(function (day) {
+    if (!/^\d{4}-\d{2}-\d{2}$/.test(day) || !hist[day] || typeof hist[day] !== 'object') return;
+    var mine = history[day] || {}, touched = false;
+    Object.keys(hist[day]).forEach(function (k) {
+      var c = hist[day][k];
+      if (!c || !(BOOK[k] || k === 'open')) return;
+      var min = Number(c.min) || 0, blocks = Number(c.blocks) || 0;
+      if (!mine[k] || (mine[k].min || 0) < min) { mine[k] = { blocks: blocks, min: min }; touched = true; }
+    });
+    if (touched) { history[day] = mine; added.days++; }
+  });
+  var patch = { tasks: tasks, links: links, apps: apps, resources: mergeList(s.resources, d.resources), refs: mergeList(s.refs, d.refs), history: history };
+  if (!s.subject && BOOK[d.subject]) patch.subject = d.subject;
+  var parts = [];
+  if (added.tasks) parts.push(added.tasks + (added.tasks === 1 ? ' task' : ' tasks'));
+  if (added.links) parts.push(added.links + ' Canvas ' + (added.links === 1 ? 'link' : 'links'));
+  if (added.saved) parts.push(added.saved + ' saved ' + (added.saved === 1 ? 'link' : 'links'));
+  if (added.days) parts.push(added.days + ' study-log ' + (added.days === 1 ? 'day' : 'days'));
+  return { patch: patch, added: added, summary: parts.length ? 'Restored: ' + parts.join(', ') + '. Nothing here was removed.' : 'Everything in that backup is already here. Nothing changed.' };
+}
+
+function getStorage() {
+  try { var ls = window.localStorage; ls.setItem('__msr_probe', '1'); ls.removeItem('__msr_probe'); return ls; }
+  catch (e) { return null; }
+}
+function makeStars(n, maxY, seed) {
+  var out = [];
+  function rnd() { seed = (seed * 9301 + 49297) % 233280; return seed / 233280; }
+  for (var i = 0; i < n; i++) {
+    out.push({ x: (3 + rnd() * 94).toFixed(1), y: (3 + rnd() * maxY).toFixed(1), r: rnd() > 0.8 ? 3 : 2, d: (rnd() * 6).toFixed(2), t: (3 + rnd() * 4).toFixed(2) });
+  }
+  return out;
+}
+var STARS = makeStars(30, 52, 7);
+var STARS_LAKE = makeStars(18, 44, 23);
+
+class Component extends DCLogic {
+  constructor() {
+    super(...arguments);
+    this.storage = getStorage();
+    var saved = null;
+    if (this.storage) { try { saved = JSON.parse(this.storage.getItem(STORE_KEY) || 'null'); } catch (e) { saved = null; } }
+    saved = saved && typeof saved === 'object' ? saved : {};
+    var st = saved.settings || {};
+    var links = {}, apps = {};
+    BOOKS.forEach(function (b) { links[b.id] = safeHref((saved.links || {})[b.id]); });
+    APPS.forEach(function (a) { apps[a.id] = safeHref((saved.apps || {})[a.id]) || a.def; });
+    var tm = saved.timer || {};
+    var today = dayKey();
+    var tasks = arr(saved.tasks).map(normTask).filter(Boolean).map(function (t) { if (!t.synced) t.dirty = true; if (!t.updated) { t.updated = isoNow(); t.updatedBy = 'room'; } if (!t.created) t.created = t.updated; return t; });
+    var sync = saved.sync && typeof saved.sync === 'object' ? saved.sync : {};
+    this.state = {
+      tasks: tasks,
+      links: links, apps: apps,
+      resources: cleanLinks(saved.resources), refs: cleanLinks(saved.refs),
+      subject: BOOK[saved.subject] ? saved.subject : null,
+      activeTask: typeof saved.activeTask === 'string' ? saved.activeTask : null,
+      light: saved.light === 'dim' ? 'dim' : 'warm',
+      sky: saved.sky === 'lake' ? 'lake' : 'clear',
+      settings: { focus: clampInt(st.focus, 1, 180, 25), short: clampInt(st.short, 1, 60, 5), long: clampInt(st.long, 1, 90, 15), sound: st.sound !== false },
+      sync: { url: SYNC_URL_RE.test(sync.url || '') ? sync.url : '', key: typeof sync.key === 'string' ? sync.key : '' },
+      lastSync: typeof saved.lastSync === 'string' ? saved.lastSync : '',
+      syncState: 'idle', syncError: '', syncTestMsg: '',
+      history: (saved.history && typeof saved.history === 'object') ? saved.history : {},
+      mode: (tm.mode === 'short' || tm.mode === 'long') ? tm.mode : 'focus',
+      running: !!tm.running && typeof tm.endAt === 'number',
+      endAt: typeof tm.endAt === 'number' ? tm.endAt : 0,
+      remaining: typeof tm.remaining === 'number' ? tm.remaining : null,
+      blockSec: typeof tm.blockSec === 'number' ? tm.blockSec : null,
+      focusCount: tm.focusDay === today ? (tm.focusCount || 0) : 0,
+      focusDay: today,
+      status: 'Pick a book, then press Start.',
+      draft: '', draftCourse: '', edit: null, editErr: '',
+      drawer: null, dialog: null, sd: null, sdErrors: {}, settingsNotice: '', focusField: null,
+      resDraft: { label: '', url: '', error: '' }, refDraft: { label: '', url: '', error: '' },
+      sway: '', toast: null,
+      backupText: '', restoreText: '', backupMsg: ''
+    };
+    if (this.state.activeTask && !this.findTask(this.state.activeTask)) this.state.activeTask = null;
+    if (this.state.running) {
+      var rem = Math.ceil((this.state.endAt - Date.now()) / 1000);
+      if (rem > 0) { this.state.remaining = rem; this.state.status = 'Welcome back. The timer kept counting while you were away.'; }
+    } else if (this.state.remaining != null) {
+      this.state.status = 'Paused at ' + this.fmtClock(this.state.remaining) + '.';
+    }
+  }
+
+  componentDidMount() {
+    var self = this;
+    this.iv = setInterval(function () { self.tick(); }, 250);
+    this.syncIv = setInterval(function () { if (!(typeof document !== 'undefined' && document.hidden)) self.scheduleSync(0); }, 5 * 60 * 1000);
+    this.onVis = function () { self.tick(); if (!document.hidden) self.scheduleSync(200); };
+    this.onOnline = function () { self.scheduleSync(200); };
+    try { document.addEventListener('visibilitychange', this.onVis); } catch (e) {}
+    try { window.addEventListener('online', this.onOnline); } catch (e) {}
+    this.tick();
+    this.scheduleSync(300);
+  }
+  componentWillUnmount() {
+    clearInterval(this.iv); clearInterval(this.syncIv); clearTimeout(this.toastT); clearTimeout(this.syncT);
+    try { document.removeEventListener('visibilitychange', this.onVis); } catch (e) {}
+    try { window.removeEventListener('online', this.onOnline); } catch (e) {}
+  }
+  componentDidUpdate(pp, ps) {
+    var s = this.state, self = this;
+    this.persist();
+    if (s.dialog && s.dialog !== ps.dialog) setTimeout(function () { self.focusIn(s.focusField ? '#' + s.focusField : null, '.dlg'); }, 40);
+    if (!s.dialog && ps.dialog) { var back = this.returnFocus; this.returnFocus = null; setTimeout(function () { try { back && back.focus && back.focus(); } catch (e) {} }, 40); }
+    if (s.drawer && s.drawer !== ps.drawer) setTimeout(function () { self.focusIn(null, '.tray'); }, 40);
+    if (!s.drawer && ps.drawer && !s.dialog) setTimeout(function () { self.focusIn('#h-' + ps.drawer, 'body'); }, 40);
+    if (s.edit && (!ps.edit || ps.edit.id !== s.edit.id)) setTimeout(function () { self.focusIn('#ed-title', '.dlg'); }, 60);
+    if (!s.edit && ps.edit && s.dialog === 'notebook' && ps.dialog === 'notebook') setTimeout(function () { self.focusIn('#task-input-x', '.dlg'); }, 60);
+  }
+
+  /* ---------- persistence ---------- */
+  exportData() {
+    var s = this.state;
+    return { v: 1, tasks: s.tasks, links: s.links, apps: s.apps, resources: s.resources, refs: s.refs, subject: s.subject, activeTask: s.activeTask, light: s.light, sky: s.sky, settings: s.settings, history: s.history,
+      sync: s.sync, lastSync: s.lastSync,
+      timer: { mode: s.mode, running: s.running, endAt: s.endAt, remaining: s.remaining, blockSec: s.blockSec, focusCount: s.focusCount, focusDay: s.focusDay } };
+  }
+  persist() {
+    if (!this.storage) return;
+    try { var json = JSON.stringify(this.exportData()); if (json !== this.lastSaved) { this.storage.setItem(STORE_KEY, json); this.lastSaved = json; } } catch (e) {}
+  }
+  focusIn(sel, scope) {
+    try {
+      var root = document.querySelector(scope); if (!root) return;
+      var el = (sel && (root.matches && root.matches(sel) ? root : root.querySelector(sel))) || root.querySelector('[data-autofocus]') || root.querySelector('input, button, a[href]');
+      if (el) el.focus();
+    } catch (e) {}
+  }
+  remember() { try { if (!this.returnFocus) this.returnFocus = document.activeElement; } catch (e) {} }
+
+  /* ---------- backup & restore (safe merge, never deletes) ---------- */
+  backupJson() {
+    var d = this.exportData();
+    delete d.timer; delete d.sync; delete d.lastSync;
+    d.tasks = d.tasks.map(function (t) { var c = Object.assign({}, t); delete c.dirty; delete c.synced; delete c.rev; return c; });
+    d.app = 'midnight-study-room'; d.exportedAt = new Date().toISOString();
+    return JSON.stringify(d);
+  }
+  openBackup() {
+    this.remember();
+    this.setState({ dialog: 'backup', drawer: null, sd: null, sdErrors: {}, settingsNotice: '', focusField: null, edit: null, backupText: this.backupJson(), restoreText: '', backupMsg: '' });
+  }
+  copyBackup() {
+    var self = this, text = this.state.backupText;
+    var fallback = function () {
+      try { var el = document.getElementById('bk-out'); el.focus(); el.select(); var ok = document.execCommand && document.execCommand('copy'); self.setState({ backupMsg: ok ? 'Backup copied.' : 'The text is selected. Press Ctrl+C to copy it.' }); }
+      catch (e) { self.setState({ backupMsg: 'Select the text above and press Ctrl+C to copy it.' }); }
+    };
+    try {
+      if (navigator.clipboard && navigator.clipboard.writeText) navigator.clipboard.writeText(text).then(function () { self.setState({ backupMsg: 'Backup copied. Paste it into the other room’s Restore box.' }); }, fallback);
+      else fallback();
+    } catch (e) { fallback(); }
+  }
+  downloadBackup() {
+    try {
+      var blob = new Blob([this.state.backupText], { type: 'application/json' });
+      var url = URL.createObjectURL(blob), a = document.createElement('a');
+      a.href = url; a.download = 'midnight-study-room-backup-' + dayKey() + '.json';
+      document.body.appendChild(a); a.click(); a.remove();
+      setTimeout(function () { URL.revokeObjectURL(url); }, 2000);
+      this.setState({ backupMsg: 'Backup file downloaded. If nothing appeared, use Copy backup instead.' });
+    } catch (e) { this.setState({ backupMsg: 'This window can’t download files. Use Copy backup instead.' }); }
+  }
+  readRestoreFile(e) {
+    var self = this, f = e && e.target && e.target.files && e.target.files[0];
+    if (!f) return;
+    try { var r = new FileReader(); r.onload = function () { self.setState({ restoreText: String(r.result || ''), backupMsg: 'File loaded. Press Restore.' }); }; r.readAsText(f); }
+    catch (x) { this.setState({ backupMsg: 'That file couldn’t be read.' }); }
+  }
+  restoreBackup() {
+    var d;
+    try { d = JSON.parse(this.state.restoreText || ''); } catch (e) { d = null; }
+    if (!d || typeof d !== 'object' || d.v !== 1 || (!Array.isArray(d.tasks) && !d.links && !d.history)) {
+      this.setState({ backupMsg: 'That doesn’t look like a Midnight Study Room backup. Nothing was changed.' }); return;
+    }
+    if (this.storage) { try { this.storage.setItem(STORE_KEY + '.before-restore', JSON.stringify(this.exportData())); } catch (e) {} }
+    var r = mergeData(this.state, d);
+    this.setState(Object.assign(r.patch, { restoreText: '', backupText: '', backupMsg: r.summary }));
+    var self = this; setTimeout(function () { self.setState({ backupText: self.backupJson() }); }, 0);
+    this.scheduleSync();
+  }
+
+  /* ---------- timer ---------- */
+  fmtClock(sec) { return pad(Math.floor(sec / 60)) + ':' + pad(sec % 60); }
+  dur(mode) { var st = this.state.settings; return (mode === 'focus' ? st.focus : mode === 'short' ? st.short : st.long) * 60; }
+  left() { var s = this.state; return s.remaining == null ? this.dur(s.mode) : s.remaining; }
+  blockTotal() { var s = this.state; return (s.remaining != null && s.blockSec) ? s.blockSec : this.dur(s.mode); }
+  tick() {
+    var s = this.state;
+    if (s.focusDay !== dayKey()) this.setState({ focusDay: dayKey(), focusCount: 0 });
+    if (!s.running) return;
+    var rem = Math.ceil((s.endAt - Date.now()) / 1000);
+    if (rem <= 0) { this.complete(document.hidden === true ? 'hidden' : (this.mountedTick ? 'live' : 'away')); this.mountedTick = true; return; }
+    this.mountedTick = true;
+    if (rem !== s.remaining) this.setState({ remaining: rem });
+  }
+  complete(how) {
+    var s = this.state;
+    var today = dayKey();
+    if (s.mode === 'focus') {
+      var key = s.subject || 'open';
+      var min = (s.blockSec || this.dur('focus')) / 60;
+      var day = dayKey(new Date(s.endAt || Date.now()));
+      var history = Object.assign({}, s.history);
+      var d = Object.assign({}, history[day] || {});
+      var c = Object.assign({ blocks: 0, min: 0 }, d[key]);
+      c.blocks += 1; c.min += min; d[key] = c; history[day] = d;
+      var count = (s.focusDay === today ? s.focusCount : 0) + 1;
+      var next = count % 4 === 0 ? 'long' : 'short';
+      var task = s.activeTask ? this.findTask(s.activeTask) : null;
+      var patch = { running: false, remaining: null, blockSec: null, mode: next, focusCount: count, focusDay: today, history: history,
+        status: next === 'long' ? 'Block logged. You earned a long break.' : 'Block logged. Time for a short break.' };
+      var msg;
+      if (task && task.status === 'open') {
+        var studied = Math.round((task.studied + min) * 10) / 10;
+        patch.tasks = this.withTask(task.id, { studied: studied });
+        msg = fmtMin(min) + ' on “' + task.text + '” · ' + (task.minutes ? Math.round(studied) + ' / ' + task.minutes + ' minutes studied' : fmtMin(studied) + ' studied so far') + '. Check it off whenever it’s truly done.';
+      } else {
+        msg = fmtMin(min) + ' of ' + (s.subject ? BOOK[s.subject].name : 'open study') + ' logged.';
+      }
+      this.setState(patch);
+      this.notify((how === 'away' ? 'While you were away: ' : 'Focus block complete. ') + msg, how !== 'away');
+      if (patch.tasks) this.scheduleSync();
+    } else {
+      this.setState({ running: false, remaining: null, blockSec: null, mode: 'focus', status: 'Break over. Ready for the next block?' });
+      this.notify('Break finished. The desk is ready when you are.', how !== 'away');
+    }
+  }
+  notify(text, sound) {
+    var self = this;
+    clearTimeout(this.toastT);
+    this.setState({ toast: { text: text } });
+    this.toastT = setTimeout(function () { self.setState({ toast: null }); }, 12000);
+    if (sound && this.state.settings.sound) this.chime();
+  }
+  ensureAudio() {
+    try {
+      if (!this.audio) { var AC = window.AudioContext || window.webkitAudioContext; if (AC) this.audio = new AC(); }
+      if (this.audio && this.audio.state === 'suspended') this.audio.resume();
+    } catch (e) {}
+  }
+  chime() {
+    try {
+      var ctx = this.audio; if (!ctx) return;
+      if (ctx.state === 'suspended') ctx.resume();
+      var t = ctx.currentTime + 0.05;
+      [[523.25, 0], [659.25, 0.22], [783.99, 0.44]].forEach(function (n) {
+        var o = ctx.createOscillator(), g = ctx.createGain();
+        o.type = 'sine'; o.frequency.value = n[0];
+        g.gain.setValueAtTime(0.0001, t + n[1]);
+        g.gain.exponentialRampToValueAtTime(0.06, t + n[1] + 0.04);
+        g.gain.exponentialRampToValueAtTime(0.0001, t + n[1] + 1.9);
+        o.connect(g); g.connect(ctx.destination);
+        o.start(t + n[1]); o.stop(t + n[1] + 2);
+      });
+    } catch (e) {}
+  }
+  toggle() {
+    var s = this.state;
+    this.ensureAudio();
+    if (s.running) {
+      var rem = Math.max(1, Math.ceil((s.endAt - Date.now()) / 1000));
+      this.setState({ running: false, remaining: rem, status: 'Paused at ' + this.fmtClock(rem) + '.' });
+    } else {
+      var left = this.left();
+      var total = s.remaining == null ? this.dur(s.mode) : (s.blockSec || this.dur(s.mode));
+      this.setState({ running: true, remaining: left, blockSec: total, endAt: Date.now() + left * 1000,
+        status: s.mode === 'focus' ? 'Focusing. It keeps counting if you switch to Canvas.' : 'Resting. Look out the window for a minute.' });
+    }
+  }
+  reset() { this.setState({ running: false, remaining: null, blockSec: null, status: 'Timer reset.' }); }
+  setMode(m) { this.setState({ mode: m, running: false, remaining: null, blockSec: null, status: MODE_LABEL[m] + ' selected.' }); }
+
+  /* ---------- books + settings ---------- */
+  onBook(id) {
+    var has = !!this.state.links[id];
+    var at = this.state.activeTask ? this.findTask(this.state.activeTask) : null;
+    this.setState({ subject: id, drawer: null, activeTask: at && at.course && at.course !== id ? null : this.state.activeTask, status: 'Now studying ' + BOOK[id].name + '.' });
+    if (!has) this.openSettings(id);
+  }
+  openSettings(focusId) {
+    var s = this.state;
+    this.remember();
+    var sd = { links: Object.assign({}, s.links), apps: Object.assign({}, s.apps), focus: String(s.settings.focus), short: String(s.settings.short), long: String(s.settings.long), sound: s.settings.sound, syncUrl: s.sync.url, syncKey: s.sync.key };
+    this.setState({ dialog: 'settings', drawer: null, edit: null, sd: sd, sdErrors: {}, syncTestMsg: '',
+      focusField: focusId ? 'url-' + focusId : null,
+      settingsNotice: focusId ? BOOK[focusId].name + ' doesn’t have a Canvas link yet. Paste the course link below, then save.' : '' });
+  }
+  setSd(patch) { this.setState({ sd: Object.assign({}, this.state.sd, patch) }); }
+  setSdLink(group, id, v) { var g = Object.assign({}, this.state.sd[group]); g[id] = v; var p = {}; p[group] = g; this.setSd(p); }
+  checkSyncDraft(sd) {
+    var url = (sd.syncUrl || '').trim(), key = (sd.syncKey || '').trim();
+    if (!url && !key) return { ok: true, url: '', key: '' };
+    if (!SYNC_URL_RE.test(url)) return { ok: false, field: 'sync-url', error: 'Paste the Web app link that ends in /exec (it starts with https://script.google.com/).' };
+    if (key.length < 16) return { ok: false, field: 'sync-key', error: 'Paste the room key from your sheet’s “Midnight Study Room” menu.' };
+    return { ok: true, url: url, key: key };
+  }
+  saveSettings(e) {
+    if (e && e.preventDefault) e.preventDefault();
+    var sd = this.state.sd; if (!sd) return;
+    var errors = {}, links = {}, apps = {}, firstBad = null;
+    BOOKS.forEach(function (b) { var r = normUrl(sd.links[b.id]); if (r.ok) links[b.id] = r.url; else { errors['link-' + b.id] = 'Use a full web address, like https://…'; firstBad = firstBad || 'url-' + b.id; } });
+    APPS.forEach(function (a) { var r = normUrl(sd.apps[a.id]); if (r.ok) apps[a.id] = r.url || a.def; else { errors['app-' + a.id] = 'Use a full web address, like https://…'; firstBad = firstBad || 'app-' + a.id; } });
+    var sy = this.checkSyncDraft(sd);
+    if (!sy.ok) { errors.sync = sy.error; firstBad = firstBad || sy.field; }
+    if (firstBad) {
+      this.setState({ sdErrors: errors, settingsNotice: 'Something needs a fix before saving.' });
+      var self = this; setTimeout(function () { self.focusIn('#' + firstBad, '.dlg'); }, 40);
+      return;
+    }
+    var st = this.state.settings;
+    var settings = { focus: clampInt(sd.focus, 1, 180, st.focus), short: clampInt(sd.short, 1, 60, st.short), long: clampInt(sd.long, 1, 90, st.long), sound: !!sd.sound };
+    var syncChanged = sy.url !== this.state.sync.url || sy.key !== this.state.sync.key;
+    this.setState({ links: links, apps: apps, settings: settings, sync: { url: sy.url, key: sy.key }, dialog: null, sd: null, sdErrors: {}, settingsNotice: '', focusField: null, status: 'Settings saved.',
+      syncState: sy.url ? (syncChanged ? 'idle' : this.state.syncState) : 'idle', syncError: '' });
+    if (sy.url && syncChanged) this.scheduleSync(100);
+  }
+  testSync() {
+    var self = this, sy = this.checkSyncDraft(this.state.sd || {});
+    if (!sy.ok) { this.setState({ syncTestMsg: sy.error }); return; }
+    if (!sy.url) { this.setState({ syncTestMsg: 'Paste the connector link and room key first.' }); return; }
+    this.setState({ syncTestMsg: 'Knocking on the sheet’s door…' });
+    this.syncNow({ url: sy.url, key: sy.key }).then(function (r) {
+      self.setState({ syncTestMsg: r.ok ? 'Connected. Your sheet has ' + r.count + (r.count === 1 ? ' task' : ' tasks') + '. Press Save settings to keep this connection.' : r.message });
+    });
+  }
+
+  /* ---------- tasks ---------- */
+  findTask(id) { return this.state.tasks.filter(function (t) { return t.id === id; })[0] || null; }
+  withTask(id, patch) {
+    return this.state.tasks.map(function (t) {
+      if (t.id !== id) return t;
+      return Object.assign({}, t, patch, { updated: isoNow(), updatedBy: 'room', dirty: true, rev: (t.rev || 0) + 1 });
+    });
+  }
+  changeTask(id, patch, extra) {
+    this.setState(Object.assign({ tasks: this.withTask(id, patch) }, extra || {}));
+    this.scheduleSync();
+  }
+  addTask(e) {
+    if (e && e.preventDefault) e.preventDefault();
+    var text = (this.state.draft || '').trim();
+    if (!text) return;
+    var course = this.state.dialog === 'notebook' ? this.state.draftCourse : (this.state.subject || '');
+    var now = isoNow();
+    var t = normTask({ id: 'm-' + uid(), text: text, status: 'open', course: course, kind: 'task', day: dayKey(), priority: 'normal', source: 'manual', updated: now, updatedBy: 'room', created: now, dirty: true });
+    this.setState({ tasks: this.state.tasks.concat([t]), draft: '' });
+    this.scheduleSync();
+  }
+  toggleTask(id) {
+    var t = this.findTask(id); if (!t) return;
+    var done = t.status !== 'done';
+    this.changeTask(id, { status: done ? 'done' : 'open', doneOn: done ? dayKey() : '' }, done && this.state.activeTask === id ? { activeTask: null } : null);
+  }
+  dismissTask(id) {
+    var t = this.findTask(id); if (!t) return;
+    this.changeTask(id, { status: 'dismissed' }, { activeTask: this.state.activeTask === id ? null : this.state.activeTask, edit: this.state.edit && this.state.edit.id === id ? null : this.state.edit, status: '“' + t.text + '” dismissed.' });
+  }
+  studyTask(id) {
+    var t = this.findTask(id); if (!t || t.status !== 'open') return;
+    if (this.state.activeTask === id) { this.setState({ activeTask: null, status: 'Stopped tracking “' + t.text + '”.' }); return; }
+    this.setState({ activeTask: id, subject: t.course || this.state.subject, status: 'Studying “' + t.text + '”. Start the timer when ready.' });
+  }
+  startEdit(id) {
+    var t = this.findTask(id); if (!t) return;
+    if (this.state.dialog !== 'notebook') { this.remember(); }
+    this.setState({ dialog: 'notebook', drawer: null, draftCourse: this.state.dialog === 'notebook' ? this.state.draftCourse : (this.state.subject || ''), edit: { id: id, text: t.text, course: t.course, priority: t.priority, day: t.day, due: t.due, minutes: t.minutes ? String(t.minutes) : '', context: t.context }, editErr: '' });
+  }
+  setEdit(patch) { this.setState({ edit: Object.assign({}, this.state.edit, patch), editErr: '' }); }
+  saveEdit(e) {
+    if (e && e.preventDefault) e.preventDefault();
+    var ed = this.state.edit; if (!ed) return;
+    var text = (ed.text || '').trim();
+    if (!text) { this.setState({ editErr: 'A task needs a few words.' }); return; }
+    this.changeTask(ed.id, { text: text.slice(0, 160), course: BOOK[ed.course] ? ed.course : '', priority: (ed.priority === 'high' || ed.priority === 'low') ? ed.priority : 'normal',
+      day: asDay(ed.day), due: asDay(ed.due), minutes: clampInt(ed.minutes, 0, 600, 0), context: String(ed.context || '').trim().slice(0, 120) }, { edit: null });
+  }
+  moveTomorrow() {
+    var ed = this.state.edit; if (!ed) return;
+    var t = this.findTask(ed.id); if (!t) return;
+    var base = t.day && t.day > dayKey() ? t.day : dayKey();
+    this.changeTask(ed.id, { day: addDays(base, 1) }, { edit: null, status: '“' + t.text + '” moved to ' + shortDay(addDays(base, 1), dayKey()) + '.' });
+  }
+
+  /* ---------- Morning Brief sync (Google Sheet through your Apps Script connector) ---------- */
+  syncConfigured() { var c = this.state.sync; return !!(c && c.url && c.key); }
+  scheduleSync(delay) {
+    if (!this.syncConfigured()) return;
+    clearTimeout(this.syncT);
+    var self = this;
+    this.syncT = setTimeout(function () { self.syncNow(); }, delay == null ? 1500 : delay);
+  }
+  syncNow(cfg) {
+    var self = this, s = this.state;
+    cfg = cfg || s.sync;
+    if (!cfg || !cfg.url || !cfg.key) return Promise.resolve({ ok: false, message: 'Not connected yet.' });
+    if (this.syncing) { this.syncAgain = true; return Promise.resolve({ ok: false, message: 'A sync is already running. Try again in a moment.' }); }
+    if (typeof navigator !== 'undefined' && navigator.onLine === false) {
+      this.setState({ syncState: 'offline' });
+      return Promise.resolve({ ok: false, message: 'You’re offline. Changes are saved here and will sync when you’re back online.' });
+    }
+    if (typeof fetch !== 'function') return Promise.resolve({ ok: false, message: 'This window can’t reach the internet.' });
+    this.syncing = true;
+    this.setState({ syncState: 'syncing' });
+    var sent = s.tasks.filter(function (t) { return t.dirty; });
+    var revs = {};
+    sent.forEach(function (t) { revs[t.id] = t.rev; });
+    return fetch(cfg.url, { method: 'POST', headers: { 'Content-Type': 'text/plain;charset=utf-8' }, body: JSON.stringify({ key: cfg.key, action: 'sync', changes: sent.map(toRow) }) })
+      .then(function (r) { return r.json(); })
+      .then(function (res) {
+        if (!res || !res.ok) {
+          var why = res && res.error === 'not-authorized' ? 'The room key doesn’t match your sheet. Copy it again from the sheet’s menu.' : 'The connector answered with an error' + (res && res.error ? ' (' + res.error + ')' : '') + '.';
+          self.setState({ syncState: 'error', syncError: why });
+          return { ok: false, message: why };
+        }
+        var n = self.applyRemote(arr(res.tasks), revs);
+        self.setState({ syncState: 'ok', lastSync: isoNow(), syncError: '' });
+        return { ok: true, count: n };
+      })
+      .catch(function () {
+        var off = typeof navigator !== 'undefined' && navigator.onLine === false;
+        var why = off ? 'You’re offline. Changes are saved here and will sync later.' : 'Couldn’t reach the connector. Check the link, and that it’s deployed for “Anyone”.';
+        self.setState({ syncState: off ? 'offline' : 'error', syncError: why });
+        return { ok: false, message: why };
+      })
+      .then(function (r) { self.syncing = false; if (self.syncAgain) { self.syncAgain = false; self.scheduleSync(300); } return r; });
+  }
+  /* The sheet's answer is the truth for every task, except tasks edited here while the request was travelling. */
+  applyRemote(rows, revs) {
+    var cur = this.state.tasks, local = {}, seen = {}, out = [];
+    cur.forEach(function (t) { local[t.id] = t; });
+    rows.forEach(function (r) {
+      var rt = normTask(Object.assign({}, r, { text: r.title }));
+      if (!rt || seen[rt.id]) return;
+      seen[rt.id] = true;
+      var lt = local[rt.id];
+      if (lt && lt.dirty && revs[lt.id] !== lt.rev) { out.push(lt); return; }
+      rt.synced = true; rt.dirty = false; rt.rev = lt ? lt.rev : 0;
+      out.push(rt);
+    });
+    cur.forEach(function (lt) { if (!seen[lt.id] && (lt.dirty || !lt.synced)) out.push(lt); });
+    var patch = { tasks: out };
+    if (this.state.activeTask && !out.some(function (t) { return t.id === this.state.activeTask && t.status === 'open'; }, this)) patch.activeTask = null;
+    this.setState(patch);
+    return rows.length;
+  }
+
+  /* ---------- saved link lists ---------- */
+  setDraft(list, patch) { var key = list === 'resources' ? 'resDraft' : 'refDraft'; var p = {}; p[key] = Object.assign({}, this.state[key], patch); this.setState(p); }
+  addLink(list, e) {
+    if (e && e.preventDefault) e.preventDefault();
+    var key = list === 'resources' ? 'resDraft' : 'refDraft';
+    var d = this.state[key];
+    var r = normUrl(d.url);
+    if (!r.ok || !r.url) { this.setDraft(list, { error: 'Enter a full web address, like https://…' }); return; }
+    var label = (d.label || '').trim() || hostOf(r.url);
+    var item = { id: uid(), label: label.slice(0, 80), url: r.url };
+    var p = {}; p[list] = this.state[list].concat([item]).slice(-40); p[key] = { label: '', url: '', error: '' };
+    this.setState(p);
+  }
+  removeLink(list, id) { var p = {}; p[list] = this.state[list].filter(function (x) { return x.id !== id; }); this.setState(p); }
+
+  /* ---------- objects ---------- */
+  openDrawer(name) { this.setState({ drawer: this.state.drawer === name ? null : name }); }
+  openDialog(name) { this.remember(); this.setState({ dialog: name, drawer: null, focusField: null, edit: null, draftCourse: name === 'notebook' ? (this.state.subject || '') : this.state.draftCourse }); }
+  closeDialog() { this.setState({ dialog: null, sd: null, sdErrors: {}, settingsNotice: '', focusField: null, edit: null, editErr: '' }); }
+
+  taskView(t, today, where, compact) {
+    var self = this, s = this.state;
+    var b = BOOK[t.course];
+    var meta = [];
+    if (b) meta.push(b.name);
+    if (!compact && (TESTS[t.kind] || t.kind === 'assignment' || t.kind === 'reminder')) meta.push(KINDS[t.kind]);
+    if (t.context) meta.push(t.context);
+    else if (t.due && where !== 'upcoming') meta.push('due ' + shortDay(t.due, today));
+    if (t.minutes || t.studied) meta.push(t.minutes ? Math.round(t.studied) + ' / ' + t.minutes + ' min' + (compact ? '' : ' studied') : fmtMin(t.studied) + ' studied');
+    if (where === 'today' && t.status === 'open' && t.day && t.day < today) meta.push('carried from ' + shortDay(t.day, today));
+    if (where === 'completed' && t.doneOn && t.doneOn !== today) meta.push('done ' + shortDay(t.doneOn, today));
+    if (!compact && t.source === 'brief') meta.push('from Morning Brief');
+    var active = s.activeTask === t.id;
+    var dateKey = where === 'upcoming' ? (t.due || t.day) : '';
+    return {
+      id: t.id, text: t.text, done: t.status === 'done', active: active, priority: t.priority, prioText: PRIO_TEXT[t.priority],
+      courseBg: b ? b.bg : 'transparent', meta: meta.join(' · '),
+      checkable: !(where === 'upcoming' && TESTS[t.kind]), notCheckable: where === 'upcoming' && !!TESTS[t.kind],
+      dateLabel: dateKey ? shortDay(dateKey, today) : '',
+      studyLabel: t.status !== 'open' ? t.text : (active ? 'Stop tracking with the timer: ' : 'Study with the timer: ') + t.text,
+      toggle: function () { self.toggleTask(t.id); },
+      study: function () { self.studyTask(t.id); },
+      edit: function () { self.startEdit(t.id); },
+      dismiss: function () { self.dismissTask(t.id); }
+    };
+  }
+
+  renderVals() {
+    var self = this, s = this.state;
+    var today = dayKey(), now = Date.now();
+
+    var total = this.blockTotal(), rem = this.left();
+    var fresh = s.remaining == null;
+    var inCycle = (s.focusDay === today ? s.focusCount : 0) % 4;
+
+    var books = BOOKS.map(function (b) {
+      var href = safeHref(s.links[b.id]);
+      return { name: b.name, w: b.w, h: b.h, bg: b.bg, fg: b.fg, href: href, noHref: !href, open: s.subject === b.id, current: s.subject === b.id ? 'true' : 'false', pick: function () { self.onBook(b.id); } };
+    });
+    var book = s.subject ? BOOK[s.subject] : null;
+    var active = s.activeTask ? this.findTask(s.activeTask) : null;
+    if (active && active.status !== 'open') active = null;
+    var todayH = s.history[today] || {};
+    var courseMin = function (key) { var m = 0; Object.keys(s.history).forEach(function (d) { var c = s.history[d] && s.history[d][key]; if (c) m += c.min || 0; }); return m; };
+    var cardToday = book ? ((todayH[s.subject] || {}).blocks || 0) : 0;
+
+    var todayMin = 0, todayBlocks = 0;
+    Object.keys(todayH).forEach(function (k) { todayMin += todayH[k].min || 0; todayBlocks += todayH[k].blocks || 0; });
+    var weekRaw = [], maxMin = 0, weekMin = 0;
+    for (var i = 6; i >= 0; i--) {
+      var d = new Date(now - i * DAY_MS), k = dayKey(d), h = s.history[k] || {}, m = 0;
+      Object.keys(h).forEach(function (x) { m += h[x].min || 0; });
+      weekRaw.push({ label: 'SMTWTFS'.charAt(d.getDay()), min: m, name: d.toLocaleDateString('en-US', { weekday: 'short' }) });
+      maxMin = Math.max(maxMin, m); weekMin += m;
+    }
+    var week = weekRaw.map(function (w) { return { label: w.label, h: w.min ? Math.max(4, Math.round(w.min / maxMin * 56)) : 2 }; });
+    var courseTotals = BOOKS.concat([{ id: 'open', name: 'Open study', bg: '#D6CCEB' }]).map(function (b) { return { name: b.name, bg: b.bg, min: courseMin(b.id) }; })
+      .filter(function (c) { return c.min > 0; }).map(function (c) { return { name: c.name, bg: c.bg, text: fmtMin(c.min) }; });
+    var taskProgress = s.tasks.filter(function (t) { return t.status === 'open' && t.studied > 0; }).slice(0, 8).map(function (t) {
+      return { text: t.text, bg: BOOK[t.course] ? BOOK[t.course].bg : '#D6CCEB', progress: t.minutes ? Math.round(t.studied) + ' / ' + t.minutes + 'm' : fmtMin(t.studied) };
+    });
+
+    /* notebook sections */
+    var buckets = { today: [], upcoming: [], completed: [] };
+    s.tasks.forEach(function (t) { var p = placeOf(t, today); if (p) buckets[p].push(t); });
+    buckets.today.sort(function (a, b) { return (a.status === 'done') - (b.status === 'done') || PRIO_RANK[a.priority] - PRIO_RANK[b.priority]; });
+    buckets.upcoming.sort(function (a, b) { return ((a.due || a.day || '9') < (b.due || b.day || '9') ? -1 : (a.due || a.day || '9') > (b.due || b.day || '9') ? 1 : 0) || PRIO_RANK[a.priority] - PRIO_RANK[b.priority]; });
+    buckets.completed.sort(function (a, b) { return a.doneOn < b.doneOn ? 1 : a.doneOn > b.doneOn ? -1 : 0; });
+    var todayOpenDone = buckets.today.concat(buckets.completed.filter(function (t) { return t.doneOn === today && placeOf(t, today) === 'completed'; }));
+    var todayList = buckets.today.concat(buckets.completed.filter(function (t) { return t.doneOn === today; }));
+    var todayTasks = todayList.map(function (t) { return self.taskView(t, today, 'today'); });
+    var deskTasks = todayList.map(function (t) { return self.taskView(t, today, 'today', true); });
+    var doneToday = todayOpenDone.filter(function (t) { return t.status === 'done'; }).length;
+    var upcoming = buckets.upcoming.map(function (t) { return self.taskView(t, today, 'upcoming'); });
+    var completed = buckets.completed.map(function (t) { return self.taskView(t, today, 'completed'); });
+    var nextDl = buckets.upcoming.filter(function (t) { return t.due; })[0];
+
+    var syncText = !this.syncConfigured() ? '' :
+      s.syncState === 'syncing' ? 'syncing…' :
+      s.syncState === 'offline' ? 'offline · will sync later' :
+      s.syncState === 'error' ? 'sync needs attention' :
+      s.lastSync ? 'synced ' + new Date(s.lastSync).toLocaleTimeString('en-US', { hour: 'numeric', minute: '2-digit' }).replace(/\s?[AP]M$/, '') : 'connecting…';
+    var pending = s.tasks.filter(function (t) { return t.dirty; }).length;
+
+    var ed = s.edit;
+    var sd = s.sd || { links: {}, apps: {}, focus: '', short: '', long: '', sound: false, syncUrl: '', syncKey: '' };
+    var courseFields = BOOKS.map(function (b) {
+      var err = s.sdErrors['link-' + b.id] || '';
+      return { name: b.name, bg: b.bg, inputId: 'url-' + b.id, errId: 'err-url-' + b.id, value: sd.links[b.id] || '', error: err, invalid: err ? 'true' : 'false', onInput: function (e) { self.setSdLink('links', b.id, e.target.value); } };
+    });
+    var appFields = APPS.map(function (a) {
+      var err = s.sdErrors['app-' + a.id] || '';
+      return { name: a.name, inputId: 'app-' + a.id, errId: 'err-app-' + a.id, value: sd.apps[a.id] || '', error: err, invalid: err ? 'true' : 'false', onInput: function (e) { self.setSdLink('apps', a.id, e.target.value); } };
+    });
+    var linkItems = function (list) { return s[list].map(function (x) { return { label: x.label, href: safeHref(x.url), remove: function () { self.removeLink(list, x.id); } }; }); };
+    var draftView = function (d) { return { label: d.label, url: d.url, error: d.error, invalid: d.error ? 'true' : 'false' }; };
+    var dialogKey = function (e) { if (e.key === 'Escape') { e.preventDefault(); self.closeDialog(); } };
+    var cardBook = book || (active && BOOK[active.course]) || null;
+    var cardShow = !!(book || active);
+
+    return {
+      light: s.light, lampOn: s.light === 'warm', lampTip: s.light === 'warm' ? 'Dim the lamp' : 'Turn the lamp up',
+      toggleLight: function () { self.setState({ light: s.light === 'warm' ? 'dim' : 'warm' }); },
+      sway: s.sway, swayPlant: function () { self.setState({ sway: s.sway === 'a' ? 'b' : 'a' }); },
+      skyClear: s.sky === 'clear', skyLake: s.sky === 'lake', stars: STARS, starsLake: STARS_LAKE,
+      skyLabel: s.sky === 'clear' ? 'Window: crescent moon over the hills. Change the sky' : 'Window: full moon over a still lake. Change the sky',
+      toggleSky: function () { self.setState({ sky: s.sky === 'clear' ? 'lake' : 'clear' }); },
+      openRefs: function () { self.openDialog('refs'); },
+      openNotebook: function () { self.openDialog('notebook'); },
+
+      books: books,
+      cardShow: cardShow, noBook: !cardShow,
+      cardName: cardBook ? cardBook.name : 'Open study', cardBg: cardBook ? cardBook.bg : '#D6CCEB',
+      activeTask: active ? { text: active.text } : null,
+      cardLeft: active ? (active.minutes ? Math.round(active.studied) + ' / ' + active.minutes : fmtMin(active.studied)) : cardToday,
+      cardLeftLabel: active ? (active.minutes ? 'minutes studied' : 'studied on this task') : (cardToday === 1 ? 'focus block today' : 'focus blocks today'),
+      cardTotal: cardBook ? fmtMin(courseMin(cardBook.id)) : fmtMin(courseMin('open')),
+      bookHref: cardBook ? safeHref(s.links[cardBook.id]) : '', bookNoHref: cardBook ? !safeHref(s.links[cardBook.id]) : false,
+      closeBook: function () { self.setState({ subject: null, activeTask: null, status: 'Book returned to the shelf.' }); },
+      addLinkForBook: function () { self.openSettings(cardBook ? cardBook.id : null); },
+      openSettingsPlain: function () { self.openSettings(null); },
+
+      modeLabel: MODE_LABEL[s.mode], timeText: this.fmtClock(rem),
+      dashOffset: (CIRC * (1 - rem / total)).toFixed(2),
+      subjectLabel: active ? (active.text.length > 34 ? active.text.slice(0, 32) + '…' : active.text) : (book ? book.name : 'Open study'),
+      pips: [0, 1, 2, 3].map(function (i) { return { on: i < inCycle }; }),
+      pipLabel: inCycle + ' of 4 focus blocks before a long break',
+      isFocus: s.mode === 'focus', isShort: s.mode === 'short', isLong: s.mode === 'long',
+      setFocus: function () { self.setMode('focus'); }, setShort: function () { self.setMode('short'); }, setLong: function () { self.setMode('long'); },
+      toggle: function () { self.toggle(); }, toggleLabel: s.running ? 'Pause' : (fresh ? 'Start' : 'Resume'),
+      reset: function () { self.reset(); }, status: s.status,
+      toast: s.toast, dismissToast: function () { clearTimeout(self.toastT); self.setState({ toast: null }); },
+
+      dateText: new Date().toLocaleDateString('en-US', { weekday: 'long', month: 'long', day: 'numeric' }),
+      draft: s.draft, onDraft: function (e) { self.setState({ draft: e.target.value }); },
+      draftCourse: s.draftCourse, onDraftCourse: function (e) { self.setState({ draftCourse: e.target.value }); },
+      addTask: function (e) { self.addTask(e); },
+      todayTasks: todayTasks, deskTasks: deskTasks, noTasks: todayTasks.length === 0,
+      todayOpen: todayTasks.filter(function (t) { return !t.done; }), noTodayOpen: !todayTasks.some(function (t) { return !t.done; }),
+      todayOpenText: todayTasks.length && !todayTasks.some(function (t) { return !t.done; }) ? 'Everything for today is done.' : 'Nothing for today yet.',
+      upcoming: upcoming, noUpcoming: upcoming.length === 0,
+      completed: completed, noCompleted: completed.length === 0,
+      todayCount: todayTasks.length ? doneToday + ' of ' + todayTasks.length + ' done' : '',
+      progressText: (todayTasks.length === 0 ? 'Nothing written yet' : doneToday + ' of ' + todayTasks.length + ' done') + (syncText ? ' · ' + syncText : ''),
+      nextDeadline: nextDl ? 'Next: ' + nextDl.text + ' · ' + shortDay(nextDl.due, today) : '',
+      syncText: syncText ? 'Morning Brief: ' + syncText + (pending && s.syncState !== 'syncing' ? ' · ' + pending + ' waiting to send' : '') : 'Not connected to the Morning Brief yet. Settings drawer → Morning Brief connection.',
+      syncError: s.syncState === 'error' || s.syncState === 'offline' ? s.syncError : '',
+      canSync: this.syncConfigured(), syncNow: function () { self.syncNow(); },
+
+      editing: !!ed, notEditing: !ed,
+      ed: ed ? { text: ed.text, course: ed.course, priority: ed.priority, day: ed.day, due: ed.due, minutes: ed.minutes, context: ed.context } : { text: '', course: '', priority: 'normal', day: '', due: '', minutes: '', context: '' },
+      editErr: s.editErr,
+      onEdText: function (e) { self.setEdit({ text: e.target.value }); },
+      onEdCourse: function (e) { self.setEdit({ course: e.target.value }); },
+      onEdPrio: function (e) { self.setEdit({ priority: e.target.value }); },
+      onEdDay: function (e) { self.setEdit({ day: e.target.value }); },
+      onEdDue: function (e) { self.setEdit({ due: e.target.value }); },
+      onEdMin: function (e) { self.setEdit({ minutes: e.target.value }); },
+      onEdCtx: function (e) { self.setEdit({ context: e.target.value }); },
+      saveEdit: function (e) { self.saveEdit(e); },
+      cancelEdit: function () { self.setState({ edit: null, editErr: '' }); },
+      editKey: function (e) { if (e.key === 'Escape') { e.preventDefault(); e.stopPropagation(); self.setState({ edit: null, editErr: '' }); } },
+      moveTomorrow: function () { self.moveTomorrow(); },
+      dismissEditing: function () { if (ed) self.dismissTask(ed.id); },
+
+      drawerOpen: { apps: s.drawer === 'apps', history: s.drawer === 'history', resources: s.drawer === 'resources', settings: s.dialog === 'settings' },
+      openApps: function () { self.openDrawer('apps'); }, openHistory: function () { self.openDrawer('history'); }, openResources: function () { self.openDrawer('resources'); },
+      closeDrawer: function () { self.setState({ drawer: null }); },
+      trayKey: function (e) { if (e.key === 'Escape') { e.preventDefault(); self.setState({ drawer: null }); } },
+      apps: APPS.map(function (a) { var href = safeHref(s.apps[a.id]) || a.def; return { name: a.name, href: href, host: hostOf(href) }; }),
+      todayMinText: fmtMin(todayMin), todayBlocksText: todayBlocks === 1 ? '1 block' : todayBlocks + ' blocks', weekMinText: fmtMin(weekMin),
+      week: week, weekLabel: 'Focus minutes for the last 7 days: ' + weekRaw.map(function (w) { return w.name + ' ' + fmtMin(w.min); }).join(', '),
+      courseTotals: courseTotals, noHistory: courseTotals.length === 0,
+      taskProgress: taskProgress, hasTaskProgress: taskProgress.length > 0,
+      resources: linkItems('resources'), noResources: s.resources.length === 0,
+      resDraft: draftView(s.resDraft),
+      onResLabel: function (e) { self.setDraft('resources', { label: e.target.value }); },
+      onResUrl: function (e) { self.setDraft('resources', { url: e.target.value, error: '' }); },
+      addResource: function (e) { self.addLink('resources', e); },
+      refs: linkItems('refs'), noRefs: s.refs.length === 0,
+      refDraft: draftView(s.refDraft),
+      onRefLabel: function (e) { self.setDraft('refs', { label: e.target.value }); },
+      onRefUrl: function (e) { self.setDraft('refs', { url: e.target.value, error: '' }); },
+      addRef: function (e) { self.addLink('refs', e); },
+
+      anyDialog: !!s.dialog, dlgSettings: s.dialog === 'settings', dlgRefs: s.dialog === 'refs', dlgNotebook: s.dialog === 'notebook', dlgBackup: s.dialog === 'backup',
+      openBackup: function () { self.openBackup(); }, noop: function () {},
+      backupText: s.backupText, restoreText: s.restoreText, backupMsg: s.backupMsg,
+      copyBackup: function () { self.copyBackup(); }, downloadBackup: function () { self.downloadBackup(); },
+      onRestoreText: function (e) { self.setState({ restoreText: e.target.value, backupMsg: '' }); },
+      onRestoreFile: function (e) { self.readRestoreFile(e); },
+      restoreBackup: function () { self.restoreBackup(); },
+      closeDialog: function () { self.closeDialog(); }, dialogKey: dialogKey,
+      settingsNotice: s.settingsNotice, courseFields: courseFields, appFields: appFields, sd: sd,
+      syncErr: s.sdErrors.sync || '', syncInvalid: s.sdErrors.sync ? 'true' : 'false', syncTestMsg: s.syncTestMsg,
+      onSyncUrl: function (e) { self.setSd({ syncUrl: e.target.value }); },
+      onSyncKey: function (e) { self.setSd({ syncKey: e.target.value }); },
+      testSync: function () { self.testSync(); },
+      onFocusMin: function (e) { self.setSd({ focus: e.target.value }); },
+      onShortMin: function (e) { self.setSd({ short: e.target.value }); },
+      onLongMin: function (e) { self.setSd({ long: e.target.value }); },
+      onSound: function () { self.setSd({ sound: !sd.sound }); },
+      testChime: function () { self.ensureAudio(); self.chime(); },
+      saveSettings: function (e) { self.saveSettings(e); },
+      storageText: this.storage ? 'Everything here is saved in this browser only (localStorage). It won’t follow you to another device.' : 'This preview can’t save to browser storage, so changes last only until the page reloads.'
+    };
+  }
+}
+</script>
+</body>
+</html>

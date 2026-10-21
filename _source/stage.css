@@ -1,0 +1,23 @@
+/* The 16:10 stage. The room itself is 1440 × 1000; the stage widens the wall and
+   floor to 1600 × 1000 (exactly 16:10) and scales the whole scene to fit the window. */
+html, body { margin: 0; height: 100%; background: #10142A; overflow: hidden; }
+#viewport { position: fixed; inset: 0; display: flex; align-items: center; justify-content: center; }
+#stage { position: relative; width: 1600px; height: 1000px; flex: none; transform-origin: center center; overflow: hidden; background: #1C2346; }
+#stage .wall-stripes { position: absolute; left: 0; top: 0; width: 1600px; height: 1000px; background: repeating-linear-gradient(90deg, rgba(183,169,214,0.04) 0 2px, transparent 2px 56px); background-position: 80px 0; }
+#stage .wainscot { position: absolute; left: 0; top: 700px; width: 1600px; height: 130px; background: #19203F; border-top: 2px solid #2E3561; }
+#stage .baseboard { position: absolute; left: 0; top: 818px; width: 1600px; height: 12px; background: #2E2A4A; border-top: 1px solid rgba(185,154,97,0.35); }
+#stage .floor { position: absolute; left: 0; top: 830px; width: 1600px; height: 170px; background: repeating-linear-gradient(90deg, transparent 0 178px, rgba(0,0,0,0.25) 178px 180px), repeating-linear-gradient(180deg, #141A33 0 40px, #121730 40px 42px); background-position: 80px 0, 0 0; }
+#stage .stage-grain { position: absolute; left: 0; top: 0; z-index: 40; pointer-events: none; opacity: 0.09; mix-blend-mode: overlay; }
+#room-mount { position: absolute; left: 80px; top: 0; width: 1440px; height: 1000px; }
+/* the stage draws one grain layer across the full width, so the room's own is hidden here */
+#room-mount .grain { display: none; }
+/* while the room's own script is starting */
+#room-mount:empty::after { content: "Lighting the lamp…"; position: absolute; left: 0; right: 0; top: 46%; text-align: center; color: #B7A9D6; font: italic 500 22px 'Cormorant Garamond', Georgia, serif; }
+noscript p { position: fixed; inset: auto 0 40% 0; text-align: center; color: #F6EEDC; font: 18px 'DM Sans', system-ui, sans-serif; }
+/* the side strips follow the room's lighting and dialog shading */
+#stage .side-veil, #stage .side-scrim { position: absolute; left: 0; top: 0; width: 1600px; height: 1000px; pointer-events: none; opacity: 0; z-index: 25; }
+#stage .side-veil { background: linear-gradient(90deg, #060818 0 80px, transparent 80px 1520px, #060818 1520px); transition: opacity .8s ease; }
+#stage .side-scrim { background: linear-gradient(90deg, rgba(9,11,28,.58) 0 80px, transparent 80px 1520px, rgba(9,11,28,.58) 1520px); transition: opacity .3s ease; }
+#stage:has(.room[data-light="dim"]) .side-veil { opacity: .3; }
+#stage:has(.scrim) .side-scrim { opacity: 1; }
+@media (prefers-reduced-motion: reduce) { #stage .side-veil, #stage .side-scrim { transition: none; } }
