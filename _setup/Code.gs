@@ -17,10 +17,11 @@
  */
 
 var SHEET_NAME = 'Tasks';
-var COLS = ['id', 'status', 'title', 'course', 'kind', 'day', 'due', 'context', 'priority', 'minutes', 'studied', 'source', 'done_on', 'updated', 'updated_by', 'created', 'brief_date'];
+var COLS = ['id', 'status', 'title', 'course', 'kind', 'day', 'due', 'context', 'priority', 'minutes', 'studied', 'source', 'done_on', 'updated', 'updated_by', 'created', 'brief_date', 'edited'];
+var EDITABLE = ['title', 'course', 'priority', 'day', 'due', 'context', 'minutes'];   // fields Lia can edit by hand
 var DATE_COLS = { day: 1, due: 1, done_on: 1, brief_date: 1 };
 var STAMP_COLS = { updated: 1, created: 1 };
-var ROOM_FIELDS = ['status', 'title', 'course', 'kind', 'day', 'due', 'context', 'priority', 'minutes', 'studied', 'done_on', 'updated'];
+var ROOM_FIELDS = ['status', 'title', 'course', 'kind', 'day', 'due', 'context', 'priority', 'minutes', 'studied', 'done_on', 'edited'];
 var OK = {
   status: { open: 1, done: 1, dismissed: 1 },
   course: { '': 1, calc: 1, bio: 1, lab: 1, bme: 1, wri: 1, com: 1 },
@@ -73,7 +74,11 @@ function handle_(body) {
     var sh = sheet_();
     var values = sh.getDataRange().getValues();
     var header = (values[0] || []).slice(0, COLS.length).map(function (h) { return String(h).trim(); });
-    if (header.join('|') !== COLS.join('|')) return { ok: false, error: 'header-changed' };
+    if (header.slice(0, 17).join('|') !== COLS.slice(0, 17).join('|')) return { ok: false, error: 'header-changed' };
+    if (header[17] !== 'edited') {
+      if (header[17]) return { ok: false, error: 'header-changed' };
+      sh.getRange(1, 18).setValue('edited');                      // one-time upgrade: add the "edited" column
+    }
     var rows = values.slice(1).map(rowToObj_);
     var byId = {};
     rows.forEach(function (r, i) { if (r.id) byId[r.id] = i; });
@@ -85,6 +90,7 @@ function handle_(body) {
       if (i === undefined) {
         var fresh = {};
         COLS.forEach(function (k) { fresh[k] = t[k] != null ? t[k] : ''; });
+        delete fresh.changed;
         fresh.updated_by = 'room';
         if (!fresh.source) fresh.source = 'manual';
         if (!fresh.created) fresh.created = fresh.updated;
@@ -94,8 +100,18 @@ function handle_(body) {
         return;
       }
       var cur = rows[i];
-      if (time_(t.updated) < time_(cur.updated)) return;           // the sheet has a newer change: keep it
-      ROOM_FIELDS.forEach(function (k) { if (t[k] != null) cur[k] = t[k]; });
+      var sheetNewer = time_(t.updated) < time_(cur.updated);
+      var fields = t.changed;                                     // exactly the fields changed in the room
+      if (!fields) {                                              // an older room version sends whole rows:
+        if (sheetNewer) return;                                   //   keep the sheet's newer copy (previous behaviour)
+        fields = ROOM_FIELDS;
+      } else if (sheetNewer && cur.updated_by !== 'brief') {
+        return;                                                   // changed later from another device: keep that
+      }
+      // If the brief updated this task after the room's change, the room still applies only the fields
+      // Lia actually changed, so the brief's fresher deadline, note or priority are never overwritten.
+      fields.forEach(function (k) { if (t[k] != null) cur[k] = t[k]; });
+      if (!sheetNewer) cur.updated = t.updated;
       cur.updated_by = 'room';
       touched[i] = true;
     });
@@ -135,7 +151,7 @@ function clean_(c) {
   if (!c || typeof c.id !== 'string' || !c.id.trim() || c.id.length > 120) return null;
   var t = { id: c.id.trim() };
   COLS.forEach(function (k) {
-    if (k === 'id' || c[k] == null) return;
+    if (k === 'id' || k === 'edited' || c[k] == null) return;
     var v = c[k];
     if (OK[k]) { v = String(v); if (!OK[k][v]) return; }
     else if (k === 'minutes' || k === 'studied') { v = Math.max(0, Math.min(10000, Number(v) || 0)); if (k === 'minutes' && !v) v = ''; }
@@ -144,8 +160,16 @@ function clean_(c) {
     else { v = String(v).replace(/^[=+\-@]+/, '').slice(0, k === 'title' ? 160 : 120); }   // never let text start like a formula
     t[k] = v;
   });
+  if (c.edited != null) t.edited = list_(c.edited, EDITABLE).join(',');
+  if (c.changed != null) t.changed = list_(c.changed, ROOM_FIELDS);
   if (!t.updated) t.updated = new Date().toISOString();
   return t;
+}
+function list_(v, allowed) {
+  var a = Array.isArray(v) ? v : String(v || '').split(',');
+  var out = [];
+  a.forEach(function (x) { x = String(x).trim(); if (allowed.indexOf(x) >= 0 && out.indexOf(x) < 0) out.push(x); });
+  return out;
 }
 function time_(s) { var t = Date.parse(s || ''); return isNaN(t) ? 0 : t; }
 function json_(o) { return ContentService.createTextOutput(JSON.stringify(o)).setMimeType(ContentService.MimeType.JSON); }

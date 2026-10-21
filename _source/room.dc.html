@@ -622,6 +622,8 @@ body{margin:0;background:#141A33}
                 <label class="task-label" style="flex: 1;"><input type="checkbox" checked="{{sd.sound}}" onChange="{{onSound}}"><span style="font-size: 15px;">Play a soft chime when a block ends</span></label>
                 <button type="button" class="text-btn" onClick="{{testChime}}">Test chime</button>
               </div>
+              <label class="task-label"><input type="checkbox" checked="{{sd.notify}}" onChange="{{onNotify}}"><span style="font-size: 15px;">Also show a Windows notification when a block ends while the room is minimized</span></label>
+              <sc-if value="{{notifyMsg}}" hint-placeholder-val="{{ false }}"><p role="status" style="margin: 0; font-size: 13px; line-height: 1.5; color: #3A3760;">{{notifyMsg}}</p></sc-if>
               <p style="margin: 0; font-size: 13px; line-height: 1.5; color: #3A3760;">New lengths apply the next time the timer starts fresh.</p>
             </fieldset>
           </div>
@@ -857,6 +859,16 @@ var DAY_MS = 86400000;
 var KINDS = { task: 'Task', study: 'Study', assignment: 'Assignment', exam: 'Exam', quiz: 'Quiz', reminder: 'Reminder' };
 var TESTS = { exam: true, quiz: true };
 var PRIO_TEXT = { high: 'High priority. ', normal: '', low: 'Low priority. ' };
+var SHEET_NAME_OF = { text: 'title', doneOn: 'done_on' };            // local field → sheet column (others match)
+var EDITABLE = ['title', 'course', 'priority', 'day', 'due', 'context', 'minutes'];   // fields that count as a manual edit
+function sheetName(k) { return SHEET_NAME_OF[k] || k; }
+function fieldList(v, allowed) {
+  var a = Array.isArray(v) ? v : String(v || '').split(',');
+  var out = [];
+  a.forEach(function (x) { x = String(x).trim(); if (allowed.indexOf(x) >= 0 && out.indexOf(x) < 0) out.push(x); });
+  return out;
+}
+function union(a, b) { var out = (a || []).slice(); (b || []).forEach(function (x) { if (out.indexOf(x) < 0) out.push(x); }); return out; }
 var SYNC_URL_RE = /^https:\/\/script\.google\.com\/(a\/macros\/[^\/\s]+|macros)\/s\/[A-Za-z0-9_-]+\/exec$/;
 
 function pad(n) { return (n < 10 ? '0' : '') + n; }
@@ -913,12 +925,17 @@ function normTask(t) {
     doneOn: status === 'done' ? doneOn : '',
     updated: String(t.updated || ''), updatedBy: String(t.updatedBy || t.updated_by || 'room'),
     created: String(t.created || ''), briefDate: asDay(t.briefDate) || asDay(t.brief_date),
+    edited: fieldList(t.edited, EDITABLE),
+    changed: fieldList(t.changed, EDITABLE.concat(['status', 'studied', 'done_on', 'kind', 'edited'])),
     dirty: !!t.dirty, synced: !!t.synced, rev: Number(t.rev) || 0
   };
 }
 function toRow(t) {
-  return { id: t.id, status: t.status, title: t.text, course: t.course, kind: t.kind, day: t.day, due: t.due, context: t.context, priority: t.priority,
-    minutes: t.minutes || '', studied: t.studied || 0, source: t.source, done_on: t.doneOn, updated: t.updated, updated_by: t.updatedBy, created: t.created, brief_date: t.briefDate };
+  var row = { id: t.id, status: t.status, title: t.text, course: t.course, kind: t.kind, day: t.day, due: t.due, context: t.context, priority: t.priority,
+    minutes: t.minutes || '', studied: t.studied || 0, source: t.source, done_on: t.doneOn, updated: t.updated, updated_by: t.updatedBy, created: t.created, brief_date: t.briefDate,
+    edited: t.edited.join(',') };
+  if (t.synced && t.changed.length) row.changed = t.changed.slice();   // the sheet already has this task: send only what changed here
+  return row;
 }
 /* Where a task belongs in the notebook today: 'today', 'upcoming', 'completed' or '' (hidden). */
 function placeOf(t, today) {
@@ -1011,7 +1028,7 @@ class Component extends DCLogic {
       activeTask: typeof saved.activeTask === 'string' ? saved.activeTask : null,
       light: saved.light === 'dim' ? 'dim' : 'warm',
       sky: saved.sky === 'lake' ? 'lake' : 'clear',
-      settings: { focus: clampInt(st.focus, 1, 180, 25), short: clampInt(st.short, 1, 60, 5), long: clampInt(st.long, 1, 90, 15), sound: st.sound !== false },
+      settings: { focus: clampInt(st.focus, 1, 180, 25), short: clampInt(st.short, 1, 60, 5), long: clampInt(st.long, 1, 90, 15), sound: st.sound !== false, notify: st.notify === true },
       sync: { url: SYNC_URL_RE.test(sync.url || '') ? sync.url : '', key: typeof sync.key === 'string' ? sync.key : '' },
       lastSync: typeof saved.lastSync === 'string' ? saved.lastSync : '',
       syncState: 'idle', syncError: '', syncTestMsg: '',
@@ -1049,6 +1066,23 @@ class Component extends DCLogic {
     try { window.addEventListener('online', this.onOnline); } catch (e) {}
     this.tick();
     this.scheduleSync(300);
+    this.handleLaunchAction();
+  }
+  /* Windows taskbar / Start-menu shortcuts open the app with ?open=… or ?focus=start */
+  handleLaunchAction() {
+    try {
+      if (typeof location === 'undefined' || !location.search) return;
+      var q = new URLSearchParams(location.search), self = this;
+      var open = q.get('open'), focus = q.get('focus');
+      if (!open && !focus) return;
+      if (window.history && history.replaceState) history.replaceState(null, '', location.pathname);
+      setTimeout(function () {
+        if (open === 'notebook') self.openDialog('notebook');
+        else if (open === 'log') self.openDrawer('history');
+        else if (open === 'settings') self.openSettings(null);
+        if (focus === 'start' && !self.state.running) { if (self.state.mode !== 'focus') self.setMode('focus'); self.toggle(); }
+      }, 120);
+    } catch (e) {}
   }
   componentWillUnmount() {
     clearInterval(this.iv); clearInterval(this.syncIv); clearTimeout(this.toastT); clearTimeout(this.syncT);
@@ -1090,7 +1124,7 @@ class Component extends DCLogic {
   backupJson() {
     var d = this.exportData();
     delete d.timer; delete d.sync; delete d.lastSync;
-    d.tasks = d.tasks.map(function (t) { var c = Object.assign({}, t); delete c.dirty; delete c.synced; delete c.rev; return c; });
+    d.tasks = d.tasks.map(function (t) { var c = Object.assign({}, t); delete c.dirty; delete c.synced; delete c.rev; delete c.changed; return c; });
     d.app = 'midnight-study-room'; d.exportedAt = new Date().toISOString();
     return JSON.stringify(d);
   }
@@ -1190,6 +1224,31 @@ class Component extends DCLogic {
     this.setState({ toast: { text: text } });
     this.toastT = setTimeout(function () { self.setState({ toast: null }); }, 12000);
     if (sound && this.state.settings.sound) this.chime();
+    if (sound && this.state.settings.notify) this.systemNotify(text);
+  }
+  /* A Windows notification, only when the room is hidden (minimized or behind Canvas). */
+  systemNotify(text) {
+    try {
+      if (typeof document === 'undefined' || !document.hidden) return;
+      if (typeof Notification === 'undefined' || Notification.permission !== 'granted') return;
+      var opts = { body: text, icon: 'icons/icon-192.png', badge: 'icons/icon-48.png', tag: 'msr-timer', renotify: true, silent: true };
+      if (navigator.serviceWorker && navigator.serviceWorker.ready) {
+        navigator.serviceWorker.ready.then(function (r) { r.showNotification('Midnight Study Room', opts); }).catch(function () { try { new Notification('Midnight Study Room', opts); } catch (e) {} });
+      } else { new Notification('Midnight Study Room', opts); }
+    } catch (e) {}
+  }
+  toggleNotifyDraft() {
+    var self = this, sd = this.state.sd || {};
+    if (sd.notify) { this.setSd({ notify: false }); this.setState({ notifyMsg: '' }); return; }
+    if (typeof Notification === 'undefined') { this.setState({ notifyMsg: 'Notifications work in the installed app or the website, not inside this preview.' }); return; }
+    if (Notification.permission === 'granted') { this.setSd({ notify: true }); this.setState({ notifyMsg: '' }); return; }
+    if (Notification.permission === 'denied') { this.setState({ notifyMsg: 'Notifications are blocked for this site. Allow them in Edge: click the lock icon in the address bar → Permissions → Notifications.' }); return; }
+    try {
+      Promise.resolve(Notification.requestPermission()).then(function (p) {
+        if (p === 'granted') { self.setSd({ notify: true }); self.setState({ notifyMsg: 'Notifications allowed. Press Save settings to keep this.' }); }
+        else self.setState({ notifyMsg: 'Notifications weren’t allowed, so the room will only chime.' });
+      });
+    } catch (e) { this.setState({ notifyMsg: 'This window can’t show notifications.' }); }
   }
   ensureAudio() {
     try {
@@ -1239,8 +1298,8 @@ class Component extends DCLogic {
   openSettings(focusId) {
     var s = this.state;
     this.remember();
-    var sd = { links: Object.assign({}, s.links), apps: Object.assign({}, s.apps), focus: String(s.settings.focus), short: String(s.settings.short), long: String(s.settings.long), sound: s.settings.sound, syncUrl: s.sync.url, syncKey: s.sync.key };
-    this.setState({ dialog: 'settings', drawer: null, edit: null, sd: sd, sdErrors: {}, syncTestMsg: '',
+    var sd = { links: Object.assign({}, s.links), apps: Object.assign({}, s.apps), focus: String(s.settings.focus), short: String(s.settings.short), long: String(s.settings.long), sound: s.settings.sound, notify: s.settings.notify, syncUrl: s.sync.url, syncKey: s.sync.key };
+    this.setState({ dialog: 'settings', drawer: null, edit: null, sd: sd, sdErrors: {}, syncTestMsg: '', notifyMsg: '',
       focusField: focusId ? 'url-' + focusId : null,
       settingsNotice: focusId ? BOOK[focusId].name + ' doesn’t have a Canvas link yet. Paste the course link below, then save.' : '' });
   }
@@ -1267,11 +1326,11 @@ class Component extends DCLogic {
       return;
     }
     var st = this.state.settings;
-    var settings = { focus: clampInt(sd.focus, 1, 180, st.focus), short: clampInt(sd.short, 1, 60, st.short), long: clampInt(sd.long, 1, 90, st.long), sound: !!sd.sound };
+    var settings = { focus: clampInt(sd.focus, 1, 180, st.focus), short: clampInt(sd.short, 1, 60, st.short), long: clampInt(sd.long, 1, 90, st.long), sound: !!sd.sound, notify: !!sd.notify };
     var syncChanged = sy.url !== this.state.sync.url || sy.key !== this.state.sync.key;
     this.setState({ links: links, apps: apps, settings: settings, sync: { url: sy.url, key: sy.key }, dialog: null, sd: null, sdErrors: {}, settingsNotice: '', focusField: null, status: 'Settings saved.',
       syncState: sy.url ? (syncChanged ? 'idle' : this.state.syncState) : 'idle', syncError: '' });
-    if (sy.url && syncChanged) this.scheduleSync(100);
+    if (sy.url && syncChanged) this.scheduleSync(100, { url: sy.url, key: sy.key });
   }
   testSync() {
     var self = this, sy = this.checkSyncDraft(this.state.sd || {});
@@ -1285,14 +1344,18 @@ class Component extends DCLogic {
 
   /* ---------- tasks ---------- */
   findTask(id) { return this.state.tasks.filter(function (t) { return t.id === id; })[0] || null; }
-  withTask(id, patch) {
+  withTask(id, patch, manual) {
     return this.state.tasks.map(function (t) {
       if (t.id !== id) return t;
-      return Object.assign({}, t, patch, { updated: isoNow(), updatedBy: 'room', dirty: true, rev: (t.rev || 0) + 1 });
+      var changed = union(t.changed, Object.keys(patch).map(sheetName));
+      var edited = manual && manual.length ? union(t.edited, manual) : t.edited;
+      if (edited.length !== t.edited.length) changed = union(changed, ['edited']);
+      return Object.assign({}, t, patch, { edited: edited, changed: changed, updated: isoNow(), updatedBy: 'room', dirty: true, rev: (t.rev || 0) + 1 });
     });
   }
-  changeTask(id, patch, extra) {
-    this.setState(Object.assign({ tasks: this.withTask(id, patch) }, extra || {}));
+  /* manual = the sheet fields Lia changed by hand (only from the editor or "Move to tomorrow"). */
+  changeTask(id, patch, extra, manual) {
+    this.setState(Object.assign({ tasks: this.withTask(id, patch, manual) }, extra || {}));
     this.scheduleSync();
   }
   addTask(e) {
@@ -1330,20 +1393,26 @@ class Component extends DCLogic {
     var ed = this.state.edit; if (!ed) return;
     var text = (ed.text || '').trim();
     if (!text) { this.setState({ editErr: 'A task needs a few words.' }); return; }
-    this.changeTask(ed.id, { text: text.slice(0, 160), course: BOOK[ed.course] ? ed.course : '', priority: (ed.priority === 'high' || ed.priority === 'low') ? ed.priority : 'normal',
-      day: asDay(ed.day), due: asDay(ed.due), minutes: clampInt(ed.minutes, 0, 600, 0), context: String(ed.context || '').trim().slice(0, 120) }, { edit: null });
+    var next = { text: text.slice(0, 160), course: BOOK[ed.course] ? ed.course : '', priority: (ed.priority === 'high' || ed.priority === 'low') ? ed.priority : 'normal',
+      day: asDay(ed.day), due: asDay(ed.due), minutes: clampInt(ed.minutes, 0, 600, 0), context: String(ed.context || '').trim().slice(0, 120) };
+    var cur = this.findTask(ed.id) || {}, patch = {};
+    Object.keys(next).forEach(function (k) { if (next[k] !== cur[k]) patch[k] = next[k]; });
+    if (!Object.keys(patch).length) { this.setState({ edit: null, editErr: '' }); return; }   // nothing changed: the task stays untouched
+    this.changeTask(ed.id, patch, { edit: null }, Object.keys(patch).map(sheetName));
   }
   moveTomorrow() {
     var ed = this.state.edit; if (!ed) return;
     var t = this.findTask(ed.id); if (!t) return;
     var base = t.day && t.day > dayKey() ? t.day : dayKey();
-    this.changeTask(ed.id, { day: addDays(base, 1) }, { edit: null, status: '“' + t.text + '” moved to ' + shortDay(addDays(base, 1), dayKey()) + '.' });
+    this.changeTask(ed.id, { day: addDays(base, 1) }, { edit: null, status: '“' + t.text + '” moved to ' + shortDay(addDays(base, 1), dayKey()) + '.' }, ['day']);
   }
 
   /* ---------- Morning Brief sync (Google Sheet through your Apps Script connector) ---------- */
   syncConfigured() { var c = this.state.sync; return !!(c && c.url && c.key); }
-  scheduleSync(delay) {
-    if (!this.syncConfigured()) return;
+  /* cfg: pass the new connection right after saving it (React applies saved settings a moment later). */
+  scheduleSync(delay, cfg) {
+    var c = cfg || this.state.sync;
+    if (!c || !c.url || !c.key) return;
     clearTimeout(this.syncT);
     var self = this;
     this.syncT = setTimeout(function () { self.syncNow(); }, delay == null ? 1500 : delay);
@@ -1393,7 +1462,7 @@ class Component extends DCLogic {
       seen[rt.id] = true;
       var lt = local[rt.id];
       if (lt && lt.dirty && revs[lt.id] !== lt.rev) { out.push(lt); return; }
-      rt.synced = true; rt.dirty = false; rt.rev = lt ? lt.rev : 0;
+      rt.synced = true; rt.dirty = false; rt.changed = []; rt.rev = lt ? lt.rev : 0;
       out.push(rt);
     });
     cur.forEach(function (lt) { if (!seen[lt.id] && (lt.dirty || !lt.synced)) out.push(lt); });
@@ -1625,6 +1694,7 @@ class Component extends DCLogic {
       onShortMin: function (e) { self.setSd({ short: e.target.value }); },
       onLongMin: function (e) { self.setSd({ long: e.target.value }); },
       onSound: function () { self.setSd({ sound: !sd.sound }); },
+      onNotify: function () { self.toggleNotifyDraft(); }, notifyMsg: s.notifyMsg || '',
       testChime: function () { self.ensureAudio(); self.chime(); },
       saveSettings: function (e) { self.saveSettings(e); },
       storageText: this.storage ? 'Everything here is saved in this browser only (localStorage). It won’t follow you to another device.' : 'This preview can’t save to browser storage, so changes last only until the page reloads.'

@@ -1,4 +1,6 @@
-# Midnight Study Room: standalone website (Stages 1–2)
+# Midnight Study Room: website and Windows app (Stages 1–3)
+
+**New in Stage 3:** install the room as a Windows app. See **STAGE-3-INSTALL.md**.
 
 **New in Stage 2:** the notebook connects to your Morning Brief. After publishing (Part 1 below), follow **STAGE-2-SETUP.md**.
 

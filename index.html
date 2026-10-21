@@ -6,7 +6,11 @@
 <title>Midnight Study Room</title>
 <meta name="theme-color" content="#1C2346">
 <meta name="description" content="Lia's enchanted study room: focus timer, course bookshelf, and daily notebook.">
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,500;0,600;1,500&amp;family=DM+Sans:opsz,wght@9..40,400;9..40,500;9..40,600&amp;family=JetBrains+Mono:wght@500&amp;display=swap">
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="icon" href="icons/icon.svg" type="image/svg+xml">
+<link rel="icon" href="icons/icon-32.png" sizes="32x32" type="image/png">
+<link rel="apple-touch-icon" href="icons/icon-180.png">
+<link rel="stylesheet" href="fonts/fonts.css">
 <style>
 body{margin:0;background:#141A33}
 .room *{box-sizing:border-box}
@@ -154,6 +158,7 @@ body{margin:0;background:#141A33}
 @media (prefers-reduced-motion: reduce){.tw,.drift,.glow,.shimmer,.fadein,.leaf,.tray,.dlg,.scrim,.toast{animation:none!important}.spine,.drawer,.veil,.wash{transition:none!important}.shoot{display:none}}
 </style>
 <link rel="stylesheet" href="stage.css">
+<script src="pwa.js"></script>
 </head>
 <body>
 <noscript><p>The Midnight Study Room needs JavaScript turned on.</p></noscript>
@@ -635,6 +640,8 @@ body{margin:0;background:#141A33}
                 <label class="task-label" style="flex: 1;"><input type="checkbox" checked="{{sd.sound}}" onChange="{{onSound}}"><span style="font-size: 15px;">Play a soft chime when a block ends</span></label>
                 <button type="button" class="text-btn" onClick="{{testChime}}">Test chime</button>
               </div>
+              <label class="task-label"><input type="checkbox" checked="{{sd.notify}}" onChange="{{onNotify}}"><span style="font-size: 15px;">Also show a Windows notification when a block ends while the room is minimized</span></label>
+              <sc-if value="{{notifyMsg}}" hint-placeholder-val="{{ false }}"><p role="status" style="margin: 0; font-size: 13px; line-height: 1.5; color: #3A3760;">{{notifyMsg}}</p></sc-if>
               <p style="margin: 0; font-size: 13px; line-height: 1.5; color: #3A3760;">New lengths apply the next time the timer starts fresh.</p>
             </fieldset>
           </div>
@@ -1043,7 +1050,7 @@ class Component extends DCLogic {
       activeTask: typeof saved.activeTask === 'string' ? saved.activeTask : null,
       light: saved.light === 'dim' ? 'dim' : 'warm',
       sky: saved.sky === 'lake' ? 'lake' : 'clear',
-      settings: { focus: clampInt(st.focus, 1, 180, 25), short: clampInt(st.short, 1, 60, 5), long: clampInt(st.long, 1, 90, 15), sound: st.sound !== false },
+      settings: { focus: clampInt(st.focus, 1, 180, 25), short: clampInt(st.short, 1, 60, 5), long: clampInt(st.long, 1, 90, 15), sound: st.sound !== false, notify: st.notify === true },
       sync: { url: SYNC_URL_RE.test(sync.url || '') ? sync.url : '', key: typeof sync.key === 'string' ? sync.key : '' },
       lastSync: typeof saved.lastSync === 'string' ? saved.lastSync : '',
       syncState: 'idle', syncError: '', syncTestMsg: '',
@@ -1081,6 +1088,23 @@ class Component extends DCLogic {
     try { window.addEventListener('online', this.onOnline); } catch (e) {}
     this.tick();
     this.scheduleSync(300);
+    this.handleLaunchAction();
+  }
+  /* Windows taskbar / Start-menu shortcuts open the app with ?open=… or ?focus=start */
+  handleLaunchAction() {
+    try {
+      if (typeof location === 'undefined' || !location.search) return;
+      var q = new URLSearchParams(location.search), self = this;
+      var open = q.get('open'), focus = q.get('focus');
+      if (!open && !focus) return;
+      if (window.history && history.replaceState) history.replaceState(null, '', location.pathname);
+      setTimeout(function () {
+        if (open === 'notebook') self.openDialog('notebook');
+        else if (open === 'log') self.openDrawer('history');
+        else if (open === 'settings') self.openSettings(null);
+        if (focus === 'start' && !self.state.running) { if (self.state.mode !== 'focus') self.setMode('focus'); self.toggle(); }
+      }, 120);
+    } catch (e) {}
   }
   componentWillUnmount() {
     clearInterval(this.iv); clearInterval(this.syncIv); clearTimeout(this.toastT); clearTimeout(this.syncT);
@@ -1222,6 +1246,31 @@ class Component extends DCLogic {
     this.setState({ toast: { text: text } });
     this.toastT = setTimeout(function () { self.setState({ toast: null }); }, 12000);
     if (sound && this.state.settings.sound) this.chime();
+    if (sound && this.state.settings.notify) this.systemNotify(text);
+  }
+  /* A Windows notification, only when the room is hidden (minimized or behind Canvas). */
+  systemNotify(text) {
+    try {
+      if (typeof document === 'undefined' || !document.hidden) return;
+      if (typeof Notification === 'undefined' || Notification.permission !== 'granted') return;
+      var opts = { body: text, icon: 'icons/icon-192.png', badge: 'icons/icon-48.png', tag: 'msr-timer', renotify: true, silent: true };
+      if (navigator.serviceWorker && navigator.serviceWorker.ready) {
+        navigator.serviceWorker.ready.then(function (r) { r.showNotification('Midnight Study Room', opts); }).catch(function () { try { new Notification('Midnight Study Room', opts); } catch (e) {} });
+      } else { new Notification('Midnight Study Room', opts); }
+    } catch (e) {}
+  }
+  toggleNotifyDraft() {
+    var self = this, sd = this.state.sd || {};
+    if (sd.notify) { this.setSd({ notify: false }); this.setState({ notifyMsg: '' }); return; }
+    if (typeof Notification === 'undefined') { this.setState({ notifyMsg: 'Notifications work in the installed app or the website, not inside this preview.' }); return; }
+    if (Notification.permission === 'granted') { this.setSd({ notify: true }); this.setState({ notifyMsg: '' }); return; }
+    if (Notification.permission === 'denied') { this.setState({ notifyMsg: 'Notifications are blocked for this site. Allow them in Edge: click the lock icon in the address bar → Permissions → Notifications.' }); return; }
+    try {
+      Promise.resolve(Notification.requestPermission()).then(function (p) {
+        if (p === 'granted') { self.setSd({ notify: true }); self.setState({ notifyMsg: 'Notifications allowed. Press Save settings to keep this.' }); }
+        else self.setState({ notifyMsg: 'Notifications weren’t allowed, so the room will only chime.' });
+      });
+    } catch (e) { this.setState({ notifyMsg: 'This window can’t show notifications.' }); }
   }
   ensureAudio() {
     try {
@@ -1271,8 +1320,8 @@ class Component extends DCLogic {
   openSettings(focusId) {
     var s = this.state;
     this.remember();
-    var sd = { links: Object.assign({}, s.links), apps: Object.assign({}, s.apps), focus: String(s.settings.focus), short: String(s.settings.short), long: String(s.settings.long), sound: s.settings.sound, syncUrl: s.sync.url, syncKey: s.sync.key };
-    this.setState({ dialog: 'settings', drawer: null, edit: null, sd: sd, sdErrors: {}, syncTestMsg: '',
+    var sd = { links: Object.assign({}, s.links), apps: Object.assign({}, s.apps), focus: String(s.settings.focus), short: String(s.settings.short), long: String(s.settings.long), sound: s.settings.sound, notify: s.settings.notify, syncUrl: s.sync.url, syncKey: s.sync.key };
+    this.setState({ dialog: 'settings', drawer: null, edit: null, sd: sd, sdErrors: {}, syncTestMsg: '', notifyMsg: '',
       focusField: focusId ? 'url-' + focusId : null,
       settingsNotice: focusId ? BOOK[focusId].name + ' doesn’t have a Canvas link yet. Paste the course link below, then save.' : '' });
   }
@@ -1299,11 +1348,11 @@ class Component extends DCLogic {
       return;
     }
     var st = this.state.settings;
-    var settings = { focus: clampInt(sd.focus, 1, 180, st.focus), short: clampInt(sd.short, 1, 60, st.short), long: clampInt(sd.long, 1, 90, st.long), sound: !!sd.sound };
+    var settings = { focus: clampInt(sd.focus, 1, 180, st.focus), short: clampInt(sd.short, 1, 60, st.short), long: clampInt(sd.long, 1, 90, st.long), sound: !!sd.sound, notify: !!sd.notify };
     var syncChanged = sy.url !== this.state.sync.url || sy.key !== this.state.sync.key;
     this.setState({ links: links, apps: apps, settings: settings, sync: { url: sy.url, key: sy.key }, dialog: null, sd: null, sdErrors: {}, settingsNotice: '', focusField: null, status: 'Settings saved.',
       syncState: sy.url ? (syncChanged ? 'idle' : this.state.syncState) : 'idle', syncError: '' });
-    if (sy.url && syncChanged) this.scheduleSync(100);
+    if (sy.url && syncChanged) this.scheduleSync(100, { url: sy.url, key: sy.key });
   }
   testSync() {
     var self = this, sy = this.checkSyncDraft(this.state.sd || {});
@@ -1382,8 +1431,10 @@ class Component extends DCLogic {
 
   /* ---------- Morning Brief sync (Google Sheet through your Apps Script connector) ---------- */
   syncConfigured() { var c = this.state.sync; return !!(c && c.url && c.key); }
-  scheduleSync(delay) {
-    if (!this.syncConfigured()) return;
+  /* cfg: pass the new connection right after saving it (React applies saved settings a moment later). */
+  scheduleSync(delay, cfg) {
+    var c = cfg || this.state.sync;
+    if (!c || !c.url || !c.key) return;
     clearTimeout(this.syncT);
     var self = this;
     this.syncT = setTimeout(function () { self.syncNow(); }, delay == null ? 1500 : delay);
@@ -1665,6 +1716,7 @@ class Component extends DCLogic {
       onShortMin: function (e) { self.setSd({ short: e.target.value }); },
       onLongMin: function (e) { self.setSd({ long: e.target.value }); },
       onSound: function () { self.setSd({ sound: !sd.sound }); },
+      onNotify: function () { self.toggleNotifyDraft(); }, notifyMsg: s.notifyMsg || '',
       testChime: function () { self.ensureAudio(); self.chime(); },
       saveSettings: function (e) { self.saveSettings(e); },
       storageText: this.storage ? 'Everything here is saved in this browser only (localStorage). It won’t follow you to another device.' : 'This preview can’t save to browser storage, so changes last only until the page reloads.'
