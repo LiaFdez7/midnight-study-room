@@ -39,6 +39,7 @@ page = f'''<!doctype html>
 <link rel="apple-touch-icon" href="icons/icon-180.png">
 {helmet}
 <link rel="stylesheet" href="stage.css">
+<link rel="stylesheet" href="enchanted-room.css">
 <script src="pwa.js"></script>
 </head>
 <body>
@@ -67,6 +68,8 @@ page = f'''<!doctype html>
 
 DCRuntime.mount(Component, document.getElementById('room-mount'));
 </script>
+<script src="room-worlds-core.js"></script>
+<script src="enchanted-room.js"></script>
 </body>
 </html>
 '''
@@ -79,14 +82,24 @@ for f in ('dc-runtime.js', 'stage.css', 'stage.js', 'pwa.js', 'manifest.webmanif
     shutil.copy(here / f, out / f)
 for f in ('react.production.min.js', 'react-dom.production.min.js'):
     shutil.copy(here / 'vendor' / f, out / 'vendor' / f)
-for f in (here / 'fonts').iterdir():
-    shutil.copy(f, out / 'fonts' / f.name)
-for f in (here / 'icons').iterdir():
-    shutil.copy(f, out / 'icons' / f.name)
+for folder in ('fonts', 'icons'):
+    assets = here / folder
+    if not assets.is_dir():
+        assets = here.parent / folder
+    for f in assets.iterdir():
+        target = out / folder / f.name
+        if f.resolve() != target.resolve():
+            shutil.copy(f, target)
+for name in ('room-worlds-core.js', 'enchanted-room.js', 'enchanted-room.css'):
+    asset = here.parent / name
+    target = out / name
+    if asset.resolve() != target.resolve():
+        shutil.copy(asset, target)
 
 # Offline copy list + a version stamp that changes whenever any of these files change.
 shell = ['./', 'index.html', 'stage.css', 'stage.js', 'dc-runtime.js', 'pwa.js', 'manifest.webmanifest',
-         'vendor/react.production.min.js', 'vendor/react-dom.production.min.js', 'fonts/fonts.css']
+         'vendor/react.production.min.js', 'vendor/react-dom.production.min.js', 'fonts/fonts.css',
+         'room-worlds-core.js', 'enchanted-room.js', 'enchanted-room.css']
 shell += sorted('fonts/' + f.name for f in (out / 'fonts').glob('*.woff2'))
 shell += ['icons/icon.svg', 'icons/icon-32.png', 'icons/icon-48.png', 'icons/icon-192.png', 'icons/icon-512.png', 'icons/icon-maskable-192.png', 'icons/icon-maskable-512.png']
 h = hashlib.sha256()
