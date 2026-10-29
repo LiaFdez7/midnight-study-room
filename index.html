@@ -464,7 +464,8 @@ body{margin:0;background:#141A33}
       <ul aria-label="Today’s tasks" style="flex: 1; min-height: 0; margin: 0; padding: 0 2px 0 0; list-style: none; overflow-y: auto;">
         <sc-for list="{{deskTasks}}" as="t" hint-placeholder-count="0">
           <li class="task2" data-done="{{t.done}}" data-active="{{t.active}}">
-            <input type="checkbox" class="t-check" checked="{{t.done}}" onChange="{{t.toggle}}" aria-label="Done: {{t.text}}">
+            <sc-if value="{{t.standardCheck}}" hint-placeholder-val="{{ true }}"><input type="checkbox" class="t-check" checked="{{t.done}}" onChange="{{t.toggle}}" aria-label="Done: {{t.text}}"></sc-if>
+              <sc-if value="{{t.assignmentAction}}" hint-placeholder-val="{{ false }}"><button type="button" class="text-btn" onClick="{{t.toggle}}" aria-label="{{t.assignmentActionLabel}}: {{t.text}}">{{t.assignmentActionLabel}}</button></sc-if>
             <div class="t-body">
               <button type="button" class="t-title" aria-pressed="{{t.active}}" aria-label="{{t.prioText}}{{t.studyLabel}}" onClick="{{t.study}}"><span class="prio" data-p="{{t.priority}}"></span><span class="t-text">{{t.text}}</span></button>
               <p class="t-meta"><span class="t-dot" aria-hidden="true" style="background: {{t.courseBg}};"></span>{{t.meta}}</p>
@@ -723,7 +724,7 @@ body{margin:0;background:#141A33}
       </div>
 
       <sc-if value="{{editing}}" hint-placeholder-val="{{ false }}">
-        <form class="t-editor" onSubmit="{{saveEdit}}" onKeyDown="{{editKey}}" aria-label="Edit task">
+        <form class="t-editor" style="overflow-y: auto; max-height: 590px; flex-shrink: 0;" onSubmit="{{saveEdit}}" onKeyDown="{{editKey}}" aria-label="Edit task">
           <div style="display: flex; flex-direction: column; gap: 5px;">
             <label for="ed-title" class="f-label">Task</label>
             <input id="ed-title" class="field" type="text" maxlength="160" value="{{ed.text}}" onChange="{{onEdText}}">
@@ -738,6 +739,25 @@ body{margin:0;background:#141A33}
             <div style="display: flex; flex-direction: column; gap: 5px;"><label for="ed-min" class="f-label">Planned minutes</label><input id="ed-min" class="field" type="text" inputmode="numeric" value="{{ed.minutes}}" onChange="{{onEdMin}}"></div>
             <div style="display: flex; flex-direction: column; gap: 5px;"><label for="ed-ctx" class="f-label">Note</label><input id="ed-ctx" class="field" type="text" maxlength="120" placeholder="e.g. Quiz Thursday" value="{{ed.context}}" onChange="{{onEdCtx}}"></div>
           </div>
+          <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px;">
+            <div><label for="ed-kind" class="f-label">Type</label><select id="ed-kind" class="field" value="{{ed.kind}}" onChange="{{onEdKind}}"><option value="task">Task</option><option value="study">Study</option><option value="assignment">Assignment</option><option value="exam">Exam</option><option value="quiz">Quiz</option><option value="reminder">Reminder</option></select></div>
+            <sc-if value="{{edAssignment}}" hint-placeholder-val="{{ false }}"><div><label for="ed-workflow" class="f-label">Assignment status</label><select id="ed-workflow" class="field" value="{{ed.workflow}}" onChange="{{onEdWorkflow}}"><option value="">Legacy completion · unconfirmed</option><option value="not_started">Not started</option><option value="in_progress">In progress</option><option value="ready">Ready to submit</option><option value="submitted">Submitted · I confirm</option></select></div></sc-if>
+          </div>
+          <sc-if value="{{edAssignment}}" hint-placeholder-val="{{ false }}">
+            <p class="t-meta">Choose Submitted only after you submit. This is your confirmation, not a Canvas verification.</p>
+            <label for="ed-receipt" class="f-label">Receipt link (optional)</label><input id="ed-receipt" class="field" type="text" value="{{ed.receipt}}" onChange="{{onEdReceipt}}">
+          </sc-if>
+          <h3 class="nb-h">Mini-steps</h3>
+          <p class="t-meta">Step completion never submits the assignment. These details stay in this browser and your backups.</p>
+          <sc-for list="{{edSteps}}" as="step" hint-placeholder-count="0">
+            <div style="display: grid; grid-template-columns: 24px 1fr 80px auto; align-items: center; gap: 8px;">
+              <input type="checkbox" checked="{{step.done}}" onChange="{{step.toggle}}" aria-label="Complete step {{step.number}}">
+              <input class="field" type="text" maxlength="160" value="{{step.text}}" onChange="{{step.change}}" aria-label="Step {{step.number}} name">
+              <input class="field" type="number" min="0" max="600" value="{{step.minutes}}" onChange="{{step.estimate}}" aria-label="Step {{step.number}} estimated minutes">
+              <button class="text-btn" type="button" onClick="{{step.remove}}" aria-label="Remove step {{step.number}}">Remove</button>
+            </div>
+          </sc-for>
+          <button type="button" class="btn-ink" onClick="{{addStep}}">Add mini-step</button>
           <sc-if value="{{editErr}}" hint-placeholder-val="{{ false }}"><p class="f-err" role="alert">{{editErr}}</p></sc-if>
           <div style="display: flex; align-items: center; gap: 10px; flex-wrap: wrap;">
             <button type="submit" class="btn-solid">Save</button>
@@ -765,11 +785,17 @@ body{margin:0;background:#141A33}
           <sc-for list="{{todayOpen}}" as="t" hint-placeholder-count="0">
             <li class="task2" data-done="{{t.done}}" data-active="{{t.active}}">
               <sc-if value="{{t.dateLabel}}" hint-placeholder-val="{{ false }}"><span class="t-date">{{t.dateLabel}}</span></sc-if>
-              <sc-if value="{{t.checkable}}" hint-placeholder-val="{{ true }}"><input type="checkbox" class="t-check" checked="{{t.done}}" onChange="{{t.toggle}}" aria-label="Done: {{t.text}}"></sc-if>
+              <sc-if value="{{t.checkable}}" hint-placeholder-val="{{ true }}"><sc-if value="{{t.standardCheck}}" hint-placeholder-val="{{ true }}"><input type="checkbox" class="t-check" checked="{{t.done}}" onChange="{{t.toggle}}" aria-label="Done: {{t.text}}"></sc-if>
+              <sc-if value="{{t.assignmentAction}}" hint-placeholder-val="{{ false }}"><button type="button" class="text-btn" onClick="{{t.toggle}}" aria-label="{{t.assignmentActionLabel}}: {{t.text}}">{{t.assignmentActionLabel}}</button></sc-if></sc-if>
               <sc-if value="{{t.notCheckable}}" hint-placeholder-val="{{ false }}"><span class="t-check-space" aria-hidden="true"></span></sc-if>
               <div class="t-body">
                 <button type="button" class="t-title" aria-pressed="{{t.active}}" aria-label="{{t.prioText}}{{t.studyLabel}}" onClick="{{t.study}}"><span class="prio" data-p="{{t.priority}}"></span><span class="t-text">{{t.text}}</span></button>
                 <p class="t-meta"><span class="t-dot" aria-hidden="true" style="background: {{t.courseBg}};"></span>{{t.meta}}</p>
+                <sc-for list="{{t.steps}}" as="step" hint-placeholder-count="0">
+                  <label class="task-label" style="gap: 8px; font-size: 14px;"><input type="checkbox" checked="{{step.done}}" onChange="{{step.toggle}}"><span>{{step.text}} · {{step.minutesLabel}}</span></label>
+                </sc-for>
+                <sc-if value="{{t.submittedAtLabel}}" hint-placeholder-val="{{ false }}"><p class="t-meta">{{t.submittedAtLabel}}</p></sc-if>
+                <sc-if value="{{t.receipt}}" hint-placeholder-val="{{ false }}"><a href="{{t.receipt}}" target="_blank" rel="noopener noreferrer" class="text-btn">Open receipt</a></sc-if>
               </div>
               <button type="button" class="icon-btn" aria-label="Edit task: {{t.text}}" onClick="{{t.edit}}"><svg aria-hidden="true" width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round"><path d="M3 13 L3.6 10.4 L10.6 3.4 L12.6 5.4 L5.6 12.4 Z"></path></svg></button>
               <button type="button" class="icon-btn" aria-label="Dismiss task: {{t.text}}" onClick="{{t.dismiss}}"><svg aria-hidden="true" width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round"><path d="M4 4 L12 12 M12 4 L4 12"></path></svg></button>
@@ -782,11 +808,17 @@ body{margin:0;background:#141A33}
           <sc-for list="{{upcoming}}" as="t" hint-placeholder-count="0">
             <li class="task2" data-done="{{t.done}}" data-active="{{t.active}}">
               <sc-if value="{{t.dateLabel}}" hint-placeholder-val="{{ false }}"><span class="t-date">{{t.dateLabel}}</span></sc-if>
-              <sc-if value="{{t.checkable}}" hint-placeholder-val="{{ true }}"><input type="checkbox" class="t-check" checked="{{t.done}}" onChange="{{t.toggle}}" aria-label="Done: {{t.text}}"></sc-if>
+              <sc-if value="{{t.checkable}}" hint-placeholder-val="{{ true }}"><sc-if value="{{t.standardCheck}}" hint-placeholder-val="{{ true }}"><input type="checkbox" class="t-check" checked="{{t.done}}" onChange="{{t.toggle}}" aria-label="Done: {{t.text}}"></sc-if>
+              <sc-if value="{{t.assignmentAction}}" hint-placeholder-val="{{ false }}"><button type="button" class="text-btn" onClick="{{t.toggle}}" aria-label="{{t.assignmentActionLabel}}: {{t.text}}">{{t.assignmentActionLabel}}</button></sc-if></sc-if>
               <sc-if value="{{t.notCheckable}}" hint-placeholder-val="{{ false }}"><span class="t-check-space" aria-hidden="true"></span></sc-if>
               <div class="t-body">
                 <button type="button" class="t-title" aria-pressed="{{t.active}}" aria-label="{{t.prioText}}{{t.studyLabel}}" onClick="{{t.study}}"><span class="prio" data-p="{{t.priority}}"></span><span class="t-text">{{t.text}}</span></button>
                 <p class="t-meta"><span class="t-dot" aria-hidden="true" style="background: {{t.courseBg}};"></span>{{t.meta}}</p>
+                <sc-for list="{{t.steps}}" as="step" hint-placeholder-count="0">
+                  <label class="task-label" style="gap: 8px; font-size: 14px;"><input type="checkbox" checked="{{step.done}}" onChange="{{step.toggle}}"><span>{{step.text}} · {{step.minutesLabel}}</span></label>
+                </sc-for>
+                <sc-if value="{{t.submittedAtLabel}}" hint-placeholder-val="{{ false }}"><p class="t-meta">{{t.submittedAtLabel}}</p></sc-if>
+                <sc-if value="{{t.receipt}}" hint-placeholder-val="{{ false }}"><a href="{{t.receipt}}" target="_blank" rel="noopener noreferrer" class="text-btn">Open receipt</a></sc-if>
               </div>
               <button type="button" class="icon-btn" aria-label="Edit task: {{t.text}}" onClick="{{t.edit}}"><svg aria-hidden="true" width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round"><path d="M3 13 L3.6 10.4 L10.6 3.4 L12.6 5.4 L5.6 12.4 Z"></path></svg></button>
               <button type="button" class="icon-btn" aria-label="Dismiss task: {{t.text}}" onClick="{{t.dismiss}}"><svg aria-hidden="true" width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round"><path d="M4 4 L12 12 M12 4 L4 12"></path></svg></button>
@@ -799,11 +831,17 @@ body{margin:0;background:#141A33}
           <sc-for list="{{completed}}" as="t" hint-placeholder-count="0">
             <li class="task2" data-done="{{t.done}}" data-active="{{t.active}}">
               <sc-if value="{{t.dateLabel}}" hint-placeholder-val="{{ false }}"><span class="t-date">{{t.dateLabel}}</span></sc-if>
-              <sc-if value="{{t.checkable}}" hint-placeholder-val="{{ true }}"><input type="checkbox" class="t-check" checked="{{t.done}}" onChange="{{t.toggle}}" aria-label="Done: {{t.text}}"></sc-if>
+              <sc-if value="{{t.checkable}}" hint-placeholder-val="{{ true }}"><sc-if value="{{t.standardCheck}}" hint-placeholder-val="{{ true }}"><input type="checkbox" class="t-check" checked="{{t.done}}" onChange="{{t.toggle}}" aria-label="Done: {{t.text}}"></sc-if>
+              <sc-if value="{{t.assignmentAction}}" hint-placeholder-val="{{ false }}"><button type="button" class="text-btn" onClick="{{t.toggle}}" aria-label="{{t.assignmentActionLabel}}: {{t.text}}">{{t.assignmentActionLabel}}</button></sc-if></sc-if>
               <sc-if value="{{t.notCheckable}}" hint-placeholder-val="{{ false }}"><span class="t-check-space" aria-hidden="true"></span></sc-if>
               <div class="t-body">
                 <button type="button" class="t-title" aria-pressed="{{t.active}}" aria-label="{{t.prioText}}{{t.studyLabel}}" onClick="{{t.study}}"><span class="prio" data-p="{{t.priority}}"></span><span class="t-text">{{t.text}}</span></button>
                 <p class="t-meta"><span class="t-dot" aria-hidden="true" style="background: {{t.courseBg}};"></span>{{t.meta}}</p>
+                <sc-for list="{{t.steps}}" as="step" hint-placeholder-count="0">
+                  <label class="task-label" style="gap: 8px; font-size: 14px;"><input type="checkbox" checked="{{step.done}}" onChange="{{step.toggle}}"><span>{{step.text}} · {{step.minutesLabel}}</span></label>
+                </sc-for>
+                <sc-if value="{{t.submittedAtLabel}}" hint-placeholder-val="{{ false }}"><p class="t-meta">{{t.submittedAtLabel}}</p></sc-if>
+                <sc-if value="{{t.receipt}}" hint-placeholder-val="{{ false }}"><a href="{{t.receipt}}" target="_blank" rel="noopener noreferrer" class="text-btn">Open receipt</a></sc-if>
               </div>
               <button type="button" class="icon-btn" aria-label="Edit task: {{t.text}}" onClick="{{t.edit}}"><svg aria-hidden="true" width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round"><path d="M3 13 L3.6 10.4 L10.6 3.4 L12.6 5.4 L5.6 12.4 Z"></path></svg></button>
               <button type="button" class="icon-btn" aria-label="Dismiss task: {{t.text}}" onClick="{{t.dismiss}}"><svg aria-hidden="true" width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round"><path d="M4 4 L12 12 M12 4 L4 12"></path></svg></button>
@@ -927,6 +965,21 @@ function arr(v) { return Array.isArray(v) ? v : []; }
 function cleanLinks(v) { return arr(v).filter(function (x) { return x && typeof x.label === 'string' && safeHref(x.url); }).slice(0, 40); }
 function timeOf(iso) { var t = Date.parse(iso || ''); return isFinite(t) ? t : 0; }
 
+/* Assignment details stay in browser storage/backups; the existing Sheet contract is unchanged. */
+var WORKFLOW = { not_started: 'Not started', in_progress: 'In progress', ready: 'Ready to submit', submitted: 'Submitted (confirmed by you)' };
+function normSteps(v) {
+  var seen = {};
+  return arr(v).slice(0, 30).filter(function (x) { return x && String(x.text || '').trim(); }).map(function (x, i) {
+    var id = String(x.id || ('step-' + i)).slice(0, 120);
+    if (seen[id]) id += '-' + i;
+    seen[id] = true;
+    return { id: id, text: String(x.text).trim().slice(0, 160), done: x.done === true, minutes: clampInt(x.minutes, 0, 600, 0) };
+  });
+}
+function assignmentLabel(t) {
+  if (t.workflow) return WORKFLOW[t.workflow];
+  return t.status === 'done' ? 'Completed · submission unconfirmed' : WORKFLOW.not_started;
+}
 /* ---------- tasks: one shape for manual tasks, Morning Brief tasks and old saved tasks ---------- */
 function normTask(t) {
   if (!t || t.id == null || t.id === '') return null;
@@ -938,6 +991,10 @@ function normTask(t) {
     id: String(t.id).slice(0, 120), text: text, status: status,
     course: BOOK[t.course] ? t.course : '',
     kind: KINDS[t.kind] ? t.kind : 'task',
+    workflow: t.kind === 'assignment' && WORKFLOW[t.workflow] ? t.workflow : '',
+    steps: normSteps(t.steps),
+    submittedAt: t.kind === 'assignment' && t.workflow === 'submitted' && timeOf(t.submittedAt) ? String(t.submittedAt) : '',
+    receipt: safeHref(t.receipt),
     day: asDay(t.day), due: asDay(t.due),
     context: String(t.context || '').trim().slice(0, 120),
     priority: (t.priority === 'high' || t.priority === 'low') ? t.priority : 'normal',
@@ -964,6 +1021,7 @@ function placeOf(t, today) {
   if (t.status === 'dismissed') return '';
   if (t.status === 'done') return (t.doneOn && t.doneOn >= addDays(today, -7)) ? 'completed' : '';
   if (TESTS[t.kind]) { if (!t.due) return t.day && t.day > today ? 'upcoming' : 'today'; return t.due === today ? 'today' : (t.due > today ? 'upcoming' : ''); }
+  if (t.kind === 'assignment' && t.workflow === 'ready') return 'today';
   var d = t.day || (t.due && t.due > today ? '' : today);
   if (d && d <= today) return 'today';
   return 'upcoming';
@@ -1392,8 +1450,13 @@ class Component extends DCLogic {
   }
   toggleTask(id) {
     var t = this.findTask(id); if (!t) return;
+    if (t.kind === 'assignment' && t.status !== 'done') {
+      if (t.workflow === 'ready') { this.startEdit(id); return; }
+      this.changeTask(id, { workflow: 'ready', status: 'open', doneOn: '', submittedAt: '' }, { status: 'Ready to submit. Open Edit after submitting to confirm it.' });
+      return;
+    }
     var done = t.status !== 'done';
-    this.changeTask(id, { status: done ? 'done' : 'open', doneOn: done ? dayKey() : '' }, done && this.state.activeTask === id ? { activeTask: null } : null);
+    this.changeTask(id, { status: done ? 'done' : 'open', doneOn: done ? dayKey() : '', workflow: t.kind === 'assignment' ? 'in_progress' : '', submittedAt: '' }, done && this.state.activeTask === id ? { activeTask: null } : null);
   }
   dismissTask(id) {
     var t = this.findTask(id); if (!t) return;
@@ -1407,9 +1470,24 @@ class Component extends DCLogic {
   startEdit(id) {
     var t = this.findTask(id); if (!t) return;
     if (this.state.dialog !== 'notebook') { this.remember(); }
-    this.setState({ dialog: 'notebook', drawer: null, draftCourse: this.state.dialog === 'notebook' ? this.state.draftCourse : (this.state.subject || ''), edit: { id: id, text: t.text, course: t.course, priority: t.priority, day: t.day, due: t.due, minutes: t.minutes ? String(t.minutes) : '', context: t.context }, editErr: '' });
+    this.setState({ dialog: 'notebook', drawer: null, draftCourse: this.state.dialog === 'notebook' ? this.state.draftCourse : (this.state.subject || ''), edit: { id: id, text: t.text, course: t.course, priority: t.priority, day: t.day, due: t.due, minutes: t.minutes ? String(t.minutes) : '', context: t.context, kind: t.kind, workflow: t.workflow || (t.status === 'done' ? '' : 'not_started'), steps: normSteps(t.steps), receipt: t.receipt || '' }, editErr: '' });
   }
   setEdit(patch) { this.setState({ edit: Object.assign({}, this.state.edit, patch), editErr: '' }); }
+  editStep(id, patch) {
+    var ed = this.state.edit; if (!ed) return;
+    this.setEdit({ steps: ed.steps.map(function (q) { return q.id === id ? Object.assign({}, q, patch) : q; }) });
+  }
+  addStep() {
+    var ed = this.state.edit; if (!ed || ed.steps.length >= 30) return;
+    this.setEdit({ steps: ed.steps.concat([{ id: uid(), text: '', done: false, minutes: 0 }]) });
+  }
+  toggleStep(taskId, stepId) {
+    var t = this.findTask(taskId); if (!t) return;
+    var steps = t.steps.map(function (q) { return q.id === stepId ? Object.assign({}, q, { done: !q.done }) : q; });
+    var patch = { steps: steps };
+    if (t.kind === 'assignment' && t.status === 'open' && (!t.workflow || t.workflow === 'not_started')) patch.workflow = 'in_progress';
+    this.changeTask(taskId, patch);
+  }
   saveEdit(e) {
     if (e && e.preventDefault) e.preventDefault();
     var ed = this.state.edit; if (!ed) return;
@@ -1418,9 +1496,22 @@ class Component extends DCLogic {
     var next = { text: text.slice(0, 160), course: BOOK[ed.course] ? ed.course : '', priority: (ed.priority === 'high' || ed.priority === 'low') ? ed.priority : 'normal',
       day: asDay(ed.day), due: asDay(ed.due), minutes: clampInt(ed.minutes, 0, 600, 0), context: String(ed.context || '').trim().slice(0, 120) };
     var cur = this.findTask(ed.id) || {}, patch = {};
+    var receipt = normUrl(ed.receipt);
+    if (!receipt.ok) { this.setState({ editErr: 'Use a valid http or https receipt link, or leave it empty.' }); return; }
+    if (ed.steps.some(function (q) { return !String(q.text || '').trim(); })) { this.setState({ editErr: 'Name each mini-step or remove the empty one.' }); return; }
+    next.kind = KINDS[ed.kind] ? ed.kind : 'task';
+    next.steps = normSteps(ed.steps);
+    next.receipt = receipt.url;
+    next.workflow = next.kind === 'assignment' && WORKFLOW[ed.workflow] ? ed.workflow : '';
+    if (next.kind === 'assignment' && next.workflow) {
+      next.status = next.workflow === 'submitted' ? 'done' : 'open';
+      next.doneOn = next.status === 'done' ? (cur.doneOn || dayKey()) : '';
+      next.submittedAt = next.workflow === 'submitted' ? (cur.submittedAt || isoNow()) : '';
+    } else { next.submittedAt = ''; }
+    if (JSON.stringify(next.steps) === JSON.stringify(cur.steps)) next.steps = cur.steps;
     Object.keys(next).forEach(function (k) { if (next[k] !== cur[k]) patch[k] = next[k]; });
     if (!Object.keys(patch).length) { this.setState({ edit: null, editErr: '' }); return; }   // nothing changed: the task stays untouched
-    this.changeTask(ed.id, patch, { edit: null }, Object.keys(patch).map(sheetName));
+    this.changeTask(ed.id, patch, { edit: null, activeTask: next.status === 'done' && this.state.activeTask === ed.id ? null : this.state.activeTask }, Object.keys(patch).map(sheetName));
   }
   moveTomorrow() {
     var ed = this.state.edit; if (!ed) return;
@@ -1483,6 +1574,14 @@ class Component extends DCLogic {
       if (!rt || seen[rt.id]) return;
       seen[rt.id] = true;
       var lt = local[rt.id];
+      if (lt) {
+        // Older Sheet connectors do not know these fields. Keep the local details after every sync.
+        rt.steps = lt.steps; rt.receipt = lt.receipt;
+        if (lt.kind === 'assignment' && lt.workflow) {
+          rt.kind = 'assignment'; rt.workflow = lt.workflow; rt.submittedAt = lt.submittedAt;
+          rt.status = lt.status; rt.doneOn = lt.doneOn;
+        }
+      }
       if (lt && lt.dirty && revs[lt.id] !== lt.rev) { out.push(lt); return; }
       rt.synced = true; rt.dirty = false; rt.changed = []; rt.rev = lt ? lt.rev : 0;
       out.push(rt);
@@ -1520,6 +1619,8 @@ class Component extends DCLogic {
     var meta = [];
     if (b) meta.push(b.name);
     if (!compact && (TESTS[t.kind] || t.kind === 'assignment' || t.kind === 'reminder')) meta.push(KINDS[t.kind]);
+    if (t.kind === 'assignment') meta.push(assignmentLabel(t));
+    if (t.steps.length) meta.push(t.steps.filter(function (q) { return q.done; }).length + '/' + t.steps.length + ' steps');
     if (t.context) meta.push(t.context);
     else if (t.due && where !== 'upcoming') meta.push('due ' + shortDay(t.due, today));
     if (t.minutes || t.studied) meta.push(t.minutes ? Math.round(t.studied) + ' / ' + t.minutes + ' min' + (compact ? '' : ' studied') : fmtMin(t.studied) + ' studied');
@@ -1531,7 +1632,12 @@ class Component extends DCLogic {
     return {
       id: t.id, text: t.text, done: t.status === 'done', active: active, priority: t.priority, prioText: PRIO_TEXT[t.priority],
       courseBg: b ? b.bg : 'transparent', meta: meta.join(' · '),
-      checkable: !(where === 'upcoming' && TESTS[t.kind]), notCheckable: where === 'upcoming' && !!TESTS[t.kind],
+      assignmentAction: t.kind === 'assignment' && t.status !== 'done',
+      assignmentActionLabel: t.workflow === 'ready' ? 'Confirm submission' : 'Ready',
+      checkable: !(where === 'upcoming' && TESTS[t.kind]), notCheckable: t.kind !== 'assignment' && where === 'upcoming' && !!TESTS[t.kind],
+      standardCheck: t.kind !== 'assignment',
+      steps: t.steps.map(function (q) { return { id: q.id, text: q.text, done: q.done, minutesLabel: q.minutes ? q.minutes + ' min estimated' : 'No estimate', toggle: function () { self.toggleStep(t.id, q.id); } }; }),
+      receipt: safeHref(t.receipt), submittedAtLabel: t.submittedAt ? 'Confirmed by you: ' + new Date(t.submittedAt).toLocaleString('en-US', { timeZone: 'America/New_York' }) + ' (Miami)' : '',
       dateLabel: dateKey ? shortDay(dateKey, today) : '',
       studyLabel: t.status !== 'open' ? t.text : (active ? 'Stop tracking with the timer: ' : 'Study with the timer: ') + t.text,
       toggle: function () { self.toggleTask(t.id); },
@@ -1664,7 +1770,19 @@ class Component extends DCLogic {
       canSync: this.syncConfigured(), syncNow: function () { self.syncNow(); },
 
       editing: !!ed, notEditing: !ed,
-      ed: ed ? { text: ed.text, course: ed.course, priority: ed.priority, day: ed.day, due: ed.due, minutes: ed.minutes, context: ed.context } : { text: '', course: '', priority: 'normal', day: '', due: '', minutes: '', context: '' },
+      ed: ed ? { text: ed.text, course: ed.course, priority: ed.priority, day: ed.day, due: ed.due, minutes: ed.minutes, context: ed.context, kind: ed.kind, workflow: ed.workflow, receipt: ed.receipt } : { text: '', course: '', priority: 'normal', day: '', due: '', minutes: '', context: '' },
+      edAssignment: !!ed && ed.kind === 'assignment',
+      edSteps: ed ? ed.steps.map(function (q, i) { return {
+        id: q.id, number: i + 1, text: q.text, done: q.done, minutes: q.minutes || '',
+        toggle: function () { self.editStep(q.id, { done: !q.done }); },
+        change: function (e) { self.editStep(q.id, { text: e.target.value }); },
+        estimate: function (e) { self.editStep(q.id, { minutes: e.target.value }); },
+        remove: function () { self.setEdit({ steps: self.state.edit.steps.filter(function (x) { return x.id !== q.id; }) }); }
+      }; }) : [],
+      addStep: function () { self.addStep(); },
+      onEdKind: function (e) { self.setEdit({ kind: e.target.value, workflow: e.target.value === 'assignment' ? (ed.workflow || (self.findTask(ed.id).status === 'done' ? '' : 'not_started')) : '' }); },
+      onEdWorkflow: function (e) { self.setEdit({ workflow: e.target.value }); },
+      onEdReceipt: function (e) { self.setEdit({ receipt: e.target.value }); },
       editErr: s.editErr,
       onEdText: function (e) { self.setEdit({ text: e.target.value }); },
       onEdCourse: function (e) { self.setEdit({ course: e.target.value }); },

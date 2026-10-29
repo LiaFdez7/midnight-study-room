@@ -79,10 +79,15 @@ for f in ('dc-runtime.js', 'stage.css', 'stage.js', 'pwa.js', 'manifest.webmanif
     shutil.copy(here / f, out / f)
 for f in ('react.production.min.js', 'react-dom.production.min.js'):
     shutil.copy(here / 'vendor' / f, out / 'vendor' / f)
-for f in (here / 'fonts').iterdir():
-    shutil.copy(f, out / 'fonts' / f.name)
-for f in (here / 'icons').iterdir():
-    shutil.copy(f, out / 'icons' / f.name)
+# Published repos keep large bundled assets at their root, rather than duplicating them in _source.
+for folder in ('fonts', 'icons'):
+    assets = here / folder
+    if not assets.is_dir():
+        assets = here.parent / folder
+    for f in assets.iterdir():
+        target = out / folder / f.name
+        if f.resolve() != target.resolve():
+            shutil.copy(f, target)
 
 # Offline copy list + a version stamp that changes whenever any of these files change.
 shell = ['./', 'index.html', 'stage.css', 'stage.js', 'dc-runtime.js', 'pwa.js', 'manifest.webmanifest',
