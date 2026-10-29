@@ -21,3 +21,5 @@ noscript p { position: fixed; inset: auto 0 40% 0; text-align: center; color: #F
 #stage:has(.room[data-light="dim"]) .side-veil { opacity: .3; }
 #stage:has(.scrim) .side-scrim { opacity: 1; }
 @media (prefers-reduced-motion: reduce) { #stage .side-veil, #stage .side-scrim { transition: none; } }
+/* phone held upright: the room keeps a readable size and scrolls sideways (see stage.js) */
+html.pan #viewport { justify-content: flex-start; overflow-x: auto; overflow-y: hidden; overscroll-behavior-x: contain; }
