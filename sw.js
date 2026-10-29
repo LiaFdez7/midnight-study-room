@@ -6,7 +6,7 @@
   straight to the network, and the room queues changes until you're back online.
   You don't need to edit this file. The build stamps a new VERSION on every update.
 */
-const VERSION = "b50e94f5c49e";
+const VERSION = "94be6b24b9c7";
 const CACHE = 'msr-' + VERSION;
 const SHELL = [
   "./",
