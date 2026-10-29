@@ -6,7 +6,7 @@
   straight to the network, and the room queues changes until you're back online.
   You don't need to edit this file. The build stamps a new VERSION on every update.
 */
-const VERSION = "b50e94f5c49e";
+const VERSION = "046574ca5d7c";
 const CACHE = 'msr-' + VERSION;
 const SHELL = [
   "./",
@@ -19,6 +19,9 @@ const SHELL = [
   "vendor/react.production.min.js",
   "vendor/react-dom.production.min.js",
   "fonts/fonts.css",
+  "room-worlds-core.js",
+  "enchanted-room.js",
+  "enchanted-room.css",
   "fonts/cormorant-garamond-latin-500-italic.woff2",
   "fonts/cormorant-garamond-latin-500-normal.woff2",
   "fonts/cormorant-garamond-latin-600-italic.woff2",

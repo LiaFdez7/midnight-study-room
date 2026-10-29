@@ -1058,6 +1058,15 @@ class Component extends DCLogic {
 
   componentDidMount() {
     var self = this;
+    this.onRoomAction = function (e) {
+      var action = e.detail || {};
+      if (action.action === 'notebook') self.openDialog('notebook');
+      if (action.action === 'focus') {
+        if (self.state.running) { self.setState({ status: 'Your timer is already running. Your companion is here with you.' }); return; }
+        self.setState({ mode: 'focus', running: false, remaining: null, blockSec: null, subject: BOOK[action.course] ? action.course : self.state.subject }, function () { self.toggle(); });
+      }
+    };
+    window.addEventListener('msr:room-action', this.onRoomAction);
     this.iv = setInterval(function () { self.tick(); }, 250);
     this.syncIv = setInterval(function () { if (!(typeof document !== 'undefined' && document.hidden)) self.scheduleSync(0); }, 5 * 60 * 1000);
     this.onVis = function () { self.tick(); if (!document.hidden) self.scheduleSync(200); };
@@ -1085,6 +1094,7 @@ class Component extends DCLogic {
     } catch (e) {}
   }
   componentWillUnmount() {
+    window.removeEventListener('msr:room-action', this.onRoomAction);
     clearInterval(this.iv); clearInterval(this.syncIv); clearTimeout(this.toastT); clearTimeout(this.syncT);
     try { document.removeEventListener('visibilitychange', this.onVis); } catch (e) {}
     try { window.removeEventListener('online', this.onOnline); } catch (e) {}
@@ -1092,6 +1102,7 @@ class Component extends DCLogic {
   componentDidUpdate(pp, ps) {
     var s = this.state, self = this;
     this.persist();
+    if (s.running !== ps.running || s.mode !== ps.mode) window.dispatchEvent(new CustomEvent('msr:focus-state', { detail: { running: s.running, mode: s.mode } }));
     if (s.dialog && s.dialog !== ps.dialog) setTimeout(function () { self.focusIn(s.focusField ? '#' + s.focusField : null, '.dlg'); }, 40);
     if (!s.dialog && ps.dialog) { var back = this.returnFocus; this.returnFocus = null; setTimeout(function () { try { back && back.focus && back.focus(); } catch (e) {} }, 40); }
     if (s.drawer && s.drawer !== ps.drawer) setTimeout(function () { self.focusIn(null, '.tray'); }, 40);
@@ -1125,6 +1136,7 @@ class Component extends DCLogic {
     var d = this.exportData();
     delete d.timer; delete d.sync; delete d.lastSync;
     d.tasks = d.tasks.map(function (t) { var c = Object.assign({}, t); delete c.dirty; delete c.synced; delete c.rev; delete c.changed; return c; });
+    if (window.EnchantedRoom) d.enchanted = window.EnchantedRoom.exportData();
     d.app = 'midnight-study-room'; d.exportedAt = new Date().toISOString();
     return JSON.stringify(d);
   }
@@ -1167,6 +1179,7 @@ class Component extends DCLogic {
     }
     if (this.storage) { try { this.storage.setItem(STORE_KEY + '.before-restore', JSON.stringify(this.exportData())); } catch (e) {} }
     var r = mergeData(this.state, d);
+    if (d.enchanted && window.EnchantedRoom) { window.EnchantedRoom.importData(d.enchanted); r.summary += ' Your enchanted-room discoveries and missing notes were merged too.'; }
     this.setState(Object.assign(r.patch, { restoreText: '', backupText: '', backupMsg: r.summary }));
     var self = this; setTimeout(function () { self.setState({ backupText: self.backupJson() }); }, 0);
     this.scheduleSync();
@@ -1211,6 +1224,7 @@ class Component extends DCLogic {
         msg = fmtMin(min) + ' of ' + (s.subject ? BOOK[s.subject].name : 'open study') + ' logged.';
       }
       this.setState(patch);
+      window.dispatchEvent(new CustomEvent('msr:focus-complete', { detail: { id: day + '-' + String(s.endAt || Date.now()) + '-' + key, minutes: min, course: key } }));
       this.notify((how === 'away' ? 'While you were away: ' : 'Focus block complete. ') + msg, how !== 'away');
       if (patch.tasks) this.scheduleSync();
     } else {
@@ -1597,8 +1611,8 @@ class Component extends DCLogic {
       toggleLight: function () { self.setState({ light: s.light === 'warm' ? 'dim' : 'warm' }); },
       sway: s.sway, swayPlant: function () { self.setState({ sway: s.sway === 'a' ? 'b' : 'a' }); },
       skyClear: s.sky === 'clear', skyLake: s.sky === 'lake', stars: STARS, starsLake: STARS_LAKE,
-      skyLabel: s.sky === 'clear' ? 'Window: crescent moon over the hills. Change the sky' : 'Window: full moon over a still lake. Change the sky',
-      toggleSky: function () { self.setState({ sky: s.sky === 'clear' ? 'lake' : 'clear' }); },
+      skyLabel: 'Window: explore other worlds',
+      toggleSky: function () { window.dispatchEvent(new CustomEvent('msr:open-worlds')); },
       openRefs: function () { self.openDialog('refs'); },
       openNotebook: function () { self.openDialog('notebook'); },
 

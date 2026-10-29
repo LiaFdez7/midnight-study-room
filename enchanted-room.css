@@ -1,0 +1,104 @@
+/* Original vector scenery and controls for the enchanted room. */
+:root{--ew-ink:#f4ead5;--ew-muted:#beb4cf;--ew-gold:#d5b877;--ew-plum:#302944;--ew-paper:#f2ebda}
+#enchanted-root{position:absolute;inset:0;pointer-events:none;z-index:12;font-family:'DM Sans',sans-serif;color:var(--ew-ink)}
+#enchanted-root button,#enchanted-root input,#enchanted-root select,#enchanted-root textarea,.ew-dialog button,.ew-dialog input,.ew-dialog select,.ew-dialog textarea{font:inherit}
+.ew-control{pointer-events:auto;cursor:pointer;border:1px solid #8d789b66;color:var(--ew-ink);background:#25233ee8;border-radius:12px;padding:12px 18px;transition:background .2s,transform .2s;min-height:44px}
+.ew-control:hover{background:#514260;transform:translateY(-2px)}
+.ew-control:focus-visible,.ew-dialog :focus-visible{outline:3px solid var(--ew-gold);outline-offset:4px}
+.ew-control[aria-pressed=true]{background:#655071;border-color:var(--ew-gold)}
+.ew-dock{position:absolute;left:470px;bottom:16px;display:flex;gap:6px;pointer-events:auto;background:#17172be8;padding:8px;border:1px solid #826b8c66;border-radius:18px;box-shadow:0 10px 40px #0004;z-index:16}
+.ew-dock .ew-control{font-size:13px;padding:9px 14px;border:0;background:none;min-height:42px}
+.ew-dock .ew-control:hover{background:#4b3d5d}
+.ew-caption{font:italic 500 22px 'Cormorant Garamond',serif;color:#ddcfb3}
+.ew-window{position:absolute;left:635px;top:72px;width:331px;height:289px;border-radius:165px 165px 0 0;overflow:hidden;pointer-events:none;box-shadow:inset 0 0 50px #05091588}
+.ew-window::after{content:'';position:absolute;inset:0;background:linear-gradient(90deg,transparent 49.5%,#655270 49.5% 50.5%,transparent 50.5%),linear-gradient(transparent 65%,#655270 65% 66%,transparent 66%);box-shadow:inset 0 0 20px #0009;pointer-events:none}
+.ew-world-tag{position:absolute;left:685px;top:375px;min-width:230px;max-width:320px;font-size:13px;letter-spacing:.04em;text-align:center;background:#1d2039cc;border:1px solid #b99a6166;padding:9px;border-radius:20px;pointer-events:auto;cursor:pointer;color:var(--ew-ink)}
+.ew-scenery{position:absolute;inset:0;overflow:hidden;background:radial-gradient(ellipse at 64% 28%,#8683a150,transparent 35%),linear-gradient(#151c38,#504864);isolation:isolate}
+.ew-scenery[data-world=forest]{background:radial-gradient(ellipse at 65% 30%,#b9d1af44,transparent 30%),linear-gradient(#122d36,#3d5350 70%,#1b3535)}
+.ew-scenery[data-world=sea]{background:radial-gradient(ellipse at 65% 30%,#ddcccf33,transparent 28%),linear-gradient(#192c4c,#64718b 65%,#233b53)}
+.ew-scenery[data-world=city]{background:linear-gradient(135deg,#17243d,#5a526e 65%,#354050)}
+.ew-scenery[data-world=snow]{background:linear-gradient(#29334e,#9c97ad 74%,#cad1d7)}
+.ew-moon{position:absolute;width:11%;aspect-ratio:1;left:66%;top:14%;background:#eddfba;border-radius:50%;box-shadow:0 0 50px 15px #f3dfb426}
+.ew-stars{position:absolute;inset:0;background-image:radial-gradient(1px 1px at 12% 15%,#f5e9cf 90%,transparent),radial-gradient(2px 2px at 33% 30%,#f5e9cf 90%,transparent),radial-gradient(1px 1px at 76% 40%,#fff 90%,transparent),radial-gradient(1px 1px at 90% 10%,#fff 90%,transparent),radial-gradient(2px 2px at 48% 12%,#fff 90%,transparent);background-size:350px 250px;animation:ew-twinkle 8s ease-in-out infinite}
+.ew-mist{position:absolute;left:-10%;width:120%;height:28%;top:48%;background:radial-gradient(ellipse,#c2c3c633,transparent 65%);animation:ew-mist 24s ease-in-out infinite alternate}
+.ew-hills{position:absolute;left:-8%;width:120%;height:46%;bottom:-10%;border-radius:60% 40% 0 0;background:#0d2634;transform:rotate(-8deg);box-shadow:100px -25px 0 #223b49}
+.ew-scenery[data-world=snow] .ew-hills{background:#bfc8d0;box-shadow:100px -25px 0 #929fb1}
+.ew-tree{position:absolute;bottom:8%;width:19%;height:62%;background:#132e30;clip-path:polygon(48% 0,68% 28%,58% 28%,85% 58%,69% 58%,100% 90%,54% 90%,54% 100%,44% 100%,44% 90%,0 90%,29% 58%,15% 58%,41% 27%,30% 27%)}
+.ew-tree:nth-of-type(2n){background:#1e3b38;height:47%}
+.ew-scenery[data-world=snow] .ew-tree{background:#456571;filter:drop-shadow(0 -5px 0 #d0d6d9)}
+.ew-water{position:absolute;bottom:0;left:0;right:0;height:36%;background:repeating-linear-gradient(177deg,#9eb3b319 0 1px,transparent 2px 19px),linear-gradient(#354d61,#142e45);animation:ew-water 9s ease-in-out infinite alternate}
+.ew-water::after{content:'';position:absolute;left:58%;top:0;width:22%;height:80%;background:linear-gradient(#e2d2aa50,transparent);clip-path:polygon(45% 0,55% 0,100% 100%,0 100%)}
+.ew-building{position:absolute;bottom:0;width:14%;height:50%;background:#1b263d;border-top:4px solid #5d637b;background-image:repeating-linear-gradient(90deg,transparent 0 28%,#dab77877 29% 42%,transparent 43% 70%),repeating-linear-gradient(transparent 0 19%,#16263b 20% 30%);background-blend-mode:screen,normal}
+.ew-cottage{position:absolute;bottom:17%;left:26%;width:28%;height:20%;background:#514650;border:3px solid #b8b9c4;box-shadow:10px 0 0 #3b3f50}
+.ew-cottage::before{content:'';position:absolute;left:-15%;top:-75%;width:130%;height:90%;background:#d2d6dd;clip-path:polygon(50% 0,100% 100%,0 100%)}
+.ew-cottage::after{content:'';position:absolute;left:33%;top:22%;width:34%;height:53%;background:#e4bd75;box-shadow:0 0 30px #f7d59088}
+.ew-particle{position:absolute;width:4px;height:4px;border-radius:50%;background:#e2e9e6;animation:ew-fall 8s linear infinite;opacity:.5}
+.ew-scenery[data-world=city] .ew-particle{width:1px;height:35px;background:#b9becb;transform:rotate(12deg);border-radius:0;animation-duration:1.6s}
+.ew-scenery[data-world=forest] .ew-particle{background:#e1df98;box-shadow:0 0 8px #e6dd8b;animation:ew-fly 12s ease-in-out infinite alternate}
+.ew-door{position:absolute;right:17px;top:380px;width:101px;height:386px;pointer-events:auto;cursor:pointer;color:#dfcda6;border:6px solid #51425e;border-bottom:0;border-radius:60px 60px 0 0;background:linear-gradient(90deg,#131c30,#34354b 55%,#1d2338);box-shadow:inset 0 0 0 3px #ae986533,0 4px 20px #0005;display:flex;flex-direction:column;justify-content:center;align-items:center;gap:25px;font-family:'Cormorant Garamond',serif;font-size:20px}
+.ew-door::before{content:'✧';font-size:35px;color:#eddfa9;text-shadow:0 0 20px #e4c47b}
+.ew-door::after{content:'';width:9px;height:9px;border-radius:50%;background:#c6a96b;position:absolute;right:10px;top:64%}
+.ew-door:hover{box-shadow:inset 0 0 35px #bba47033,0 0 18px #d0b98522}
+.ew-pet{position:absolute;left:710px;bottom:69px;width:130px;height:128px;pointer-events:auto;cursor:pointer;border:0;background:none;padding:0;filter:drop-shadow(0 10px 8px #0006);transition:left 2s,bottom 2s;z-index:17}
+.ew-pet svg{width:100%;height:100%;overflow:visible;animation:ew-breathe 4s ease-in-out infinite}
+.ew-pet .ew-eyes{animation:ew-blink 7s infinite;transform-origin:70px 55px}
+.ew-pet .ew-tail{transform-origin:45px 90px;animation:ew-tail 6s ease-in-out infinite}
+.ew-pet-name{position:absolute;bottom:-17px;left:0;right:0;text-align:center;color:#e8d8b4;font:italic 19px 'Cormorant Garamond',serif;text-shadow:0 2px 4px #000}
+.ew-pet[data-rest=true] .ew-eyes{transform:scaleY(.15);animation:none}.ew-pet[data-pet=true]{animation:ew-petted .5s ease}
+.ew-toast{position:fixed;bottom:32px;left:50%;transform:translateX(-50%);border:1px solid #ae9865;background:#25233ef5;color:#f5ead7;padding:15px 25px;border-radius:14px;font:15px 'DM Sans',sans-serif;z-index:130;max-width:80vw;text-align:center;pointer-events:none}
+.ew-view{position:absolute;inset:0;pointer-events:auto;z-index:45;background:#152332;color:var(--ew-ink);animation:ew-appear .5s ease}
+.ew-view-header{position:absolute;left:65px;right:65px;top:35px;display:flex;align-items:center;justify-content:space-between;gap:30px;z-index:6}
+.ew-view h1{font:500 54px 'Cormorant Garamond',serif;margin:5px 0}.ew-eyebrow{font-size:11px;letter-spacing:.22em;text-transform:uppercase;color:var(--ew-gold);margin:0}
+.ew-view-copy{max-width:530px;color:#e2d9db;font-size:17px;line-height:1.7}
+.ew-balcony-floor{position:absolute;bottom:0;left:0;right:0;height:29%;background:repeating-linear-gradient(90deg,transparent 0 127px,#192831 128px 130px),linear-gradient(#45515a,#2b3946);border-top:10px solid #657078}
+.ew-railing{position:absolute;left:0;right:0;bottom:28%;height:180px;border-top:14px solid #a0a5a6;border-bottom:14px solid #a0a5a6;background:repeating-linear-gradient(90deg,transparent 0 79px,#929c9f 80px 89px,transparent 90px 100px);box-shadow:0 -2px 1px #dde0d0}
+.ew-balcony-chair{position:absolute;right:250px;bottom:80px;width:230px;height:240px;border-radius:75px 75px 15px 15px;background:repeating-linear-gradient(90deg,#4c465c 0 12px,#5f556c 13px 15px);border:12px solid #342d40;transform:rotate(-7deg);box-shadow:0 18px 20px #0004}
+.ew-balcony-chair::after{content:'';position:absolute;inset:40% -10% 5%;border-radius:20px;background:#9a7a8d;box-shadow:inset 0 0 0 4px #b193a3}
+.ew-balcony-table{position:absolute;right:80px;bottom:55px;width:180px;height:24px;background:#b09c83;border-radius:50%;box-shadow:0 8px #645d59}
+.ew-balcony-table::after{content:'';position:absolute;width:16px;height:100px;left:82px;top:22px;background:#79726d}
+.ew-break-card{position:absolute;left:85px;bottom:65px;width:480px;z-index:3;padding:28px;background:#172635ed;border:1px solid #a3adad66;border-radius:22px;box-shadow:0 18px 45px #0004}
+.ew-break-clock{font:500 62px 'Cormorant Garamond',serif;letter-spacing:.06em;margin:6px 0}
+.ew-flex{display:flex;gap:10px;align-items:center;flex-wrap:wrap}.ew-stack{display:flex;flex-direction:column;gap:14px}.ew-help{font-size:13px;line-height:1.6;opacity:.78}
+.ew-view textarea,.ew-view input,.ew-view select{color:#f0e8d7;background:#ffffff0a;border:1px solid #ac9fbe66;padding:12px;border-radius:9px;box-sizing:border-box;width:100%}
+.ew-view textarea{min-height:80px;resize:vertical}
+.ew-greenhouse{background:radial-gradient(ellipse at 65% 30%,#37695b66,transparent 60%),linear-gradient(#152e37,#1c3b37 70%,#27312d)}
+.ew-glass{position:absolute;inset:0;background:repeating-linear-gradient(90deg,transparent 0 194px,#18252e 195px 205px),repeating-linear-gradient(transparent 0 210px,#18252e 211px 220px);transform:perspective(1000px) rotateX(-5deg);opacity:.5;pointer-events:none}
+.ew-plant-shelf{position:absolute;left:90px;right:90px;top:250px;bottom:90px;display:grid;grid-template-columns:repeat(4,1fr);gap:35px;align-content:start;overflow:auto;padding:20px}
+.ew-pot{border:0;border-bottom:16px solid #6e5950;color:var(--ew-ink);background:linear-gradient(transparent 75%,#3b312d 76%);padding:20px;min-height:240px;cursor:pointer;text-align:center;position:relative}
+.ew-pot svg{height:145px;max-width:100%;transition:transform .8s}.ew-pot:hover svg{transform:rotate(-3deg)}.ew-pot strong{display:block;font:500 25px 'Cormorant Garamond',serif}.ew-pot small{display:block;opacity:.7;margin-top:7px}
+.ew-ground{position:absolute;bottom:0;height:70px;left:0;right:0;background:repeating-linear-gradient(90deg,#1a2928 0 99px,#2b3c36 100px 102px)}
+.ew-observatory{background:radial-gradient(ellipse at 55% 40%,#5a386a55,transparent 50%),#101c32}
+.ew-sky-map{position:absolute;inset:190px 80px 80px;border:1px solid #b99a6133;border-radius:50%;background:radial-gradient(ellipse,transparent 40%,#0c1529cc 90%);overflow:hidden}
+.ew-map-line{stroke:#d0b97c;stroke-width:1;opacity:.6}.ew-map-star{fill:#f8e0a2;filter:drop-shadow(0 0 5px #e4bc7b)}.ew-map-text{fill:#e4d8ca;font:16px 'DM Sans',sans-serif;text-anchor:middle}
+.ew-dialog{border:1px solid #b99a6188;color:var(--ew-ink);background:linear-gradient(135deg,#302b44,#21243a);border-radius:24px;padding:0;width:min(930px,90vw);max-height:88vh;box-shadow:0 30px 100px #05081599;font:15px/1.55 'DM Sans',sans-serif;z-index:100}
+.ew-dialog::backdrop{background:#090c20ad;backdrop-filter:blur(5px)}
+.ew-dialog-head{display:flex;justify-content:space-between;align-items:center;padding:25px 30px 16px;border-bottom:1px solid #9d86ac33;position:sticky;top:0;background:#29263de8;z-index:2}
+.ew-dialog h2{font:500 36px/1.1 'Cormorant Garamond',serif;margin:5px 0}.ew-dialog h3{font:500 25px 'Cormorant Garamond',serif;margin:10px 0}
+.ew-dialog-body{padding:24px 30px 30px;overflow:auto}.ew-dialog label{display:block;font-size:13px;letter-spacing:.02em;color:#e2d4e4;margin:5px 0}
+.ew-dialog input,.ew-dialog select,.ew-dialog textarea{width:100%;box-sizing:border-box;color:#f4ead5;background:#171c2e;border:1px solid #9d86ac66;border-radius:9px;padding:11px 12px;min-height:44px}
+.ew-dialog select option{background:#252a3c}.ew-dialog textarea{min-height:130px;resize:vertical}.ew-dialog input[type=range]{min-height:28px;accent-color:#d5b877;padding:0}.ew-dialog input[type=checkbox]{width:20px;min-height:20px;accent-color:#d5b877}
+.ew-dialog .ew-control{background:#554261}.ew-dialog .ew-control:hover{background:#735679}.ew-dialog .ew-subtle{background:transparent}
+.ew-grid{display:grid;grid-template-columns:1fr 1fr;gap:18px}.ew-world-card{padding:0;overflow:hidden;border:1px solid #84769477;background:#22263b;border-radius:16px;color:var(--ew-ink);cursor:pointer;text-align:left}
+.ew-world-preview{height:145px;position:relative;overflow:hidden}.ew-world-card strong{font:500 25px 'Cormorant Garamond',serif;display:block;padding:10px 16px 0}.ew-world-card span.ew-help{display:block;padding:0 16px 14px}
+.ew-world-card[aria-pressed=true]{outline:2px solid #d5b877;outline-offset:3px}
+.ew-note{padding:16px;background:#efdda20b;border-left:2px solid var(--ew-gold);border-radius:0 9px 9px 0;font-size:14px;line-height:1.7}
+.ew-discovery{display:grid;grid-template-columns:65px 1fr;gap:18px;align-items:center;padding:18px 0;border-bottom:1px solid #ac9fbe33}.ew-discovery-symbol{font-size:35px;text-align:center;color:#d5b877}.ew-discovery.locked{opacity:.6}
+.ew-card{border:1px solid #bba3c366;border-radius:16px;background:#ede2c6;color:#322d44;padding:28px;min-height:120px;display:flex;align-items:center;justify-content:center;font:500 28px/1.4 'Cormorant Garamond',serif;text-align:center;white-space:pre-wrap;overflow-wrap:anywhere}
+.ew-card[role=button]{cursor:pointer}.ew-journal-entry{white-space:pre-wrap;overflow-wrap:anywhere;border-bottom:1px solid #a88eb133;padding:15px 0;font-size:15px}.ew-journal-entry time{display:block;font-size:12px;color:#c5b3ca;margin-bottom:5px}
+.ew-board{display:block;width:100%;height:auto;border:10px solid #7c6354;border-radius:10px;background:#163e3a;touch-action:none;cursor:crosshair;aspect-ratio:5/3}.ew-board path{fill:none;stroke:#eee8c9;stroke-width:3;stroke-linecap:round;stroke-linejoin:round}.ew-board text{fill:#eee8c9;font:22px 'DM Sans',sans-serif;pointer-events:none}
+.ew-secret{position:absolute;background:none;border:0;color:#e6d6a7;font-size:30px;cursor:pointer;pointer-events:auto;animation:ew-twinkle 4s ease-in-out infinite}
+.ew-secret:hover{filter:drop-shadow(0 0 15px #f9e4ac)}
+.ew-route{display:flex;gap:12px;flex-wrap:wrap;margin-top:15px}.ew-route .ew-control{flex:1}
+.ew-pet-large{width:160px;height:160px;margin:auto;display:block}.ew-pet-large svg{width:100%;height:100%}
+#enchanted-root[data-quiet=true] .ew-pet svg,#enchanted-root[data-quiet=true] .ew-particle,#enchanted-root[data-quiet=true] .ew-stars,#enchanted-root[data-quiet=true] .ew-mist,#enchanted-root[data-quiet=true] .ew-water{animation:none}
+#stage:has(.scrim) #enchanted-root>.ew-dock,#stage:has(.scrim) #enchanted-root>.ew-pet,#stage:has(.scrim) #enchanted-root>.ew-door,#stage:has(.scrim) #enchanted-root>.ew-world-tag,#stage:has(.scrim) #enchanted-root>.ew-visitor{visibility:hidden}
+@keyframes ew-breathe{50%{transform:translateY(-4px) scaleY(1.025)}}@keyframes ew-blink{0%,43%,47%,100%{transform:scaleY(1)}45%{transform:scaleY(.1)}}@keyframes ew-tail{50%{transform:rotate(9deg)}}@keyframes ew-petted{50%{transform:translateY(-12px)}}@keyframes ew-twinkle{50%{opacity:.4}}@keyframes ew-mist{to{transform:translateX(10%)}}@keyframes ew-water{to{transform:translateY(6px)}}@keyframes ew-fall{from{translate:0 -60px}to{translate:-45px 500px}}@keyframes ew-fly{to{translate:20px -40px;opacity:.2}}@keyframes ew-appear{from{opacity:0}to{opacity:1}}
+@media(prefers-reduced-motion:reduce){#enchanted-root *,#enchanted-root *::before,.ew-dialog *{animation:none!important;transition:none!important}}
+@media(max-width:650px){.ew-dialog{width:95vw;max-height:94vh;border-radius:16px}.ew-dialog-head,.ew-dialog-body{padding:17px}.ew-grid{grid-template-columns:1fr}.ew-dialog h2{font-size:30px}.ew-world-preview{height:120px}}
+
+/* Focus must not scroll the scaled stage, and hidden room objects must leave the tab order. */
+#stage{overflow:clip}
+#enchanted-root [hidden]{display:none!important}
+.ew-visitor{position:absolute;left:1090px;top:395px;pointer-events:auto;border:0;background:none;color:#e4d6a6;font-size:30px;cursor:pointer;filter:drop-shadow(0 0 10px #d8ca8a88);animation:ew-fly 12s ease-in-out infinite alternate}
+
+#enchanted-root[data-quiet=true] *{animation:none!important;transition:none!important}
