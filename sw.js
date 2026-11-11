@@ -6,7 +6,7 @@
   straight to the network, and the room queues changes until you're back online.
   You don't need to edit this file. The build stamps a new VERSION on every update.
 */
-const VERSION = "d31116b86913";
+const VERSION = "9bd0bd884285";
 const CACHE = 'msr-' + VERSION;
 const SHELL = [
   "./",
@@ -22,14 +22,15 @@ const SHELL = [
   "room-worlds-core.js",
   "enchanted-room.js",
   "enchanted-room.css",
-  "fonts/cormorant-garamond-latin-500-italic.woff2",
-  "fonts/cormorant-garamond-latin-500-normal.woff2",
-  "fonts/cormorant-garamond-latin-600-italic.woff2",
-  "fonts/cormorant-garamond-latin-600-normal.woff2",
-  "fonts/dm-sans-latin-400-normal.woff2",
-  "fonts/dm-sans-latin-500-normal.woff2",
-  "fonts/dm-sans-latin-600-normal.woff2",
-  "fonts/jetbrains-mono-latin-500-normal.woff2",
+  "fonts/fraunces-latin-500-italic.woff2",
+  "fonts/fraunces-latin-500-normal.woff2",
+  "fonts/fraunces-latin-600-normal.woff2",
+  "fonts/ibm-plex-mono-latin-500-normal.woff2",
+  "fonts/ibm-plex-mono-latin-600-normal.woff2",
+  "fonts/manrope-latin-400-normal.woff2",
+  "fonts/manrope-latin-500-normal.woff2",
+  "fonts/manrope-latin-600-normal.woff2",
+  "fonts/manrope-latin-700-normal.woff2",
   "icons/icon.svg",
   "icons/icon-32.png",
   "icons/icon-48.png",

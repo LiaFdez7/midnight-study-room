@@ -8,15 +8,15 @@
 <body>
 <x-dc>
 <helmet>
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,500;0,600;1,500&amp;family=DM+Sans:opsz,wght@9..40,400;9..40,500;9..40,600&amp;family=JetBrains+Mono:wght@500&amp;display=swap">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Fraunces:ital,wght@0,500;0,600;1,500&amp;family=Manrope:wght@400;500;600;700&amp;family=IBM+Plex+Mono:wght@500;600&amp;display=swap">
 <style>
-body{margin:0;background:#141A33}
+body{margin:0;background:#0F1C1B}
 .room *{box-sizing:border-box}
-.room button,.room input{font-family:'DM Sans',system-ui,sans-serif}
+.room button,.room input{font-family:'Manrope',system-ui,sans-serif}
 .room button{cursor:pointer}
-.eyebrow{margin:0;font:500 11.5px/1.3 'DM Sans',system-ui,sans-serif;letter-spacing:.14em;text-transform:uppercase}
-.room :focus-visible{outline:2px solid #E9D9A8;outline-offset:2px}
-.paper :focus-visible{outline-color:#3E3870}
+.eyebrow{margin:0;font:500 11.5px/1.3 'Manrope',system-ui,sans-serif;letter-spacing:.14em;text-transform:uppercase}
+.room :focus-visible{outline:2px solid #E6C07B;outline-offset:2px}
+.paper :focus-visible{outline-color:#2F5D5A}
 .sr-only{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}
 
 /* light: the lamp drives these */
@@ -26,15 +26,14 @@ body{margin:0;background:#141A33}
 .room[data-light="dim"] .wash,.room[data-light="dim"] .lamp-light{opacity:0}
 .lamp-light{transition:opacity .8s ease}
 .bulb{transition:background .6s ease}
-.room[data-light="dim"] .bulb{background:#6F6888!important;animation:none!important}
+.room[data-light="dim"] .bulb{background:#4A4636!important;animation:none!important}
 .desk-top{transition:background .8s ease}
-.room[data-light="warm"] .desk-top{background:#443A6B!important}
-.nb-paper{transition:background .8s ease}
-.room[data-light="dim"] .nb-paper{background:#F1EADC!important}
+.nb-paper{transition:filter .8s ease}
+.room[data-light="dim"] .nb-paper{filter:brightness(.9)}
 
 /* discoverable objects */
 .obj{position:absolute}
-.tip{position:absolute;left:50%;bottom:calc(100% + 8px);transform:translate(-50%,4px);padding:5px 9px;border-radius:4px;background:#F6EEDC;color:#1A2140;border:1px solid rgba(185,154,97,.8);font:500 12.5px/1.2 'DM Sans',system-ui,sans-serif;letter-spacing:0;text-transform:none;writing-mode:horizontal-tb;white-space:nowrap;opacity:0;pointer-events:none;transition:opacity .18s ease,transform .18s ease;box-shadow:0 6px 14px rgba(5,8,20,.35);z-index:3}
+.tip{position:absolute;left:50%;bottom:calc(100% + 8px);transform:translate(-50%,4px);padding:5px 9px;border-radius:4px;background:#EFE4CC;color:#0F1C1B;border:1px solid rgba(200,150,74,.8);font:500 12.5px/1.2 'Manrope',system-ui,sans-serif;letter-spacing:0;text-transform:none;writing-mode:horizontal-tb;white-space:nowrap;opacity:0;pointer-events:none;transition:opacity .18s ease,transform .18s ease;box-shadow:0 6px 14px rgba(2,8,8,.35);z-index:3}
 .tip.below{bottom:auto;top:calc(100% + 8px);transform:translate(-50%,-4px)}
 .tip.inside{bottom:16px}
 .obj:hover .tip,.obj:focus-visible .tip{opacity:1;transform:translate(-50%,0)}
@@ -47,89 +46,89 @@ body{margin:0;background:#141A33}
 .spine::before{top:10px}
 .spine::after{bottom:10px}
 .spine:hover{transform:translateY(-6px)}
-.spine[data-open="true"]{transform:translateY(-22px) scale(1.03);box-shadow:inset -6px 0 0 rgba(0,0,0,.14),0 0 0 2px #E9D9A8,0 12px 18px rgba(5,8,20,.5)}
-.spine-text{writing-mode:vertical-rl;font:600 13px/1.15 'DM Sans',system-ui,sans-serif;letter-spacing:.1em;text-transform:uppercase;text-align:center}
+.spine[data-open="true"]{transform:translateY(-22px) scale(1.03);box-shadow:inset -6px 0 0 rgba(0,0,0,.14),0 0 0 2px #E6C07B,0 12px 18px rgba(2,8,8,.5)}
+.spine-text{writing-mode:vertical-rl;font:600 13px/1.15 'Manrope',system-ui,sans-serif;letter-spacing:.1em;text-transform:uppercase;text-align:center}
 
 /* timer controls */
-.seg{flex:1;height:44px;border-radius:6px;border:1px solid #6A6294;background:transparent;color:#D6CCEB;font-size:13px;font-weight:500;transition:background .15s ease,color .15s ease}
-.seg:hover{background:rgba(183,169,214,.12)}
-.seg[aria-pressed="true"]{background:#B7A9D6;border-color:#B7A9D6;color:#1A2140}
-.btn-gold{height:44px;border:0;border-radius:6px;background:#B99A61;color:#1A2140;font-size:15px;font-weight:600;transition:background .15s ease}
-.btn-gold:hover{background:#C9AC75}
-.btn-line{height:44px;border:1px solid #8C83B3;border-radius:6px;background:transparent;color:#F3EAD7;font-size:15px;font-weight:500;transition:background .15s ease}
+.seg{flex:1;height:44px;border-radius:6px;border:1px solid #7A6A45;background:transparent;color:#D6CBB1;font-size:13px;font-weight:500;transition:background .15s ease,color .15s ease}
+.seg:hover{background:rgba(230,192,123,.12)}
+.seg[aria-pressed="true"]{background:#E6C07B;border-color:#E6C07B;color:#0F1C1B}
+.btn-gold{height:44px;border:0;border-radius:6px;background:#C8964A;color:#0F1C1B;font-size:15px;font-weight:600;transition:background .15s ease}
+.btn-gold:hover{background:#E6C07B}
+.btn-line{height:44px;border:1px solid #8A7A5C;border-radius:6px;background:transparent;color:#F4ECDA;font-size:15px;font-weight:500;transition:background .15s ease}
 .btn-line:hover{background:rgba(243,234,215,.08)}
 
 /* paper controls */
-.btn-ink{height:44px;padding:0 16px;display:inline-flex;align-items:center;justify-content:center;border:1.5px solid #1A2140;border-radius:6px;background:transparent;color:#1A2140;font-size:14px;font-weight:500;text-decoration:none;white-space:nowrap}
-.btn-ink:hover{background:rgba(26,33,64,.06)}
-.btn-solid{height:44px;padding:0 18px;border:0;border-radius:6px;background:#2E2A4A;color:#F6EEDC;font-size:15px;font-weight:600;white-space:nowrap}
-.btn-solid:hover{background:#3E3866}
-.text-btn{min-height:44px;padding:0 4px;border:0;background:transparent;color:#3E3870;font-size:14px;font-weight:500;text-decoration:underline;text-underline-offset:3px;text-decoration-color:rgba(62,56,112,.4)}
-.icon-btn{width:44px;height:44px;flex:none;border:0;border-radius:6px;background:transparent;display:inline-flex;align-items:center;justify-content:center;color:#4A4475}
-.icon-btn:hover{background:rgba(62,56,112,.09)}
-.field{width:100%;min-width:0;height:44px;padding:0 12px;border:1.5px solid #8077A6;border-radius:6px;background:#FFFBF2;font:400 15px 'DM Sans',system-ui,sans-serif;color:#1A2140}
+.btn-ink{height:44px;padding:0 16px;display:inline-flex;align-items:center;justify-content:center;border:1.5px solid #0F1C1B;border-radius:6px;background:transparent;color:#0F1C1B;font-size:14px;font-weight:500;text-decoration:none;white-space:nowrap}
+.btn-ink:hover{background:rgba(15,28,27,.06)}
+.btn-solid{height:44px;padding:0 18px;border:0;border-radius:6px;background:#17302D;color:#EFE4CC;font-size:15px;font-weight:600;white-space:nowrap}
+.btn-solid:hover{background:#1E3634}
+.text-btn{min-height:44px;padding:0 4px;border:0;background:transparent;color:#2F5D5A;font-size:14px;font-weight:500;text-decoration:underline;text-underline-offset:3px;text-decoration-color:rgba(47,93,90,.4)}
+.icon-btn{width:44px;height:44px;flex:none;border:0;border-radius:6px;background:transparent;display:inline-flex;align-items:center;justify-content:center;color:#3D3226}
+.icon-btn:hover{background:rgba(47,93,90,.09)}
+.field{width:100%;min-width:0;height:44px;padding:0 12px;border:1.5px solid #8A7A5C;border-radius:6px;background:#FFFBF2;font:400 15px 'Manrope',system-ui,sans-serif;color:#0F1C1B}
 .field[aria-invalid="true"]{border-color:#8A3A48;background:#FFF6F3}
-.f-label{font-size:13px;font-weight:500;color:#3A3760}
+.f-label{font-size:13px;font-weight:500;color:#3D3226}
 .f-err{margin:0;font-size:13px;color:#8A3A48}
 
 /* notebook tasks */
 .task{display:flex;align-items:center;gap:2px;min-height:44px;margin:0}
 .task-label{flex:1;min-width:0;display:flex;align-items:center;gap:12px;min-height:44px;cursor:pointer}
-.task-label input{width:20px;height:20px;margin:0;flex:none;accent-color:#3E3870;cursor:pointer}
-.task-text{font:400 16px/22px 'DM Sans',system-ui,sans-serif;color:#1A2140;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;overflow-wrap:anywhere}
-.task[data-done="true"] .task-text{text-decoration:line-through;text-decoration-color:#8C83B3;color:#5E5785}
+.task-label input{width:20px;height:20px;margin:0;flex:none;accent-color:#2F5D5A;cursor:pointer}
+.task-text{font:400 16px/22px 'Manrope',system-ui,sans-serif;color:#0F1C1B;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;overflow-wrap:anywhere}
+.task[data-done="true"] .task-text{text-decoration:line-through;text-decoration-color:#8A7A5C;color:#5D4A38}
 .edit-form{flex:1;display:flex;align-items:center;gap:2px;margin:0}
-.nb-open{display:inline-flex;align-items:center;gap:10px;min-height:44px;padding:0;border:0;background:transparent;color:#1A2140;font:600 34px/1.05 'Cormorant Garamond',Georgia,serif;text-align:left}
+.nb-open{display:inline-flex;align-items:center;gap:10px;min-height:44px;padding:0;border:0;background:transparent;color:#0F1C1B;font:600 34px/1.05 'Fraunces',Georgia,serif;text-align:left}
 .nb-open svg{opacity:.55;transition:opacity .2s ease}
 .nb-open:hover svg,.nb-open:focus-visible svg{opacity:1}
-.ruled{background:repeating-linear-gradient(180deg,transparent 0 43px,#DCD2E6 43px 44px);background-attachment:local}
+.ruled{background:repeating-linear-gradient(180deg,transparent 0 43px,#D8C9A6 43px 44px);background-attachment:local}
 
 /* drawers, trays, dialogs */
-.drawer{position:absolute;border:1px solid rgba(185,154,97,.45);border-radius:3px;transition:transform .5s cubic-bezier(.2,.7,.2,1),box-shadow .5s ease,background .5s ease}
-.drawer[data-open="true"]{transform:translateY(10px) scale(1.05);background:#3A3462;box-shadow:0 -10px 0 0 #120F26,0 14px 18px rgba(5,8,20,.55)}
+.drawer{position:absolute;border:1px solid rgba(200,150,74,.45);border-radius:3px;transition:transform .5s cubic-bezier(.2,.7,.2,1),box-shadow .5s ease,background .5s ease}
+.drawer[data-open="true"]{transform:translateY(10px) scale(1.05);background:#6A4330;box-shadow:0 -10px 0 0 #1A100B,0 14px 18px rgba(2,8,8,.55)}
 .handle{width:64px;height:44px;border:0;border-radius:6px;background:transparent;display:flex;align-items:center;justify-content:center}
-.handle:hover .knob,.handle:focus-visible .knob{background:#D6B97C;box-shadow:0 0 8px rgba(233,217,168,.45)}
-.knob{display:block;width:20px;height:8px;border-radius:4px;background:#B99A61;transition:background .2s ease,box-shadow .2s ease}
-.tray{position:absolute;z-index:6;background:#F6EEDC;color:#1A2140;border-radius:6px;padding:12px 16px 16px;box-shadow:0 0 0 8px #3E3766,0 0 0 9px rgba(185,154,97,.6),0 22px 34px rgba(5,8,20,.6);animation:trayIn .5s cubic-bezier(.2,.7,.2,1);transform-origin:top center}
+.handle:hover .knob,.handle:focus-visible .knob{background:#E6C07B;box-shadow:0 0 8px rgba(233,217,168,.45)}
+.knob{display:block;width:20px;height:8px;border-radius:4px;background:#C8964A;transition:background .2s ease,box-shadow .2s ease}
+.tray{position:absolute;z-index:6;background:#EFE4CC;color:#0F1C1B;border-radius:6px;padding:12px 16px 16px;box-shadow:0 0 0 8px #4A2E1F,0 0 0 9px rgba(200,150,74,.6),0 22px 34px rgba(2,8,8,.6);animation:trayIn .5s cubic-bezier(.2,.7,.2,1);transform-origin:top center}
 @keyframes trayIn{from{opacity:0;transform:translateY(-22px) scaleY(.94)}to{opacity:1;transform:none}}
-.scrim{position:absolute;left:0;top:0;width:1440px;height:1000px;z-index:20;background:rgba(9,11,28,.58);animation:fadein .3s ease}
-.dlg{position:absolute;z-index:21;background:#F6EEDC;color:#1A2140;border-radius:8px;box-shadow:0 0 0 1px rgba(185,154,97,.7),0 30px 60px rgba(5,8,20,.6);animation:dlgIn .35s cubic-bezier(.2,.7,.2,1)}
+.scrim{position:absolute;left:0;top:0;width:1440px;height:1000px;z-index:20;background:rgba(6,12,12,.58);animation:fadein .3s ease}
+.dlg{position:absolute;z-index:21;background:#EFE4CC;color:#0F1C1B;border-radius:8px;box-shadow:0 0 0 1px rgba(200,150,74,.7),0 30px 60px rgba(2,8,8,.6);animation:dlgIn .35s cubic-bezier(.2,.7,.2,1)}
 @keyframes dlgIn{from{opacity:0;transform:translateY(14px) scale(.98)}to{opacity:1;transform:none}}
-.card-link{display:flex;flex-direction:column;justify-content:center;gap:2px;min-height:60px;padding:8px 12px;border-radius:4px;background:#FFFBF2;border:1px solid #D9CDB4;color:#1A2140;text-decoration:none;box-shadow:0 2px 0 #E4D8C0;transition:transform .2s ease,border-color .2s ease}
-.card-link:hover{transform:translateY(-2px);border-color:#B99A61}
-.card-name{font:600 18px/1.1 'Cormorant Garamond',Georgia,serif}
-.card-sub{font:500 11.5px/1.2 'JetBrains Mono',ui-monospace,monospace;color:#5E5785;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.card-link{display:flex;flex-direction:column;justify-content:center;gap:2px;min-height:60px;padding:8px 12px;border-radius:4px;background:#FFFBF2;border:1px solid #D9CDB4;color:#0F1C1B;text-decoration:none;box-shadow:0 2px 0 #E4D8C0;transition:transform .2s ease,border-color .2s ease}
+.card-link:hover{transform:translateY(-2px);border-color:#C8964A}
+.card-name{font:600 18px/1.1 'Fraunces',Georgia,serif}
+.card-sub{font:500 11.5px/1.2 'IBM Plex Mono',ui-monospace,monospace;color:#5D4A38;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 .link-row{display:flex;align-items:center;gap:4px;min-height:44px;border-bottom:1px solid #E1D6C0}
-.link-row a{flex:1;min-width:0;color:#1A2140;text-decoration:underline;text-decoration-color:rgba(62,56,112,.35);text-underline-offset:3px;font-size:15px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
-.bar{width:22px;border-radius:2px 2px 0 0;background:#6E6496}
+.link-row a{flex:1;min-width:0;color:#0F1C1B;text-decoration:underline;text-decoration-color:rgba(47,93,90,.35);text-underline-offset:3px;font-size:15px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.bar{width:22px;border-radius:2px 2px 0 0;background:#2F5D5A}
 .toast{animation:dlgIn .4s cubic-bezier(.2,.7,.2,1)}
 
 /* notebook rows (Stage 2) */
-.task2{display:flex;align-items:flex-start;gap:8px;padding:6px 0;border-bottom:1px solid #DCD2E6;margin:0}
-.task2[data-active="true"]{background:linear-gradient(90deg,rgba(185,154,97,.16),rgba(185,154,97,0));box-shadow:inset 3px 0 0 #B99A61}
-.t-check{width:20px;height:20px;margin:12px 2px 0 0;flex:none;accent-color:#3E3870;cursor:pointer}
+.task2{display:flex;align-items:flex-start;gap:8px;padding:6px 0;border-bottom:1px solid #D8C9A6;margin:0}
+.task2[data-active="true"]{background:linear-gradient(90deg,rgba(200,150,74,.16),rgba(200,150,74,0));box-shadow:inset 3px 0 0 #C8964A}
+.t-check{width:20px;height:20px;margin:12px 2px 0 0;flex:none;accent-color:#2F5D5A;cursor:pointer}
 .t-body{flex:1;min-width:0}
-.t-title{display:block;width:100%;min-height:44px;padding:4px 0;border:0;background:transparent;text-align:left;color:#1A2140;font:400 16px/22px 'DM Sans',system-ui,sans-serif;cursor:pointer;overflow-wrap:anywhere}
-.t-title:hover .t-text{text-decoration:underline;text-decoration-color:rgba(62,56,112,.35);text-underline-offset:3px}
-.task2[data-done="true"] .t-text{text-decoration:line-through;text-decoration-color:#8C83B3;color:#5E5785}
-.t-meta{margin:-6px 0 2px;font:400 12.5px/1.4 'DM Sans',system-ui,sans-serif;color:#4F4A78}
+.t-title{display:block;width:100%;min-height:44px;padding:4px 0;border:0;background:transparent;text-align:left;color:#0F1C1B;font:400 16px/22px 'Manrope',system-ui,sans-serif;cursor:pointer;overflow-wrap:anywhere}
+.t-title:hover .t-text{text-decoration:underline;text-decoration-color:rgba(47,93,90,.35);text-underline-offset:3px}
+.task2[data-done="true"] .t-text{text-decoration:line-through;text-decoration-color:#8A7A5C;color:#5D4A38}
+.t-meta{margin:-6px 0 2px;font:400 12.5px/1.4 'Manrope',system-ui,sans-serif;color:#5D4A38}
 .t-dot{display:inline-block;width:8px;height:8px;border-radius:50%;margin-right:6px;vertical-align:1px}
 .t-check-space{flex:none;width:22px}
-.t-date{flex:none;width:76px;padding-top:13px;font:500 12px/1.2 'JetBrains Mono',ui-monospace,monospace;color:#4F4A78;text-transform:capitalize}
+.t-date{flex:none;width:76px;padding-top:13px;font:500 12px/1.2 'IBM Plex Mono',ui-monospace,monospace;color:#5D4A38;text-transform:capitalize}
 .prio{display:inline-block;width:7px;height:7px;margin:0 8px 2px 0;transform:rotate(45deg);vertical-align:middle;background:transparent}
 .prio[data-p="high"]{background:#8A3A48}
-.prio[data-p="low"]{width:6px;height:6px;border:1px solid #8C83B3;transform:none;border-radius:50%}
+.prio[data-p="low"]{width:6px;height:6px;border:1px solid #8A7A5C;transform:none;border-radius:50%}
 .task2[data-done="true"] .prio{opacity:.4}
-.nb-h{display:flex;align-items:baseline;gap:10px;margin:18px 0 4px;font:600 24px/1.1 'Cormorant Garamond',Georgia,serif;color:#1A2140}
-.nb-h span{font:500 12px 'JetBrains Mono',ui-monospace,monospace;color:#4F4A78}
+.nb-h{display:flex;align-items:baseline;gap:10px;margin:18px 0 4px;font:600 24px/1.1 'Fraunces',Georgia,serif;color:#0F1C1B}
+.nb-h span{font:500 12px 'IBM Plex Mono',ui-monospace,monospace;color:#5D4A38}
 .nb-h:first-child{margin-top:4px}
-.nb-empty{min-height:40px;display:flex;align-items:center;font:italic 500 18px 'Cormorant Garamond',Georgia,serif;color:#5E5785;border-bottom:1px solid #DCD2E6}
+.nb-empty{min-height:40px;display:flex;align-items:center;font:italic 500 18px 'Fraunces',Georgia,serif;color:#5D4A38;border-bottom:1px solid #D8C9A6}
 .t-editor{display:flex;flex-direction:column;gap:8px;margin:14px 0 4px;padding:14px 16px;border-radius:6px;background:#FFFBF2;border:1px solid #D9CDB4}
 .t-editor select.field{padding:0 8px}
 .danger{color:#8A3A48;text-decoration-color:rgba(138,58,72,.4)}
 
-.pip{width:7px;height:7px;border-radius:50%;border:1.5px solid #6E6496}
-.pip[data-on="true"]{background:#6E6496}
+.pip{width:7px;height:7px;border-radius:50%;border:1.5px solid #2F5D5A}
+.pip[data-on="true"]{background:#2F5D5A}
 
 /* sky + plant motion */
 .tw{animation:tw 4s ease-in-out infinite}
@@ -154,34 +153,76 @@ body{margin:0;background:#141A33}
 .win-btn{border:0;background:transparent;border-radius:178px 178px 4px 4px;transition:box-shadow .25s ease}
 .win-btn:hover,.win-btn:focus-visible{box-shadow:inset 0 0 0 2px rgba(233,217,168,.5)}
 @media (prefers-reduced-motion: reduce){.tw,.drift,.glow,.shimmer,.fadein,.leaf,.tray,.dlg,.scrim,.toast{animation:none!important}.spine,.drawer,.veil,.wash{transition:none!important}.shoot{display:none}}
+
+/* ===== Brass & Ink attic ===== */
+body{background:#0F1C1B}
+.journal .nb-paper{display:grid;grid-template-columns:minmax(0,1fr) 30px minmax(0,1fr);grid-template-rows:auto auto auto 1fr auto;align-content:start}
+.journal .nb-paper>*{grid-column:1}
+.journal .nb-paper>.j-right{grid-column:3;grid-row:1 / 6}
+.journal .nb-paper>form{flex-wrap:nowrap}
+.journal .nb-open{font-family:'Fraunces',Georgia,serif;font-size:25px;letter-spacing:-.01em;gap:6px}
+.journal .task2{border-bottom-color:#D8C9A6}
+.journal .t-date{display:none}
+.journal .t-title{text-align:left;font-size:14.5px;line-height:20px;min-height:40px}
+.journal .t-text{text-align:left;-webkit-line-clamp:2}
+.journal .t-check{margin-top:10px}
+.journal .t-meta{margin:-4px 0 0;font-size:12px}
+.journal .icon-btn{width:40px;height:40px}
+.journal .nb-empty{font-size:15px;line-height:1.4;min-height:0;padding:6px 0 10px;border-bottom:0}
+.drawer{background:linear-gradient(180deg,#7A4A33,#6B3F2A);border-color:rgba(200,150,74,.55);box-shadow:inset 0 1px 0 rgba(255,220,180,.18),inset 0 -3px 0 rgba(0,0,0,.25),0 3px 6px rgba(0,0,0,.35)}
+.drawer[data-open="true"]{background:linear-gradient(180deg,#8A5838,#6B3F2A)}
+.cat-tag{position:absolute;left:12px;right:12px;top:10px;height:26px;display:flex;align-items:center;justify-content:center;border-radius:3px;background:#EFE4CC;color:#0F1C1B;border:2px solid #C8964A;font:700 12px/1 'Manrope',system-ui,sans-serif;white-space:nowrap;pointer-events:none}
+.knob{width:34px;height:12px;border-radius:0 0 8px 8px;background:transparent;border:3px solid #E6C07B;border-top:0}
+.handle:hover .knob,.handle:focus-visible .knob{background:rgba(230,192,123,.25);box-shadow:0 0 8px rgba(230,192,123,.45)}
+.spine{color:#F4ECDA}
+.spine::before,.spine::after{background:#E6C07B;opacity:.75}
+.spine-text{font:700 12px/1.12 'Manrope',system-ui,sans-serif;letter-spacing:.1em}
+.clock .seg{border-color:rgba(230,192,123,.45);background:rgba(15,28,27,.45);color:#F4ECDA;font-weight:600}
+.clock .seg[aria-pressed="true"]{background:#EFE4CC;border-color:#E6C07B;color:#0F1C1B}
+.clock .btn-gold{background:linear-gradient(180deg,#E6C07B,#C8964A);color:#0F1C1B;font-weight:700;box-shadow:inset 0 1px 0 rgba(255,240,200,.5)}
+.clock .btn-gold:hover{filter:brightness(1.07)}
+.clock .btn-line{border:1.5px solid #C8964A;color:#F4ECDA;font-weight:600}
+.clock .pip{border-color:#E6C07B}.clock .pip[data-on="true"]{background:#E6C07B}
+.btn-solid{background:linear-gradient(180deg,#E6C07B,#C8964A);color:#0F1C1B;font-weight:700}
+.btn-solid:hover{background:linear-gradient(180deg,#EDCB8A,#D0A055)}
+.win-btn:hover,.win-btn:focus-visible{box-shadow:0 0 0 4px rgba(230,192,123,.45)}
+.tray{box-shadow:0 0 0 8px #4A2E1F,0 0 0 10px rgba(200,150,74,.7),0 22px 34px rgba(0,0,0,.6)}
 </style>
 </helmet>
 
-<div class="room" data-light="{{light}}" style="position: relative; width: 1440px; height: 1000px; overflow: hidden; background: #1C2346; font-family: 'DM Sans', system-ui, sans-serif; color: #F3EAD7;">
+<div class="room" data-light="{{light}}" style="position: relative; width: 1440px; height: 1000px; overflow: hidden; background: #1E3634; font-family: 'Manrope', system-ui, sans-serif; color: #F4ECDA;">
 
-  <!-- Wall, wainscot, floor -->
-  <div aria-hidden="true" style="position: absolute; left: 0; top: 0; width: 1440px; height: 1000px; background: repeating-linear-gradient(90deg, rgba(183,169,214,0.04) 0 2px, transparent 2px 56px);"></div>
-  <div aria-hidden="true" style="position: absolute; left: 0; top: 700px; width: 1440px; height: 130px; background: #19203F; border-top: 2px solid #2E3561;"></div>
-  <div aria-hidden="true" style="position: absolute; left: 0; top: 818px; width: 1440px; height: 12px; background: #2E2A4A; border-top: 1px solid rgba(185,154,97,0.35);"></div>
-  <div aria-hidden="true" style="position: absolute; left: 0; top: 830px; width: 1440px; height: 170px; background: repeating-linear-gradient(90deg, transparent 0 178px, rgba(0,0,0,0.25) 178px 180px), repeating-linear-gradient(180deg, #141A33 0 40px, #121730 40px 42px);"></div>
-  <div aria-hidden="true" style="position: absolute; left: 560px; top: 936px; width: 780px; height: 54px; border-radius: 50%; background: #262650; box-shadow: inset 0 0 0 2px #4A4475, inset 0 0 0 8px #262650, inset 0 0 0 9px rgba(185,154,97,0.4);"></div>
+  <!-- ===================== ATTIC: walls, sloped roof, skylight, floor ===================== -->
+  <div aria-hidden="true" style="position: absolute; left: 0; top: 0; width: 1440px; height: 1000px; background: repeating-linear-gradient(90deg, transparent 0 158px, rgba(15,28,27,0.55) 158px 162px, rgba(47,93,90,0.18) 162px 164px), linear-gradient(180deg, #1B302E 0%, #1E3634 45%, #172A28 100%);"></div>
+  <svg aria-hidden="true" width="1440" height="330" viewBox="0 0 1440 330" style="position: absolute; left: 0; top: 0;">
+    <defs>
+      <linearGradient id="roofL" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#0B1514"></stop><stop offset="1" stop-color="#14231F"></stop></linearGradient>
+      <linearGradient id="roofR" x1="1" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#0B1514"></stop><stop offset="1" stop-color="#14231F"></stop></linearGradient>
+    </defs>
+    <polygon points="0,0 480,0 0,300" fill="url(#roofL)"></polygon>
+    <polygon points="960,0 1440,0 1440,300" fill="url(#roofR)"></polygon>
+    <g stroke="#2A1A12" stroke-width="9" opacity="0.85"><line x1="120" y1="0" x2="0" y2="75"></line><line x1="260" y1="0" x2="0" y2="162"></line><line x1="400" y1="0" x2="0" y2="250"></line><line x1="1320" y1="0" x2="1440" y2="75"></line><line x1="1180" y1="0" x2="1440" y2="162"></line><line x1="1040" y1="0" x2="1440" y2="250"></line></g>
+    <line x1="480" y1="0" x2="0" y2="300" stroke="#4A2E1F" stroke-width="12"></line>
+    <line x1="960" y1="0" x2="1440" y2="300" stroke="#4A2E1F" stroke-width="12"></line>
+    <rect x="530" y="-3" width="380" height="40" fill="#08100F" stroke="#C8964A" stroke-width="3"></rect>
+    <g fill="#EFE4CC"><circle class="tw" cx="560" cy="14" r="1.4"></circle><circle class="tw" cx="618" cy="27" r="1" style="animation-delay: -1.2s;"></circle><circle class="tw" cx="672" cy="11" r="1.7" style="animation-delay: -2.1s;"></circle><circle class="tw" cx="733" cy="25" r="1.1" style="animation-delay: -.6s;"></circle><circle class="tw" cx="796" cy="13" r="1.5" style="animation-delay: -3s;"></circle><circle class="tw" cx="851" cy="29" r="1" style="animation-delay: -1.8s;"></circle><circle class="tw" cx="890" cy="16" r="1.3" style="animation-delay: -2.6s;"></circle></g>
+  </svg>
+  <div aria-hidden="true" style="position: absolute; left: 0; top: 800px; width: 1440px; height: 200px; background: repeating-linear-gradient(90deg, transparent 0 198px, rgba(0,0,0,0.25) 198px 200px), linear-gradient(180deg, #2A1A12, #1A100B);"></div>
+  <div aria-hidden="true" style="position: absolute; left: 260px; top: 820px; width: 920px; height: 150px; border-radius: 50%; background: radial-gradient(ellipse, #2F5D5A 0, #1E3634 55%, rgba(30,54,52,0) 72%); opacity: 0.55;"></div>
 
   <!-- Header -->
-  <header style="position: absolute; left: 40px; top: 34px; width: 400px;">
-    <p class="eyebrow" style="color: #B7A9D6;">Biomedical Engineering · FIU</p>
-    <h1 style="margin: 6px 0 0; font-family: 'Cormorant Garamond', Georgia, serif; font-weight: 600; font-size: 42px; line-height: 1.05; color: #F6EEDC;">The Midnight Study Room</h1>
+  <header style="position: absolute; left: 40px; top: 50px; width: 320px;">
+    <p class="eyebrow" style="color: #E6C07B;">Biomedical Engineering · FIU</p>
+    <h1 style="margin: 10px 0 0; font-family: 'Fraunces', Georgia, serif; font-weight: 600; font-size: 44px; line-height: 1.04; letter-spacing: -0.015em; color: #F4ECDA;">The Midnight Study Room</h1>
   </header>
 
-  <!-- ===================== BOOKSHELF ===================== -->
-  <div aria-hidden="true" style="position: absolute; left: 30px; top: 140px; width: 380px; height: 28px; background: #3E3766; border-radius: 4px 4px 0 0; border-bottom: 2px solid #B99A61; box-shadow: 0 4px 0 #2E2A4A;"></div>
-  <div aria-hidden="true" style="position: absolute; left: 40px; top: 170px; width: 360px; height: 770px; background: #2E2A4A; box-shadow: 14px 18px 30px rgba(5,8,20,0.45);"></div>
-  <div aria-hidden="true" style="position: absolute; left: 56px; top: 170px; width: 328px; height: 730px; background: #1E1C3A; box-shadow: inset 0 14px 18px rgba(0,0,0,0.35);"></div>
-  <div aria-hidden="true" style="position: absolute; left: 40px; top: 380px; width: 360px; height: 14px; background: #3E3766; border-top: 1px solid rgba(185,154,97,0.5);"></div>
-  <div aria-hidden="true" style="position: absolute; left: 40px; top: 560px; width: 360px; height: 14px; background: #3E3766; border-top: 1px solid rgba(185,154,97,0.5);"></div>
-  <div aria-hidden="true" style="position: absolute; left: 34px; top: 900px; width: 372px; height: 46px; background: #3E3766; border-top: 2px solid #B99A61;"></div>
+  <!-- ===================== BOOKSHELF (built into the right wall) ===================== -->
+  <div aria-hidden="true" style="position: absolute; left: 1100px; top: 96px; width: 320px; height: 248px; border-radius: 6px; background: #0C1716; box-shadow: inset 0 0 0 10px #4A2E1F, inset 0 0 0 12px #C8964A, inset 0 18px 30px rgba(0,0,0,0.6), 0 12px 30px rgba(0,0,0,0.45);"></div>
+  <p class="eyebrow" aria-hidden="true" style="position: absolute; left: 1124px; top: 112px; font-size: 10.5px; color: #E6C07B;">Course books</p>
+  <div aria-hidden="true" style="position: absolute; left: 1110px; top: 330px; width: 300px; height: 10px; background: linear-gradient(180deg, #6A4330, #4A2E1F); box-shadow: 0 4px 6px rgba(0,0,0,0.5);"></div>
 
-  <!-- Shelf 1: the six course books -->
-  <nav aria-label="Course bookshelf" style="position: absolute; left: 64px; top: 176px; width: 312px; height: 204px; display: flex; align-items: flex-end; gap: 4px;">
+  <!-- the six course books -->
+  <nav aria-label="Course bookshelf" style="position: absolute; left: 1118px; top: 130px; width: 284px; height: 200px; display: flex; align-items: flex-end; gap: 2px;">
     <sc-for list="{{books}}" as="b" hint-placeholder-count="6">
       <sc-if value="{{b.href}}" hint-placeholder-val="{{ false }}">
         <a class="spine obj" href="{{b.href}}" target="_blank" rel="noopener noreferrer" data-open="{{b.open}}" aria-current="{{b.current}}" aria-label="{{b.name}}: open course in Canvas (new tab)" onClick="{{b.pick}}" style="width: {{b.w}}px; height: {{b.h}}px; background: {{b.bg}}; color: {{b.fg}};"><span class="spine-text">{{b.name}}</span><span class="tip" aria-hidden="true">Open in Canvas</span></a>
@@ -192,48 +233,34 @@ body{margin:0;background:#141A33}
     </sc-for>
   </nav>
 
-  <!-- Shelf 2: quiet decor -->
-  <svg aria-hidden="true" width="100" height="140" viewBox="0 0 100 140" style="position: absolute; left: 84px; top: 420px;" fill="none" stroke="#B99A61" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
-    <path d="M18 136 H82"></path>
-    <path d="M30 136 C30 124 36 118 48 118 H58"></path>
-    <path d="M60 136 V96 C60 82 70 70 70 56"></path>
-    <path d="M34 104 H72"></path>
-    <path d="M44 14 L58 10 L76 66 L62 70 Z"></path>
-    <path d="M48 8 L60 4"></path>
-    <path d="M62 70 L64 82"></path>
-    <circle cx="70" cy="56" r="4"></circle>
-  </svg>
-  <div aria-hidden="true" style="position: absolute; left: 236px; top: 538px; width: 128px; height: 22px; background: #4E6489; border-radius: 2px; box-shadow: inset 0 -3px 0 rgba(0,0,0,0.18);"></div>
-  <div aria-hidden="true" style="position: absolute; left: 246px; top: 518px; width: 108px; height: 20px; background: #EDE2CB; border-radius: 2px; box-shadow: inset 0 -3px 0 rgba(0,0,0,0.12);"></div>
-  <div aria-hidden="true" style="position: absolute; left: 258px; top: 496px; width: 84px; height: 22px; background: #8A5560; border-radius: 2px; box-shadow: inset 0 -3px 0 rgba(0,0,0,0.18);"></div>
-
-  <!-- Shelf 3: library card -->
-  <section aria-labelledby="card-title" class="paper" style="position: absolute; left: 64px; top: 586px; width: 312px; height: 300px; padding: 20px 22px; background: #F6EEDC; border-radius: 6px; color: #1A2140; box-shadow: 0 10px 22px rgba(5,8,20,0.45); display: flex; flex-direction: column; gap: 10px;">
+  <!-- Library card, pinned under the shelf -->
+  <section aria-labelledby="card-title" class="paper" style="position: absolute; left: 1100px; top: 358px; width: 320px; height: 288px; padding: 18px 20px; background: #EFE4CC; border-radius: 4px; color: #0F1C1B; box-shadow: 0 10px 22px rgba(0,0,0,0.5); display: flex; flex-direction: column; gap: 9px;">
+    <span aria-hidden="true" style="position: absolute; left: 50%; top: -7px; width: 14px; height: 14px; margin-left: -7px; border-radius: 50%; background: radial-gradient(circle at 35% 35%, #E6C07B, #8A5F27);"></span>
     <div style="display: flex; align-items: center; gap: 10px;">
-      <p class="eyebrow" style="color: #5E5785;">Library card</p>
+      <p class="eyebrow" style="color: #5D4A38;">Library card</p>
       <div aria-hidden="true" style="flex: 1; height: 1px; background: #CFC2A6;"></div>
     </div>
     <sc-if value="{{noBook}}" hint-placeholder-val="{{ true }}">
-      <h2 id="card-title" style="margin: 2px 0 0; font-family: 'Cormorant Garamond', Georgia, serif; font-weight: 600; font-size: 28px; line-height: 1.1;">Choose a book</h2>
-      <p style="margin: 0; font-size: 15px; line-height: 1.5; color: #3A3760;">Pick a course from the top shelf, or a task in the notebook. The desk timer counts your focus blocks for it.</p>
+      <h2 id="card-title" style="margin: 2px 0 0; font-family: 'Fraunces', Georgia, serif; font-weight: 600; font-size: 28px; line-height: 1.1;">Choose a book</h2>
+      <p style="margin: 0; font-size: 14px; line-height: 1.5; color: #3D3226;">Pick a course from the shelf above, or a task in the journal. The desk clock counts your focus blocks for it.</p>
       <button type="button" class="btn-ink" style="margin-top: auto; align-self: flex-start;" onClick="{{openSettingsPlain}}">Canvas links</button>
     </sc-if>
     <sc-if value="{{cardShow}}" hint-placeholder-val="{{ false }}">
       <div style="display: flex; align-items: flex-start; gap: 10px;">
-        <span aria-hidden="true" style="width: 12px; height: 12px; margin-top: 9px; border-radius: 50%; flex: none; background: {{cardBg}}; box-shadow: 0 0 0 1.5px #1A2140;"></span>
-        <h2 id="card-title" style="margin: 0; font-family: 'Cormorant Garamond', Georgia, serif; font-weight: 600; font-size: 26px; line-height: 1.1;">{{cardName}}</h2>
+        <span aria-hidden="true" style="width: 12px; height: 12px; margin-top: 9px; border-radius: 50%; flex: none; background: {{cardBg}}; box-shadow: 0 0 0 1.5px #0F1C1B;"></span>
+        <h2 id="card-title" style="margin: 0; font-family: 'Fraunces', Georgia, serif; font-weight: 600; font-size: 26px; line-height: 1.1;">{{cardName}}</h2>
       </div>
       <sc-if value="{{activeTask}}" hint-placeholder-val="{{ false }}">
-        <p style="margin: -4px 0 0; font-family: 'Cormorant Garamond', Georgia, serif; font-style: italic; font-weight: 500; font-size: 18px; line-height: 1.2; color: #3A3760; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">{{activeTask.text}}</p>
+        <p style="margin: -4px 0 0; font-family: 'Fraunces', Georgia, serif; font-style: italic; font-weight: 500; font-size: 18px; line-height: 1.2; color: #3D3226; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">{{activeTask.text}}</p>
       </sc-if>
       <dl style="margin: 0; display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 12px; padding: 10px 0; border-top: 1px solid #E1D6C0; border-bottom: 1px solid #E1D6C0;">
         <div style="display: flex; flex-direction: column-reverse; gap: 2px;">
-          <dt style="font-size: 13px; color: #3A3760;">{{cardLeftLabel}}</dt>
-          <dd style="margin: 0; font-family: 'Cormorant Garamond', Georgia, serif; font-weight: 600; font-size: 34px; line-height: 1; font-variant-numeric: lining-nums;">{{cardLeft}}</dd>
+          <dt style="font-size: 13px; color: #3D3226;">{{cardLeftLabel}}</dt>
+          <dd style="margin: 0; font-family: 'Fraunces', Georgia, serif; font-weight: 600; font-size: 28px; line-height: 1; font-variant-numeric: lining-nums;">{{cardLeft}}</dd>
         </div>
         <div style="display: flex; flex-direction: column-reverse; gap: 2px;">
-          <dt style="font-size: 13px; color: #3A3760;">total study time</dt>
-          <dd style="margin: 0; font-family: 'Cormorant Garamond', Georgia, serif; font-weight: 600; font-size: 34px; line-height: 1; font-variant-numeric: lining-nums;">{{cardTotal}}</dd>
+          <dt style="font-size: 13px; color: #3D3226;">total study time</dt>
+          <dd style="margin: 0; font-family: 'Fraunces', Georgia, serif; font-weight: 600; font-size: 28px; line-height: 1; font-variant-numeric: lining-nums;">{{cardTotal}}</dd>
         </div>
       </dl>
       <div style="margin-top: auto; display: flex; gap: 8px; flex-wrap: wrap;">
@@ -248,13 +275,9 @@ body{margin:0;background:#141A33}
     </sc-if>
   </section>
 
-  <!-- ===================== WINDOW ===================== -->
-  <div aria-hidden="true" style="position: absolute; left: 480px; top: 28px; width: 480px; height: 6px; border-radius: 3px; background: #B99A61;"></div>
-  <div aria-hidden="true" style="position: absolute; left: 472px; top: 24px; width: 14px; height: 14px; border-radius: 50%; background: #B99A61;"></div>
-  <div aria-hidden="true" style="position: absolute; left: 954px; top: 24px; width: 14px; height: 14px; border-radius: 50%; background: #B99A61;"></div>
-
-  <div aria-hidden="true" style="position: absolute; left: 530px; top: 44px; width: 380px; height: 340px; padding: 12px; background: #2E2A4A; border-radius: 190px 190px 8px 8px; box-shadow: inset 0 0 0 1px rgba(185,154,97,0.55), 0 14px 30px rgba(5,8,20,0.4);">
-    <div style="position: relative; width: 100%; height: 100%; overflow: hidden; border-radius: 178px 178px 4px 4px; background: #0E1431;">
+  <!-- ===================== PORTHOLE WINDOW ===================== -->
+  <div aria-hidden="true" style="position: absolute; left: 498px; top: 50px; width: 324px; height: 324px; padding: 12px; border-radius: 50%; background: conic-gradient(from 200deg, #E6C07B, #C8964A, #8A5F27, #C8964A, #E6C07B); box-shadow: 0 14px 34px rgba(0,0,0,0.55);">
+    <div style="position: relative; width: 100%; height: 100%; overflow: hidden; border-radius: 50%; clip-path: circle(50% at 50% 50%); isolation: isolate; background: #0E1431;">
       <sc-if value="{{skyClear}}" hint-placeholder-val="{{ true }}">
         <div class="fadein" style="position: absolute; left: 0; top: 0; width: 100%; height: 100%; background: linear-gradient(180deg, #0E1431 0%, #1A2050 55%, #34356A 100%);">
           <sc-for list="{{stars}}" as="s" hint-placeholder-count="0">
@@ -298,89 +321,94 @@ body{margin:0;background:#141A33}
       </sc-if>
       <!-- the enchanted window worlds are drawn into this slot, under the mullions and the sill plant -->
       <div id="ew-window-slot" style="position: absolute; left: 0; top: 0; width: 100%; height: 100%;"></div>
-      <div style="position: absolute; left: 50%; top: 0; width: 8px; height: 100%; margin-left: -4px; background: #2E2A4A;"></div>
-      <div style="position: absolute; left: 0; top: 58%; width: 100%; height: 8px; background: #2E2A4A;"></div>
+      <div style="position: absolute; left: 50%; top: 0; width: 8px; height: 100%; margin-left: -4px; background: #C8964A; box-shadow: 0 0 0 1px rgba(0,0,0,0.25);"></div>
+      <div style="position: absolute; left: 0; top: 50%; width: 100%; height: 8px; margin-top: -4px; background: #C8964A; box-shadow: 0 0 0 1px rgba(0,0,0,0.25);"></div>
+      <div style="position: absolute; left: 0; top: 0; width: 100%; height: 100%; border-radius: 50%; box-shadow: inset 0 0 30px rgba(0,0,0,0.7);"></div>
     </div>
   </div>
-  <button type="button" class="obj win-btn" aria-label="{{skyLabel}}" onClick="{{toggleSky}}" style="left: 542px; top: 56px; width: 356px; height: 316px;"><span class="tip inside" aria-hidden="true">Choose a world</span></button>
+  <button type="button" class="obj win-btn" aria-label="{{skyLabel}}" onClick="{{toggleSky}}" style="left: 510px; top: 62px; width: 300px; height: 300px; border-radius: 50%;"><span class="tip inside" aria-hidden="true">Choose a world</span></button>
+  <!-- moonlight falling from the porthole -->
+  <div class="lamp-light" aria-hidden="true" style="position: absolute; left: 380px; top: 220px; width: 560px; height: 480px; pointer-events: none; background: radial-gradient(ellipse 45% 55% at 50% 10%, rgba(214,232,226,0.08), rgba(214,232,226,0) 70%);"></div>
 
-  <div aria-hidden="true" style="position: absolute; left: 492px; top: 34px; width: 66px; height: 360px; border-radius: 0 0 26px 6px; background: repeating-linear-gradient(90deg, #8F82B5 0 10px, #7C6FA4 10px 18px, #8F82B5 18px 22px); box-shadow: 6px 0 14px rgba(5,8,20,0.3);"></div>
-  <div aria-hidden="true" style="position: absolute; left: 882px; top: 34px; width: 66px; height: 360px; border-radius: 0 0 6px 26px; background: repeating-linear-gradient(90deg, #8F82B5 0 10px, #7C6FA4 10px 18px, #8F82B5 18px 22px); box-shadow: -6px 0 14px rgba(5,8,20,0.3);"></div>
-  <div aria-hidden="true" style="position: absolute; left: 512px; top: 384px; width: 416px; height: 16px; border-radius: 3px; background: #3E3766; border-top: 2px solid #B99A61;"></div>
-
-  <!-- Plant on the sill -->
-  <button type="button" class="obj plant glowable" data-sway="{{sway}}" aria-label="Plant: brush the leaves" onClick="{{swayPlant}}" style="left: 826px; top: 290px; width: 76px; height: 96px; padding: 0; border: 0; background: transparent; border-radius: 8px;">
+  <!-- Brass ledge and the plant -->
+  <div aria-hidden="true" style="position: absolute; left: 410px; top: 392px; width: 120px; height: 10px; border-radius: 3px; background: linear-gradient(180deg, #E6C07B, #C8964A); box-shadow: 0 5px 8px rgba(0,0,0,0.45);"></div>
+  <button type="button" class="obj plant glowable" data-sway="{{sway}}" aria-label="Plant: brush the leaves" onClick="{{swayPlant}}" style="left: 432px; top: 296px; width: 76px; height: 96px; padding: 0; border: 0; background: transparent; border-radius: 8px;">
     <svg aria-hidden="true" width="76" height="96" viewBox="0 0 76 96" style="display: block; overflow: visible;">
       <g class="leaf l1"><path d="M38 66 C36 48 30 36 18 28 C26 26 36 32 39 46" fill="#7E9A86"></path><path d="M38 66 C36 50 30 38 20 30" stroke="#5F7D69" stroke-width="1.2" fill="none"></path></g>
       <g class="leaf l2"><path d="M39 66 C40 42 46 26 58 16 C60 28 52 44 41 52" fill="#6F8C78"></path><path d="M39 64 C41 44 47 30 56 20" stroke="#55705E" stroke-width="1.2" fill="none"></path></g>
       <g class="leaf l3"><path d="M38 66 C38 50 38 36 36 20 C44 28 46 44 40 56" fill="#8BA893"></path><path d="M38 64 C38 48 38 36 37 24" stroke="#5F7D69" stroke-width="1.2" fill="none"></path></g>
       <g class="leaf l2"><path d="M30 70 C22 72 14 80 12 90 C20 86 26 80 31 74" fill="#7E9A86"></path></g>
-      <path d="M22 66 H54 L50 94 H26 Z" fill="#EDE2CB"></path>
-      <path d="M20 62 H56 V68 H20 Z" fill="#B99A61"></path>
-      <path d="M28 76 H48" stroke="#CFC2A6" stroke-width="1.5"></path>
+      <path d="M22 66 H54 L50 94 H26 Z" fill="#6B3F2A"></path>
+      <path d="M20 62 H56 V68 H20 Z" fill="#C8964A"></path>
+      <path d="M28 76 H48" stroke="#8A5838" stroke-width="1.5"></path>
     </svg>
     <span class="tip" aria-hidden="true">Brush the leaves</span>
   </button>
 
   <!-- Framed femur: biomedical reference -->
-  <button type="button" class="obj glowable" aria-label="Femur engraving: open biomedical reference links" onClick="{{openRefs}}" style="left: 1114px; top: 34px; width: 132px; height: 128px; padding: 10px; border: 0; background: #B99A61; border-radius: 3px; box-shadow: 0 10px 20px rgba(5,8,20,0.45);">
-    <span style="width: 100%; height: 100%; background: #F3EAD7; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 2px;">
-      <svg aria-hidden="true" width="44" height="76" viewBox="0 0 60 100" fill="none" stroke="#2E2A4A" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+  <button type="button" class="obj glowable" aria-label="Femur engraving: open biomedical reference links" onClick="{{openRefs}}" style="left: 360px; top: 132px; width: 112px; height: 150px; padding: 10px; border: 0; background: linear-gradient(135deg, #E6C07B, #C8964A); border-radius: 4px; box-shadow: 0 10px 22px rgba(0,0,0,0.5);">
+    <span style="width: 100%; height: 100%; background: #F4ECDA; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 2px;">
+      <svg aria-hidden="true" width="44" height="76" viewBox="0 0 60 100" fill="none" stroke="#17302D" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
         <circle cx="21" cy="15" r="7"></circle>
         <path d="M27 18 L32 18 C33 13 37 11 39 15 C41 20 38 24 34 26"></path>
         <path d="M26 21 C25 34 24 60 25 78"></path>
         <path d="M34 26 C35 40 36 62 35 78"></path>
         <path d="M25 78 C19 80 17 88 21 92 C24 95 28 93 30 90 C32 93 36 95 39 92 C43 88 41 80 35 78"></path>
       </svg>
-      <span style="font-family: 'Cormorant Garamond', Georgia, serif; font-style: italic; font-size: 13px; color: #2E2A4A;">Os femoris</span>
+      <span style="font-family: 'Fraunces', Georgia, serif; font-style: italic; font-size: 13px; color: #17302D;">Os femoris</span>
     </span>
     <span class="tip below" aria-hidden="true">Reference links</span>
   </button>
 
   <!-- ===================== DESK ===================== -->
-  <div class="lamp-light" aria-hidden="true" style="position: absolute; left: 340px; top: 400px; width: 260px; height: 260px; border-radius: 50%; background: radial-gradient(closest-side, rgba(240,210,150,0.16), rgba(240,210,150,0));"></div>
+  <div class="lamp-light" aria-hidden="true" style="position: absolute; left: 30px; top: 420px; width: 520px; height: 380px; background: radial-gradient(ellipse 50% 50% at 42% 62%, rgba(242,166,90,0.30), rgba(242,166,90,0.10) 45%, rgba(242,166,90,0) 72%);"></div>
+  <div aria-hidden="true" style="position: absolute; left: 156px; top: 680px; width: 1250px; height: 120px; background: repeating-linear-gradient(90deg, transparent 0 120px, rgba(0,0,0,0.08) 120px 122px), linear-gradient(180deg, #4A2B1D, #3A2217); box-shadow: inset 0 8px 14px rgba(0,0,0,0.4);"></div>
+  <div class="desk-top" aria-hidden="true" style="position: absolute; left: 136px; top: 650px; width: 1290px; height: 30px; border-radius: 5px 5px 2px 2px; background: linear-gradient(180deg, #8A5838, #6B3F2A 55%, #55311F); box-shadow: inset 0 2px 0 rgba(255,210,170,0.25), 0 8px 14px rgba(0,0,0,0.5);"></div>
 
-  <!-- Left pedestal: Apps + Study log -->
-  <div style="position: absolute; left: 452px; top: 646px; width: 220px; height: 272px; background: #2E2A4A; box-shadow: inset -10px 0 0 rgba(0,0,0,0.15);">
-    <div class="drawer" data-open="{{drawerOpen.apps}}" style="left: 14px; top: 16px; width: 192px; height: 112px; background: #2E2A4A;">
-      <button type="button" id="h-apps" class="handle obj" aria-expanded="{{drawerOpen.apps}}" aria-label="Apps drawer" onClick="{{openApps}}" style="left: 63px; top: 34px;"><span class="knob"></span><span class="tip" aria-hidden="true">Apps</span></button>
+  <!-- Card-catalog cabinet: Apps, Study log, Resources, Settings -->
+  <div style="position: absolute; left: 420px; top: 688px; width: 520px; height: 112px; background: linear-gradient(180deg, #5A3423, #4A2B1D); box-shadow: inset 0 0 0 4px #2A1A12, inset 0 0 0 6px #C8964A;">
+    <div class="drawer" data-open="{{drawerOpen.apps}}" style="left: 14px; top: 12px; width: 116px; height: 88px;">
+      <span class="cat-tag" aria-hidden="true">Apps</span>
+      <button type="button" id="h-apps" class="handle obj" aria-expanded="{{drawerOpen.apps}}" aria-label="Apps drawer" onClick="{{openApps}}" style="left: 26px; top: 40px;"><span class="knob"></span><span class="tip" aria-hidden="true">Apps</span></button>
     </div>
-    <div class="drawer" data-open="{{drawerOpen.history}}" style="left: 14px; top: 142px; width: 192px; height: 112px; background: #2E2A4A;">
-      <button type="button" id="h-history" class="handle obj" aria-expanded="{{drawerOpen.history}}" aria-label="Study log drawer" onClick="{{openHistory}}" style="left: 63px; top: 34px;"><span class="knob"></span><span class="tip" aria-hidden="true">Study log</span></button>
+    <div class="drawer" data-open="{{drawerOpen.history}}" style="left: 140px; top: 12px; width: 116px; height: 88px;">
+      <span class="cat-tag" aria-hidden="true">Study log</span>
+      <button type="button" id="h-history" class="handle obj" aria-expanded="{{drawerOpen.history}}" aria-label="Study log drawer" onClick="{{openHistory}}" style="left: 26px; top: 40px;"><span class="knob"></span><span class="tip" aria-hidden="true">Study log</span></button>
+    </div>
+    <div class="drawer" data-open="{{drawerOpen.resources}}" style="left: 266px; top: 12px; width: 116px; height: 88px;">
+      <span class="cat-tag" aria-hidden="true">Resources</span>
+      <button type="button" id="h-resources" class="handle obj" aria-expanded="{{drawerOpen.resources}}" aria-label="Study resources drawer" onClick="{{openResources}}" style="left: 26px; top: 40px;"><span class="knob"></span><span class="tip" aria-hidden="true">Study resources</span></button>
+    </div>
+    <div class="drawer" data-open="{{drawerOpen.settings}}" style="left: 392px; top: 12px; width: 116px; height: 88px;">
+      <span class="cat-tag" aria-hidden="true">Settings</span>
+      <button type="button" id="h-settings" class="handle obj" aria-haspopup="dialog" aria-label="Settings drawer" onClick="{{openSettingsPlain}}" style="left: 26px; top: 40px;"><span class="knob"></span><span class="tip" aria-hidden="true">Settings</span></button>
     </div>
   </div>
-  <!-- Right pedestal: Resources + Settings -->
-  <div style="position: absolute; left: 1168px; top: 646px; width: 220px; height: 272px; background: #2E2A4A; box-shadow: inset -10px 0 0 rgba(0,0,0,0.15);">
-    <div class="drawer" data-open="{{drawerOpen.resources}}" style="left: 14px; top: 16px; width: 192px; height: 112px; background: #2E2A4A;">
-      <button type="button" id="h-resources" class="handle obj" aria-expanded="{{drawerOpen.resources}}" aria-label="Study resources drawer" onClick="{{openResources}}" style="left: 63px; top: 34px;"><span class="knob"></span><span class="tip" aria-hidden="true">Study resources</span></button>
-    </div>
-    <div class="drawer" data-open="{{drawerOpen.settings}}" style="left: 14px; top: 142px; width: 192px; height: 112px; background: #2E2A4A;">
-      <button type="button" id="h-settings" class="handle obj" aria-haspopup="dialog" aria-label="Settings drawer" onClick="{{openSettingsPlain}}" style="left: 63px; top: 34px;"><span class="knob"></span><span class="tip" aria-hidden="true">Settings</span></button>
-    </div>
-  </div>
-  <div aria-hidden="true" style="position: absolute; left: 672px; top: 646px; width: 496px; height: 58px; background: #2A2645; box-shadow: inset 0 -8px 12px rgba(0,0,0,0.25);"></div>
-  <div class="desk-top" aria-hidden="true" style="position: absolute; left: 420px; top: 618px; width: 1000px; height: 30px; border-radius: 4px; background: #3E3766; border-top: 2px solid rgba(185,154,97,0.7); box-shadow: 0 8px 14px rgba(5,8,20,0.45);"></div>
 
-  <!-- Lamp -->
-  <div class="lamp-light" aria-hidden="true" style="position: absolute; left: 400px; top: 606px; width: 150px; height: 20px; border-radius: 50%; background: radial-gradient(closest-side, rgba(240,210,150,0.22), rgba(240,210,150,0));"></div>
-  <button type="button" class="obj glowable" aria-label="Desk lamp" aria-pressed="{{lampOn}}" onClick="{{toggleLight}}" style="left: 424px; top: 418px; width: 100px; height: 204px; padding: 0; border: 0; background: transparent; border-radius: 8px;">
-    <span aria-hidden="true" style="position: absolute; left: 20px; top: 188px; width: 60px; height: 14px; border-radius: 50%; background: #B99A61; box-shadow: inset 0 -3px 0 #8F7542;"></span>
-    <span aria-hidden="true" style="position: absolute; left: 47px; top: 52px; width: 6px; height: 140px; background: #B99A61;"></span>
-    <span aria-hidden="true" style="position: absolute; left: 8px; top: 8px; width: 84px; height: 52px; background: #6E6496; clip-path: polygon(22% 0, 78% 0, 100% 100%, 0 100%); box-shadow: inset 0 -4px 0 #B99A61;"></span>
-    <span aria-hidden="true" style="position: absolute; left: 8px; top: 56px; width: 84px; height: 4px; background: #B99A61;"></span>
-    <span class="glow bulb" aria-hidden="true" style="position: absolute; left: 38px; top: 56px; width: 24px; height: 12px; border-radius: 0 0 12px 12px; background: #F6E3B4;"></span>
+  <!-- Banker's lamp -->
+  <button type="button" class="obj glowable" aria-label="Desk lamp" aria-pressed="{{lampOn}}" onClick="{{toggleLight}}" style="left: 150px; top: 498px; width: 150px; height: 152px; padding: 0; border: 0; background: transparent; border-radius: 8px;">
+    <svg aria-hidden="true" width="150" height="152" viewBox="0 0 150 152" style="position: absolute; left: 0; top: 0;">
+      <ellipse cx="75" cy="146" rx="48" ry="7" fill="#000" opacity="0.35"></ellipse>
+      <rect x="31" y="132" width="88" height="14" rx="5" fill="#C8964A"></rect><rect x="31" y="132" width="88" height="4" rx="2" fill="#E6C07B"></rect>
+      <rect x="71" y="62" width="8" height="72" fill="#C8964A"></rect><rect x="71" y="62" width="3" height="72" fill="#E6C07B"></rect>
+      <path d="M10 66 Q12 22 75 18 Q138 22 140 66 Z" fill="#2F5D5A"></path><path d="M18 58 Q24 28 75 26" stroke="#5D9A8F" stroke-width="4" fill="none" opacity="0.7"></path>
+      <rect x="6" y="62" width="138" height="8" rx="4" fill="#C8964A"></rect>
+      <rect x="100" y="70" width="3" height="40" fill="#E6C07B"></rect><circle cx="101.5" cy="112" r="4" fill="#E6C07B"></circle>
+    </svg>
+    <span class="glow bulb" aria-hidden="true" style="position: absolute; left: 35px; top: 68px; width: 80px; height: 9px; border-radius: 0 0 40px 40px; background: #F2A65A; box-shadow: 0 6px 18px rgba(242,166,90,0.55);"></span>
     <span class="tip" aria-hidden="true">{{lampTip}}</span>
   </button>
 
   <!-- Focus timer instrument -->
-  <section aria-labelledby="timer-title" style="position: absolute; left: 520px; top: 404px; width: 424px; height: 214px; padding: 15px; display: flex; gap: 16px; align-items: center; background: #2E2A4A; border: 1px solid #5A527E; border-radius: 12px; box-shadow: 0 8px 0 -3px #221F3B, 0 18px 30px rgba(5,8,20,0.45);">
-    <div style="position: relative; width: 184px; height: 184px; flex: none;">
+  <section class="clock" aria-labelledby="timer-title" style="position: absolute; left: 830px; top: 256px; width: 256px; height: 394px; padding: 12px 14px; display: flex; flex-direction: column; gap: 10px; align-items: stretch; background: linear-gradient(180deg, #24403D, #162A28); border: 2px solid #C8964A; border-radius: 18px; box-shadow: inset 0 1px 0 rgba(230,192,123,0.4), 0 14px 28px rgba(0,0,0,0.55);">
+    <div style="position: relative; width: 184px; height: 184px; flex: none; align-self: center;">
       <svg aria-hidden="true" width="184" height="184" viewBox="0 0 184 184" style="position: absolute; left: 0; top: 0;">
-        <circle cx="92" cy="92" r="91" fill="#B99A61"></circle>
-        <circle cx="92" cy="92" r="85" fill="#F6EEDC"></circle>
-        <circle cx="92" cy="92" r="76" fill="none" stroke="#E4D8C0" stroke-width="6"></circle>
-        <circle cx="92" cy="92" r="76" fill="none" stroke="#6E6496" stroke-width="6" stroke-linecap="round" stroke-dasharray="477.5" stroke-dashoffset="{{dashOffset}}" transform="rotate(-90 92 92)" style="transition: stroke-dashoffset .4s linear;"></circle>
-        <g stroke="#B9AD94" stroke-width="1.5" stroke-linecap="round">
+        <circle cx="92" cy="92" r="91" fill="#C8964A"></circle>
+        <circle cx="92" cy="92" r="88" fill="none" stroke="#E6C07B" stroke-width="2"></circle>
+        <circle cx="92" cy="92" r="84" fill="#10201F"></circle>
+        <circle cx="92" cy="92" r="76" fill="none" stroke="rgba(230,192,123,0.18)" stroke-width="6"></circle>
+        <circle cx="92" cy="92" r="76" fill="none" stroke="#F2A65A" stroke-width="6" stroke-linecap="round" stroke-dasharray="477.5" stroke-dashoffset="{{dashOffset}}" transform="rotate(-90 92 92)" style="transition: stroke-dashoffset .4s linear;"></circle>
+        <g stroke="#E6C07B" stroke-opacity="0.7" stroke-width="1.5" stroke-linecap="round">
           <line x1="92" y1="22" x2="92" y2="28"></line>
           <line x1="92" y1="22" x2="92" y2="28" transform="rotate(30 92 92)"></line>
           <line x1="92" y1="22" x2="92" y2="28" transform="rotate(60 92 92)"></line>
@@ -395,10 +423,10 @@ body{margin:0;background:#141A33}
           <line x1="92" y1="22" x2="92" y2="28" transform="rotate(330 92 92)"></line>
         </g>
       </svg>
-      <div style="position: absolute; left: 0; top: 0; width: 184px; height: 184px; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 3px; color: #1A2140;">
-        <p class="eyebrow" style="color: #5E5785;">{{modeLabel}}</p>
-        <p role="timer" aria-label="Time remaining {{timeText}}" style="margin: 0; font-family: 'JetBrains Mono', ui-monospace, monospace; font-weight: 500; font-size: 36px; line-height: 1.1; letter-spacing: -0.02em;">{{timeText}}</p>
-        <p style="margin: 0; max-width: 120px; font-family: 'Cormorant Garamond', Georgia, serif; font-style: italic; font-weight: 500; font-size: 16px; line-height: 1.15; text-align: center; color: #3A3760;">{{subjectLabel}}</p>
+      <div style="position: absolute; left: 0; top: 0; width: 184px; height: 184px; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 3px; color: #F4ECDA;">
+        <p class="eyebrow" style="color: #E6C07B;">{{modeLabel}}</p>
+        <p role="timer" aria-label="Time remaining {{timeText}}" style="margin: 0; font-family: 'IBM Plex Mono', ui-monospace, monospace; font-weight: 500; font-size: 36px; line-height: 1.1; letter-spacing: -0.02em;">{{timeText}}</p>
+        <p style="margin: 0; max-width: 120px; font-family: 'Fraunces', Georgia, serif; font-style: italic; font-weight: 500; font-size: 15px; line-height: 1.15; text-align: center; color: #EFE4CC;">{{subjectLabel}}</p>
         <div role="img" aria-label="{{pipLabel}}" style="display: flex; gap: 5px; margin-top: 4px;">
           <sc-for list="{{pips}}" as="p" hint-placeholder-count="4">
             <span class="pip" data-on="{{p.on}}"></span>
@@ -407,8 +435,8 @@ body{margin:0;background:#141A33}
       </div>
     </div>
 
-    <div style="flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 10px;">
-      <h2 id="timer-title" class="eyebrow" style="color: #C9AC75;">Focus timer</h2>
+    <div style="min-width: 0; display: flex; flex-direction: column; gap: 10px;">
+      <h2 id="timer-title" class="eyebrow" style="color: #E6C07B; text-align: center;">Focus timer</h2>
       <div role="group" aria-label="Timer mode" style="display: flex; gap: 4px;">
         <button type="button" class="seg" aria-pressed="{{isFocus}}" onClick="{{setFocus}}">Focus</button>
         <button type="button" class="seg" aria-pressed="{{isShort}}" onClick="{{setShort}}">Break</button>
@@ -418,20 +446,16 @@ body{margin:0;background:#141A33}
         <button type="button" class="btn-gold" style="flex: 1.4;" onClick="{{toggle}}">{{toggleLabel}}</button>
         <button type="button" class="btn-line" style="flex: 1;" onClick="{{reset}}">Reset</button>
       </div>
-      <p aria-live="polite" style="margin: 0; min-height: 36px; font-size: 13px; line-height: 18px; color: #D6CCEB;">{{status}}</p>
+      <p aria-live="polite" style="margin: 0; min-height: 36px; font-size: 12.5px; line-height: 18px; text-align: center; color: #D6CBB1;">{{status}}</p>
     </div>
   </section>
 
   <!-- ===================== NOTEBOOK ===================== -->
-  <section class="paper" aria-labelledby="nb-title" style="position: absolute; left: 964px; top: 178px; width: 436px; height: 472px; color: #1A2140;">
-    <div aria-hidden="true" style="position: absolute; left: 8px; top: 10px; width: 436px; height: 472px; border-radius: 6px; background: #D9CDB4;"></div>
-    <div class="nb-paper" style="position: absolute; left: 0; top: 0; width: 436px; height: 472px; padding: 30px 18px 10px 60px; border-radius: 6px; background: #F6EEDC; box-shadow: 0 16px 28px rgba(5,8,20,0.5); display: flex; flex-direction: column;">
-      <div aria-hidden="true" style="position: absolute; left: 44px; top: 0; width: 1.5px; height: 100%; background: #CDB0C0;"></div>
-      <div aria-hidden="true" style="position: absolute; left: 30px; top: -10px; width: 380px; height: 22px; display: flex; justify-content: space-between;">
-        <span style="width: 12px; height: 22px; border-radius: 6px; border: 2.5px solid #B99A61;"></span><span style="width: 12px; height: 22px; border-radius: 6px; border: 2.5px solid #B99A61;"></span><span style="width: 12px; height: 22px; border-radius: 6px; border: 2.5px solid #B99A61;"></span><span style="width: 12px; height: 22px; border-radius: 6px; border: 2.5px solid #B99A61;"></span><span style="width: 12px; height: 22px; border-radius: 6px; border: 2.5px solid #B99A61;"></span><span style="width: 12px; height: 22px; border-radius: 6px; border: 2.5px solid #B99A61;"></span><span style="width: 12px; height: 22px; border-radius: 6px; border: 2.5px solid #B99A61;"></span><span style="width: 12px; height: 22px; border-radius: 6px; border: 2.5px solid #B99A61;"></span><span style="width: 12px; height: 22px; border-radius: 6px; border: 2.5px solid #B99A61;"></span><span style="width: 12px; height: 22px; border-radius: 6px; border: 2.5px solid #B99A61;"></span>
-      </div>
+  <section class="paper journal" aria-labelledby="nb-title" style="position: absolute; left: 316px; top: 398px; width: 500px; height: 266px; color: #0F1C1B;">
+    <div aria-hidden="true" style="position: absolute; left: -10px; top: -8px; width: 520px; height: 282px; border-radius: 9px; background: linear-gradient(180deg, #7A4A33, #6B3F2A); box-shadow: 0 16px 28px rgba(0,0,0,0.55);"></div>
+    <div class="nb-paper" style="position: absolute; left: 0; top: 0; width: 500px; height: 266px; padding: 14px 16px 6px 18px; border-radius: 4px; background: linear-gradient(90deg, #EFE4CC 0, #EFE4CC 47%, #DDCFAE 49.4%, #A8966C 50%, #DDCFAE 50.6%, #EFE4CC 53%, #EFE4CC 100%);">
 
-      <p class="eyebrow" style="color: #5E5785;">{{dateText}}</p>
+      <p class="eyebrow" style="color: #6B3F2A; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">{{dateText}}</p>
       <h2 id="nb-title" style="margin: 2px 0 6px;">
         <button type="button" class="nb-open obj" aria-haspopup="dialog" onClick="{{openNotebook}}" style="position: relative;">Today’s tasks
           <svg aria-hidden="true" width="18" height="18" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"><path d="M9 3 H13 V7 M7 13 H3 V9 M13 3 L9 7 M3 13 L7 9"></path></svg>
@@ -445,7 +469,7 @@ body{margin:0;background:#141A33}
         <button type="submit" class="btn-solid">Add</button>
       </form>
 
-      <ul aria-label="Today’s tasks" style="flex: 1; min-height: 0; margin: 0; padding: 0 2px 0 0; list-style: none; overflow-y: auto;">
+      <ul class="j-right" aria-label="Today’s tasks" style="min-height: 0; margin: 0; padding: 0 2px 0 0; list-style: none; overflow-y: auto;">
         <sc-for list="{{deskTasks}}" as="t" hint-placeholder-count="0">
           <li class="task2" data-done="{{t.done}}" data-active="{{t.active}}">
             <input type="checkbox" class="t-check" checked="{{t.done}}" onChange="{{t.toggle}}" aria-label="Done: {{t.text}}">
@@ -462,7 +486,7 @@ body{margin:0;background:#141A33}
       </ul>
 
       <div style="display: flex; align-items: center; justify-content: space-between; gap: 8px; margin-top: 4px; min-height: 44px;">
-        <p style="margin: 0; flex: none; white-space: nowrap; font-family: 'JetBrains Mono', ui-monospace, monospace; font-size: 12px; color: #4F4A78;">{{progressText}}</p>
+        <p style="margin: 0; flex: none; white-space: nowrap; font-family: 'IBM Plex Mono', ui-monospace, monospace; font-size: 12px; color: #5D4A38;">{{progressText}}</p>
         <sc-if value="{{nextDeadline}}" hint-placeholder-val="{{ false }}">
           <button type="button" class="text-btn" style="font-size: 13px; max-width: 190px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;" onClick="{{openNotebook}}">{{nextDeadline}}</button>
         </sc-if>
@@ -470,9 +494,10 @@ body{margin:0;background:#141A33}
     </div>
   </section>
 
+
   <!-- Completion note: slides onto the desk apron -->
   <sc-if value="{{toast}}" hint-placeholder-val="{{ false }}">
-    <div class="toast paper" style="position: absolute; left: 690px; top: 652px; width: 460px; z-index: 7; display: flex; align-items: center; gap: 10px; padding: 4px 4px 4px 14px; border-radius: 6px; background: #F6EEDC; color: #1A2140; box-shadow: 0 0 0 1px rgba(185,154,97,0.8), 0 12px 24px rgba(5,8,20,0.55);">
+    <div class="toast paper" style="position: absolute; left: 420px; top: 700px; width: 520px; z-index: 7; display: flex; align-items: center; gap: 10px; padding: 4px 4px 4px 14px; border-radius: 6px; background: #EFE4CC; color: #0F1C1B; box-shadow: 0 0 0 1px rgba(200,150,74,0.8), 0 12px 24px rgba(2,8,8,0.55);">
       <svg aria-hidden="true" width="18" height="18" viewBox="0 0 16 16" fill="none" stroke="#76582E" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M4 11 V7.5 A4 4 0 0 1 12 7.5 V11 L13 12.5 H3 Z"></path><path d="M6.8 14 A1.4 1.4 0 0 0 9.2 14"></path></svg>
       <p style="margin: 0; flex: 1; font-size: 14px; line-height: 1.35;">{{toast.text}}</p>
       <button type="button" class="icon-btn" aria-label="Dismiss note" onClick="{{dismissToast}}"><svg aria-hidden="true" width="14" height="14" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round"><path d="M4 4 L12 12 M12 4 L4 12"></path></svg></button>
@@ -481,9 +506,9 @@ body{margin:0;background:#141A33}
 
   <!-- ===================== DRAWER TRAYS ===================== -->
   <sc-if value="{{drawerOpen.apps}}" hint-placeholder-val="{{ false }}">
-    <section class="tray paper" aria-labelledby="tray-apps-t" onKeyDown="{{trayKey}}" style="left: 684px; top: 716px; width: 320px;">
+    <section class="tray paper" aria-labelledby="tray-apps-t" onKeyDown="{{trayKey}}" style="left: 420px; top: 700px; width: 320px;">
       <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 6px;">
-        <h2 id="tray-apps-t" class="eyebrow" style="color: #5E5785;">Apps drawer</h2>
+        <h2 id="tray-apps-t" class="eyebrow" style="color: #5D4A38;">Apps drawer</h2>
         <button type="button" class="icon-btn" aria-label="Close drawer" onClick="{{closeDrawer}}"><svg aria-hidden="true" width="14" height="14" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round"><path d="M4 4 L12 12 M12 4 L4 12"></path></svg></button>
       </div>
       <div style="display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 8px;">
@@ -496,12 +521,12 @@ body{margin:0;background:#141A33}
   </sc-if>
 
   <sc-if value="{{drawerOpen.history}}" hint-placeholder-val="{{ false }}">
-    <section class="tray paper" aria-labelledby="tray-hist-t" onKeyDown="{{trayKey}}" style="left: 684px; top: 700px; width: 320px; max-height: 292px; overflow-y: auto;">
+    <section class="tray paper" aria-labelledby="tray-hist-t" onKeyDown="{{trayKey}}" style="left: 520px; top: 690px; width: 320px; max-height: 292px; overflow-y: auto;">
       <div style="display: flex; align-items: center; justify-content: space-between;">
-        <h2 id="tray-hist-t" class="eyebrow" style="color: #5E5785;">Study log</h2>
+        <h2 id="tray-hist-t" class="eyebrow" style="color: #5D4A38;">Study log</h2>
         <button type="button" class="icon-btn" aria-label="Close drawer" onClick="{{closeDrawer}}"><svg aria-hidden="true" width="14" height="14" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round"><path d="M4 4 L12 12 M12 4 L4 12"></path></svg></button>
       </div>
-      <p style="margin: 0 0 10px; font-size: 14px; color: #3A3760;">Today <strong style="color: #1A2140;">{{todayMinText}}</strong> · {{todayBlocksText}} · This week <strong style="color: #1A2140;">{{weekMinText}}</strong></p>
+      <p style="margin: 0 0 10px; font-size: 14px; color: #3D3226;">Today <strong style="color: #0F1C1B;">{{todayMinText}}</strong> · {{todayBlocksText}} · This week <strong style="color: #0F1C1B;">{{weekMinText}}</strong></p>
       <div role="img" aria-label="{{weekLabel}}" style="display: flex; align-items: flex-end; justify-content: space-between; height: 64px; padding: 0 4px; border-bottom: 1px solid #CFC2A6;">
         <sc-for list="{{week}}" as="w" hint-placeholder-count="7">
           <div style="display: flex; flex-direction: column; align-items: center; gap: 3px;">
@@ -509,41 +534,41 @@ body{margin:0;background:#141A33}
           </div>
         </sc-for>
       </div>
-      <div aria-hidden="true" style="display: flex; justify-content: space-between; padding: 3px 4px 0; font: 500 11.5px 'JetBrains Mono', ui-monospace, monospace; color: #5E5785;">
+      <div aria-hidden="true" style="display: flex; justify-content: space-between; padding: 3px 4px 0; font: 500 11.5px 'IBM Plex Mono', ui-monospace, monospace; color: #5D4A38;">
         <sc-for list="{{week}}" as="w" hint-placeholder-count="7"><span style="width: 22px; text-align: center;">{{w.label}}</span></sc-for>
       </div>
       <sc-if value="{{hasTaskProgress}}" hint-placeholder-val="{{ false }}">
-        <h3 class="eyebrow" style="margin-top: 12px; color: #5E5785;">Task progress</h3>
+        <h3 class="eyebrow" style="margin-top: 12px; color: #5D4A38;">Task progress</h3>
         <ul style="margin: 4px 0 0; padding: 0; list-style: none;">
           <sc-for list="{{taskProgress}}" as="q" hint-placeholder-count="0">
             <li style="display: flex; align-items: center; gap: 8px; min-height: 28px; font-size: 14px;">
-              <span aria-hidden="true" style="width: 9px; height: 9px; border-radius: 50%; flex: none; background: {{q.bg}}; box-shadow: 0 0 0 1px #1A2140;"></span>
+              <span aria-hidden="true" style="width: 9px; height: 9px; border-radius: 50%; flex: none; background: {{q.bg}}; box-shadow: 0 0 0 1px #0F1C1B;"></span>
               <span style="flex: 1; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">{{q.text}}</span>
-              <span style="font-family: 'JetBrains Mono', ui-monospace, monospace; font-size: 13px;">{{q.progress}}</span>
+              <span style="font-family: 'IBM Plex Mono', ui-monospace, monospace; font-size: 13px;">{{q.progress}}</span>
             </li>
           </sc-for>
         </ul>
       </sc-if>
-      <h3 class="eyebrow" style="margin-top: 12px; color: #5E5785;">All time, by course</h3>
+      <h3 class="eyebrow" style="margin-top: 12px; color: #5D4A38;">All time, by course</h3>
       <ul style="margin: 4px 0 0; padding: 0; list-style: none;">
         <sc-for list="{{courseTotals}}" as="c" hint-placeholder-count="0">
           <li style="display: flex; align-items: center; gap: 8px; min-height: 28px; font-size: 14px;">
-            <span aria-hidden="true" style="width: 9px; height: 9px; border-radius: 50%; flex: none; background: {{c.bg}}; box-shadow: 0 0 0 1px #1A2140;"></span>
+            <span aria-hidden="true" style="width: 9px; height: 9px; border-radius: 50%; flex: none; background: {{c.bg}}; box-shadow: 0 0 0 1px #0F1C1B;"></span>
             <span style="flex: 1;">{{c.name}}</span>
-            <span style="font-family: 'JetBrains Mono', ui-monospace, monospace; font-size: 13px;">{{c.text}}</span>
+            <span style="font-family: 'IBM Plex Mono', ui-monospace, monospace; font-size: 13px;">{{c.text}}</span>
           </li>
         </sc-for>
         <sc-if value="{{noHistory}}" hint-placeholder-val="{{ true }}">
-          <li style="font-family: 'Cormorant Garamond', Georgia, serif; font-style: italic; font-size: 17px; color: #5E5785; padding: 4px 0;">Finished focus blocks will be logged here.</li>
+          <li style="font-family: 'Fraunces', Georgia, serif; font-style: italic; font-size: 17px; color: #5D4A38; padding: 4px 0;">Finished focus blocks will be logged here.</li>
         </sc-if>
       </ul>
     </section>
   </sc-if>
 
   <sc-if value="{{drawerOpen.resources}}" hint-placeholder-val="{{ false }}">
-    <section class="tray paper" aria-labelledby="tray-res-t" onKeyDown="{{trayKey}}" style="left: 836px; top: 700px; width: 320px; max-height: 292px; overflow-y: auto;">
+    <section class="tray paper" aria-labelledby="tray-res-t" onKeyDown="{{trayKey}}" style="left: 640px; top: 690px; width: 320px; max-height: 292px; overflow-y: auto;">
       <div style="display: flex; align-items: center; justify-content: space-between;">
-        <h2 id="tray-res-t" class="eyebrow" style="color: #5E5785;">Study resources</h2>
+        <h2 id="tray-res-t" class="eyebrow" style="color: #5D4A38;">Study resources</h2>
         <button type="button" class="icon-btn" aria-label="Close drawer" onClick="{{closeDrawer}}"><svg aria-hidden="true" width="14" height="14" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round"><path d="M4 4 L12 12 M12 4 L4 12"></path></svg></button>
       </div>
       <ul style="margin: 0 0 8px; padding: 0; list-style: none;">
@@ -551,7 +576,7 @@ body{margin:0;background:#141A33}
           <li class="link-row"><a href="{{r.href}}" target="_blank" rel="noopener noreferrer">{{r.label}}</a><button type="button" class="icon-btn" aria-label="Remove {{r.label}}" onClick="{{r.remove}}"><svg aria-hidden="true" width="14" height="14" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round"><path d="M4 4 L12 12 M12 4 L4 12"></path></svg></button></li>
         </sc-for>
         <sc-if value="{{noResources}}" hint-placeholder-val="{{ true }}">
-          <li style="font-family: 'Cormorant Garamond', Georgia, serif; font-style: italic; font-size: 17px; color: #5E5785; padding: 2px 0 6px;">Empty for now. Keep your textbook, slides or practice sites here.</li>
+          <li style="font-family: 'Fraunces', Georgia, serif; font-style: italic; font-size: 17px; color: #5D4A38; padding: 2px 0 6px;">Empty for now. Keep your textbook, slides or practice sites here.</li>
         </sc-if>
       </ul>
       <form onSubmit="{{addResource}}" style="display: flex; flex-direction: column; gap: 6px; margin: 0;">
@@ -581,22 +606,22 @@ body{margin:0;background:#141A33}
     <section class="dlg paper" role="dialog" aria-modal="true" aria-labelledby="set-title" onKeyDown="{{dialogKey}}" style="left: 270px; top: 56px; width: 900px; max-height: 888px; overflow-y: auto; padding: 26px 32px 24px;">
       <div style="display: flex; align-items: flex-start; justify-content: space-between; gap: 16px;">
         <div>
-          <p class="eyebrow" style="color: #5E5785;">Settings drawer</p>
-          <h2 id="set-title" style="margin: 4px 0 0; font-family: 'Cormorant Garamond', Georgia, serif; font-weight: 600; font-size: 36px; line-height: 1.05;">Room settings</h2>
+          <p class="eyebrow" style="color: #5D4A38;">Settings drawer</p>
+          <h2 id="set-title" style="margin: 4px 0 0; font-family: 'Fraunces', Georgia, serif; font-weight: 600; font-size: 36px; line-height: 1.05;">Room settings</h2>
         </div>
         <button type="button" class="icon-btn" aria-label="Close settings" onClick="{{closeDialog}}"><svg aria-hidden="true" width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round"><path d="M4 4 L12 12 M12 4 L4 12"></path></svg></button>
       </div>
       <sc-if value="{{settingsNotice}}" hint-placeholder-val="{{ false }}">
-        <p role="status" style="margin: 14px 0 0; padding: 10px 14px; border-radius: 6px; background: #EFE6F7; color: #2E2A4A; font-size: 15px; border: 1px solid #C9BEE3;">{{settingsNotice}}</p>
+        <p role="status" style="margin: 14px 0 0; padding: 10px 14px; border-radius: 6px; background: #F6E9C9; color: #0F1C1B; font-size: 15px; border: 1px solid #C8964A;">{{settingsNotice}}</p>
       </sc-if>
       <form onSubmit="{{saveSettings}}" style="margin: 18px 0 0;">
         <div style="display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 32px;">
           <fieldset style="margin: 0; padding: 0; border: 0; display: flex; flex-direction: column; gap: 12px; min-width: 0;">
-            <legend class="eyebrow" style="padding: 0; margin-bottom: 4px; color: #5E5785;">Canvas course links</legend>
-            <p style="margin: 0; font-size: 14px; line-height: 1.5; color: #3A3760;">Open each course in Canvas and paste its address here. Leave a field empty if you don’t have it yet.</p>
+            <legend class="eyebrow" style="padding: 0; margin-bottom: 4px; color: #5D4A38;">Canvas course links</legend>
+            <p style="margin: 0; font-size: 14px; line-height: 1.5; color: #3D3226;">Open each course in Canvas and paste its address here. Leave a field empty if you don’t have it yet.</p>
             <sc-for list="{{courseFields}}" as="c" hint-placeholder-count="6">
               <div style="display: flex; flex-direction: column; gap: 5px;">
-                <label for="{{c.inputId}}" class="f-label" style="display: flex; align-items: center; gap: 8px;"><span aria-hidden="true" style="width: 9px; height: 9px; border-radius: 50%; background: {{c.bg}}; box-shadow: 0 0 0 1px #1A2140;"></span>{{c.name}}</label>
+                <label for="{{c.inputId}}" class="f-label" style="display: flex; align-items: center; gap: 8px;"><span aria-hidden="true" style="width: 9px; height: 9px; border-radius: 50%; background: {{c.bg}}; box-shadow: 0 0 0 1px #0F1C1B;"></span>{{c.name}}</label>
                 <input id="{{c.inputId}}" class="field" type="text" inputmode="url" autocomplete="off" placeholder="Paste the course link from Canvas" value="{{c.value}}" onChange="{{c.onInput}}" aria-invalid="{{c.invalid}}" aria-describedby="{{c.errId}}">
                 <sc-if value="{{c.error}}" hint-placeholder-val="{{ false }}"><p id="{{c.errId}}" class="f-err">{{c.error}}</p></sc-if>
               </div>
@@ -604,7 +629,7 @@ body{margin:0;background:#141A33}
           </fieldset>
           <div style="display: flex; flex-direction: column; gap: 24px; min-width: 0;">
             <fieldset style="margin: 0; padding: 0; border: 0; display: flex; flex-direction: column; gap: 12px; min-width: 0;">
-              <legend class="eyebrow" style="padding: 0; margin-bottom: 4px; color: #5E5785;">Apps drawer shortcuts</legend>
+              <legend class="eyebrow" style="padding: 0; margin-bottom: 4px; color: #5D4A38;">Apps drawer shortcuts</legend>
               <sc-for list="{{appFields}}" as="a" hint-placeholder-count="4">
                 <div style="display: flex; flex-direction: column; gap: 5px;">
                   <label for="{{a.inputId}}" class="f-label">{{a.name}}</label>
@@ -614,7 +639,7 @@ body{margin:0;background:#141A33}
               </sc-for>
             </fieldset>
             <fieldset style="margin: 0; padding: 0; border: 0; display: flex; flex-direction: column; gap: 12px; min-width: 0;">
-              <legend class="eyebrow" style="padding: 0; margin-bottom: 4px; color: #5E5785;">Focus timer</legend>
+              <legend class="eyebrow" style="padding: 0; margin-bottom: 4px; color: #5D4A38;">Focus timer</legend>
               <div style="display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 10px;">
                 <div style="display: flex; flex-direction: column; gap: 5px;"><label for="min-focus" class="f-label">Focus (min)</label><input id="min-focus" class="field" type="number" min="1" max="180" value="{{sd.focus}}" onChange="{{onFocusMin}}"></div>
                 <div style="display: flex; flex-direction: column; gap: 5px;"><label for="min-short" class="f-label">Break (min)</label><input id="min-short" class="field" type="number" min="1" max="60" value="{{sd.short}}" onChange="{{onShortMin}}"></div>
@@ -625,14 +650,14 @@ body{margin:0;background:#141A33}
                 <button type="button" class="text-btn" onClick="{{testChime}}">Test chime</button>
               </div>
               <label class="task-label"><input type="checkbox" checked="{{sd.notify}}" onChange="{{onNotify}}"><span style="font-size: 15px;">Also show a Windows notification when a block ends while the room is minimized</span></label>
-              <sc-if value="{{notifyMsg}}" hint-placeholder-val="{{ false }}"><p role="status" style="margin: 0; font-size: 13px; line-height: 1.5; color: #3A3760;">{{notifyMsg}}</p></sc-if>
-              <p style="margin: 0; font-size: 13px; line-height: 1.5; color: #3A3760;">New lengths apply the next time the timer starts fresh.</p>
+              <sc-if value="{{notifyMsg}}" hint-placeholder-val="{{ false }}"><p role="status" style="margin: 0; font-size: 13px; line-height: 1.5; color: #3D3226;">{{notifyMsg}}</p></sc-if>
+              <p style="margin: 0; font-size: 13px; line-height: 1.5; color: #3D3226;">New lengths apply the next time the timer starts fresh.</p>
             </fieldset>
           </div>
         </div>
         <fieldset style="margin: 22px 0 0; padding: 16px 0 0; border: 0; border-top: 1px solid #E1D6C0; display: flex; flex-direction: column; gap: 10px; min-width: 0;">
-          <legend class="eyebrow" style="padding: 0; color: #5E5785;">Morning Brief connection</legend>
-          <p style="margin: 6px 0 0; font-size: 14px; line-height: 1.5; color: #3A3760;">Links the notebook to your private “Midnight Study Room · Tasks” sheet, so tasks from your Morning Brief appear here and your check-offs go back. The setup guide shows where both values come from.</p>
+          <legend class="eyebrow" style="padding: 0; color: #5D4A38;">Morning Brief connection</legend>
+          <p style="margin: 6px 0 0; font-size: 14px; line-height: 1.5; color: #3D3226;">Links the notebook to your private “Midnight Study Room · Tasks” sheet, so tasks from your Morning Brief appear here and your check-offs go back. The setup guide shows where both values come from.</p>
           <div style="display: grid; grid-template-columns: minmax(0, 3fr) minmax(0, 2fr); gap: 16px;">
             <div style="display: flex; flex-direction: column; gap: 5px;"><label for="sync-url" class="f-label">Room connector link</label><input id="sync-url" class="field" type="text" inputmode="url" autocomplete="off" spellcheck="false" placeholder="https://script.google.com/macros/s/…/exec" value="{{sd.syncUrl}}" onChange="{{onSyncUrl}}" aria-invalid="{{syncInvalid}}" aria-describedby="sync-err"></div>
             <div style="display: flex; flex-direction: column; gap: 5px;"><label for="sync-key" class="f-label">Room key</label><input id="sync-key" class="field" type="password" autocomplete="off" spellcheck="false" value="{{sd.syncKey}}" onChange="{{onSyncKey}}" aria-invalid="{{syncInvalid}}" aria-describedby="sync-err"></div>
@@ -640,12 +665,12 @@ body{margin:0;background:#141A33}
           <sc-if value="{{syncErr}}" hint-placeholder-val="{{ false }}"><p id="sync-err" class="f-err">{{syncErr}}</p></sc-if>
           <div style="display: flex; align-items: center; gap: 14px;">
             <button type="button" class="btn-ink" onClick="{{testSync}}">Test connection</button>
-            <p role="status" style="margin: 0; font-size: 14px; color: #2E2A4A;">{{syncTestMsg}}</p>
+            <p role="status" style="margin: 0; font-size: 14px; color: #17302D;">{{syncTestMsg}}</p>
           </div>
         </fieldset>
         <div style="display: flex; align-items: center; justify-content: space-between; gap: 16px; margin-top: 22px; padding-top: 16px; border-top: 1px solid #E1D6C0;">
           <div style="display: flex; flex-direction: column; gap: 2px; max-width: 470px;">
-            <p style="margin: 0; font-size: 13px; line-height: 1.5; color: #3A3760;">{{storageText}}</p>
+            <p style="margin: 0; font-size: 13px; line-height: 1.5; color: #3D3226;">{{storageText}}</p>
             <button type="button" class="text-btn" style="align-self: flex-start;" onClick="{{openBackup}}">Backup &amp; restore (unsaved changes here are discarded)</button>
           </div>
           <div style="display: flex; gap: 10px; flex: none;">
@@ -662,18 +687,18 @@ body{margin:0;background:#141A33}
     <section class="dlg paper" role="dialog" aria-modal="true" aria-labelledby="ref-title" onKeyDown="{{dialogKey}}" style="left: 460px; top: 120px; width: 520px; max-height: 760px; overflow-y: auto; padding: 26px 30px 24px;">
       <div style="display: flex; align-items: flex-start; justify-content: space-between; gap: 16px;">
         <div>
-          <p class="eyebrow" style="color: #5E5785;">Os femoris · Reference</p>
-          <h2 id="ref-title" style="margin: 4px 0 0; font-family: 'Cormorant Garamond', Georgia, serif; font-weight: 600; font-size: 34px; line-height: 1.05;">Biomedical reference</h2>
+          <p class="eyebrow" style="color: #5D4A38;">Os femoris · Reference</p>
+          <h2 id="ref-title" style="margin: 4px 0 0; font-family: 'Fraunces', Georgia, serif; font-weight: 600; font-size: 34px; line-height: 1.05;">Biomedical reference</h2>
         </div>
         <button type="button" class="icon-btn" aria-label="Close reference" onClick="{{closeDialog}}"><svg aria-hidden="true" width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round"><path d="M4 4 L12 12 M12 4 L4 12"></path></svg></button>
       </div>
-      <p style="margin: 10px 0 14px; font-size: 15px; line-height: 1.5; color: #3A3760;">Keep the papers, standards, datasheets and explainers you come back to.</p>
+      <p style="margin: 10px 0 14px; font-size: 15px; line-height: 1.5; color: #3D3226;">Keep the papers, standards, datasheets and explainers you come back to.</p>
       <ul style="margin: 0 0 16px; padding: 0; list-style: none;">
         <sc-for list="{{refs}}" as="r" hint-placeholder-count="0">
           <li class="link-row"><a href="{{r.href}}" target="_blank" rel="noopener noreferrer">{{r.label}}</a><button type="button" class="icon-btn" aria-label="Remove {{r.label}}" onClick="{{r.remove}}"><svg aria-hidden="true" width="14" height="14" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round"><path d="M4 4 L12 12 M12 4 L4 12"></path></svg></button></li>
         </sc-for>
         <sc-if value="{{noRefs}}" hint-placeholder-val="{{ true }}">
-          <li style="font-family: 'Cormorant Garamond', Georgia, serif; font-style: italic; font-size: 18px; color: #5E5785; padding: 4px 0;">No links saved yet.</li>
+          <li style="font-family: 'Fraunces', Georgia, serif; font-style: italic; font-size: 18px; color: #5D4A38; padding: 4px 0;">No links saved yet.</li>
         </sc-if>
       </ul>
       <form onSubmit="{{addRef}}" style="display: flex; flex-direction: column; gap: 6px; margin: 0;">
@@ -692,12 +717,12 @@ body{margin:0;background:#141A33}
   <!-- Notebook, opened -->
   <sc-if value="{{dlgNotebook}}" hint-placeholder-val="{{ false }}">
     <section class="dlg paper nb-paper" role="dialog" aria-modal="true" aria-labelledby="nbx-title" onKeyDown="{{dialogKey}}" style="left: 320px; top: 34px; width: 800px; height: 932px; padding: 26px 32px 18px 76px; display: flex; flex-direction: column;">
-      <div aria-hidden="true" style="position: absolute; left: 56px; top: 0; width: 1.5px; height: 100%; background: #CDB0C0;"></div>
+      <div aria-hidden="true" style="position: absolute; left: 56px; top: 0; width: 1.5px; height: 100%; background: #C9A17A;"></div>
       <div style="display: flex; align-items: flex-start; justify-content: space-between; gap: 16px;">
         <div style="min-width: 0;">
-          <p class="eyebrow" style="color: #5E5785;">{{dateText}}</p>
-          <h2 id="nbx-title" style="margin: 4px 0 0; font-family: 'Cormorant Garamond', Georgia, serif; font-weight: 600; font-size: 40px; line-height: 1.05;">Your notebook</h2>
-          <p style="margin: 6px 0 0; font-size: 13px; color: #4F4A78;">{{syncText}}</p>
+          <p class="eyebrow" style="color: #5D4A38;">{{dateText}}</p>
+          <h2 id="nbx-title" style="margin: 4px 0 0; font-family: 'Fraunces', Georgia, serif; font-weight: 600; font-size: 40px; line-height: 1.05;">Your notebook</h2>
+          <p style="margin: 6px 0 0; font-size: 13px; color: #5D4A38;">{{syncText}}</p>
           <sc-if value="{{syncError}}" hint-placeholder-val="{{ false }}"><p class="f-err" style="margin-top: 2px;">{{syncError}}</p></sc-if>
         </div>
         <div style="display: flex; align-items: center; gap: 4px; flex: none;">
@@ -804,29 +829,29 @@ body{margin:0;background:#141A33}
     <section class="dlg paper" role="dialog" aria-modal="true" aria-labelledby="bk-title" onKeyDown="{{dialogKey}}" style="left: 370px; top: 70px; width: 700px; max-height: 860px; overflow-y: auto; padding: 26px 32px 24px;">
       <div style="display: flex; align-items: flex-start; justify-content: space-between; gap: 16px;">
         <div>
-          <p class="eyebrow" style="color: #5E5785;">Settings drawer</p>
-          <h2 id="bk-title" style="margin: 4px 0 0; font-family: 'Cormorant Garamond', Georgia, serif; font-weight: 600; font-size: 34px; line-height: 1.05;">Backup &amp; restore</h2>
+          <p class="eyebrow" style="color: #5D4A38;">Settings drawer</p>
+          <h2 id="bk-title" style="margin: 4px 0 0; font-family: 'Fraunces', Georgia, serif; font-weight: 600; font-size: 34px; line-height: 1.05;">Backup &amp; restore</h2>
         </div>
         <button type="button" class="icon-btn" aria-label="Close backup" onClick="{{closeDialog}}"><svg aria-hidden="true" width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round"><path d="M4 4 L12 12 M12 4 L4 12"></path></svg></button>
       </div>
-      <h3 class="eyebrow" style="margin: 18px 0 6px; color: #5E5785;">1 · Make a backup</h3>
-      <p style="margin: 0 0 8px; font-size: 14px; line-height: 1.5; color: #3A3760;">Your tasks, Canvas links, shortcuts, saved links, study history and settings, as one block of text.</p>
+      <h3 class="eyebrow" style="margin: 18px 0 6px; color: #5D4A38;">1 · Make a backup</h3>
+      <p style="margin: 0 0 8px; font-size: 14px; line-height: 1.5; color: #3D3226;">Your tasks, Canvas links, shortcuts, saved links, study history and settings, as one block of text.</p>
       <label for="bk-out" class="sr-only">Backup text</label>
-      <textarea id="bk-out" class="field" spellcheck="false" value="{{backupText}}" onChange="{{noop}}" style="height: 96px; padding: 8px 10px; resize: none; font: 500 12px/1.4 'JetBrains Mono', ui-monospace, monospace;"></textarea>
+      <textarea id="bk-out" class="field" spellcheck="false" value="{{backupText}}" onChange="{{noop}}" style="height: 96px; padding: 8px 10px; resize: none; font: 500 12px/1.4 'IBM Plex Mono', ui-monospace, monospace;"></textarea>
       <div style="display: flex; gap: 10px; margin-top: 8px; flex-wrap: wrap;">
         <button type="button" class="btn-solid" onClick="{{copyBackup}}">Copy backup</button>
         <button type="button" class="btn-ink" onClick="{{downloadBackup}}">Download file</button>
       </div>
-      <h3 class="eyebrow" style="margin: 22px 0 6px; color: #5E5785;">2 · Restore into this room</h3>
-      <p style="margin: 0 0 8px; font-size: 14px; line-height: 1.5; color: #3A3760;">Paste a backup or choose a backup file. Restoring adds what’s missing and never deletes anything already here.</p>
+      <h3 class="eyebrow" style="margin: 22px 0 6px; color: #5D4A38;">2 · Restore into this room</h3>
+      <p style="margin: 0 0 8px; font-size: 14px; line-height: 1.5; color: #3D3226;">Paste a backup or choose a backup file. Restoring adds what’s missing and never deletes anything already here.</p>
       <label for="bk-in" class="sr-only">Paste backup text</label>
-      <textarea id="bk-in" class="field" spellcheck="false" placeholder="Paste backup text here" value="{{restoreText}}" onChange="{{onRestoreText}}" style="height: 96px; padding: 8px 10px; resize: none; font: 500 12px/1.4 'JetBrains Mono', ui-monospace, monospace;"></textarea>
+      <textarea id="bk-in" class="field" spellcheck="false" placeholder="Paste backup text here" value="{{restoreText}}" onChange="{{onRestoreText}}" style="height: 96px; padding: 8px 10px; resize: none; font: 500 12px/1.4 'IBM Plex Mono', ui-monospace, monospace;"></textarea>
       <div style="display: flex; align-items: center; gap: 12px; margin-top: 8px; flex-wrap: wrap;">
         <label for="bk-file" class="f-label">Or choose a file</label>
-        <input id="bk-file" type="file" accept=".json,application/json" onChange="{{onRestoreFile}}" style="font-size: 14px; color: #1A2140;">
+        <input id="bk-file" type="file" accept=".json,application/json" onChange="{{onRestoreFile}}" style="font-size: 14px; color: #0F1C1B;">
         <button type="button" class="btn-solid" style="margin-left: auto;" onClick="{{restoreBackup}}">Restore</button>
       </div>
-      <p role="status" style="margin: 12px 0 0; min-height: 20px; font-size: 14px; color: #2E2A4A;">{{backupMsg}}</p>
+      <p role="status" style="margin: 12px 0 0; min-height: 20px; font-size: 14px; color: #17302D;">{{backupMsg}}</p>
     </section>
   </sc-if>
 
@@ -840,12 +865,12 @@ body{margin:0;background:#141A33}
 <script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":1440,"height":1000}}'>
 var STORE_KEY = 'midnight-study-room.v1';
 var BOOKS = [
-  { id: 'calc', name: 'Calculus', bg: '#6E6496', fg: '#F6EEDC', w: 48, h: 186 },
-  { id: 'bio', name: 'Biology', bg: '#7E9A86', fg: '#1A2140', w: 46, h: 170 },
-  { id: 'lab', name: 'Biology Lab', bg: '#EDE2CB', fg: '#1A2140', w: 50, h: 178 },
-  { id: 'bme', name: 'Biomedical Engineering', bg: '#B99A61', fg: '#1A2140', w: 54, h: 196 },
-  { id: 'wri', name: 'Writing', bg: '#8A5560', fg: '#F6EEDC', w: 46, h: 166 },
-  { id: 'com', name: 'Communication', bg: '#4E6489', fg: '#F6EEDC', w: 50, h: 188 }
+  { id: 'calc', name: 'Calculus', bg: '#7D3A32', fg: '#F4ECDA', w: 46, h: 176 },
+  { id: 'bio', name: 'Biology', bg: '#2F6B4F', fg: '#F4ECDA', w: 44, h: 162 },
+  { id: 'lab', name: 'Biology Lab', bg: '#3E5F86', fg: '#F4ECDA', w: 46, h: 170 },
+  { id: 'bme', name: 'Biomedical Engineering', bg: '#8A6A2C', fg: '#F4ECDA', w: 52, h: 186 },
+  { id: 'wri', name: 'Writing', bg: '#5B3F6B', fg: '#F4ECDA', w: 42, h: 156 },
+  { id: 'com', name: 'Communication', bg: '#2F5D5A', fg: '#F4ECDA', w: 44, h: 178 }
 ];
 var BOOK = {};
 BOOKS.forEach(function (b) { BOOK[b.id] = b; });
