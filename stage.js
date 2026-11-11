@@ -13,7 +13,7 @@
     document.documentElement.classList.toggle('pan', pan);
     stage.style.transform = 'scale(' + s + ')';
     stage.style.margin = ((1000 * s - 1000) / 2) + 'px ' + ((1600 * s - 1600) / 2) + 'px';
-    if (pan && wasPan !== true && viewport) viewport.scrollLeft = Math.max(0, 800 * s - w / 2);
+    if (pan && wasPan !== true && viewport) viewport.scrollLeft = Math.max(0, 1000 * s - w / 2); // start at the desk clock
     wasPan = pan;
   }
   window.addEventListener('resize', fit);

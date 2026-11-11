@@ -31,7 +31,7 @@ page = f'''<!doctype html>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Midnight Study Room</title>
-<meta name="theme-color" content="#1C2346">
+<meta name="theme-color" content="#0F1C1B">
 <meta name="description" content="Lia's enchanted study room: focus timer, course bookshelf, and daily notebook.">
 <link rel="manifest" href="manifest.webmanifest">
 <link rel="icon" href="icons/icon.svg" type="image/svg+xml">

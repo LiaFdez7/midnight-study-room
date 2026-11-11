@@ -66,3 +66,59 @@ Checks run for this pass:
 
 - `node --test tests/enchanted-room.test.cjs`: 7 of 7 pass.
 - `node tests/room-layout.browser.cjs http://localhost:8731/` (needs Playwright and a local server, see the file header): 17 browser checks, including overlap checks, lamp dimming, focus return, the companion focus block and moth, persistence after refresh, and Settings › Backup restore into a fresh browser.
+
+## Visual polish pass
+
+Same layout, same controls, same saved data. Only drawings, styling and motion changed (`enchanted-room.js`, `enchanted-room.css`; `sw.js` rebuilt for a new cache version).
+
+Drawings:
+
+- The four window worlds are layered vector landscapes instead of flat CSS shapes. The forest has three depths of pines. The sea has a headland, a lighthouse beacon and a moon path on the water. The city has two skylines with lit windows and a water tower. The village has snow-capped pines, mountains and a cottage with a warm window and chimney smoke. The moon has craters and a halo, and the glass has a faint reflection.
+- The balcony, greenhouse and world-picker previews draw a wider version of the same scene instead of enlarging the window-sized one. The balcony has string lights, a wrought-iron railing and a wooden floor. The greenhouse has lighter glass mullions, a warm floor glow, a smaller moon and wooden shelf planks under each plant.
+- The companion has shading, a belly patch, inner ears, whiskers, eye highlights and a ground shadow. The owl and ghost have matching details.
+- Plants have a shaded pot, soil and veined leaves. The last stage is a six-petal blossom that sways.
+- Observatory: a faint star-chart grid, soft halos around the stars, and constellation lines that draw themselves in.
+- Lamp light: the desk lamp throws a warmer pool of light, a little moonlight comes in from the window, and the room's corners are slightly darker. When the lamp is dimmed, these effects switch off as before.
+
+Controls:
+
+- Buttons have a little depth and a press state. The main action in a dialog is gold, for example Study with me, Save reflection, Tuck it away, Place on the shelf, Place in the sky and Plant a topic.
+- The dock and toasts use a glass panel.
+- Dialogs fade and rise in the first time they open, but not when they redraw. Fields have a gold focus ring. The course list uses a styled arrow, and the file picker has a matching button.
+- Flash cards look like ruled index cards and turn into view.
+
+Motion and performance (checked in headless Chromium, see below):
+
+- The companion's walk now uses `translate` instead of changing `left`. Before, the walk was also cancelled by a later `transition: filter` rule, so the companion jumped instead of walking.
+- Rain is two tiled sheets moving together, replacing 30 separate drops whose animations kept restarting.
+- Observatory stars twinkle as three layers instead of 140 separate animations.
+- The moth's glow is drawn in its SVG, and its wings no longer animate inside a filter.
+- While a dialog is open, the room's animations pause underneath, so the blurred backdrop is not redrawn every frame. Measured with the course books open: layouts dropped from 190 to 9 per 180 frames, and frames over 20 ms from 168 to 7.
+- Main-thread task time with the room idle in the rainy city dropped from about 530 ms to about 210 ms over 180 frames.
+- Still mode and reduced motion stop every new animation, including the door's star.
+- Still small: the cat's tail and blink, and the chimney smoke, animate inside SVG on the main thread. These are small areas, and the tail and blink were already like this before.
+- Not verified: smoothness on a real phone or a laptop GPU. Headless Chromium renders in software.
+
+## Brass & Ink attic redesign
+
+The room has been redesigned as a scholar's attic at midnight, built from the "Brass & Ink Attic Observatory" direction chosen on the Superdesign canvas. Every feature, control, label, keyboard path and saved-data format is unchanged; only the drawing, the layout and the fonts changed.
+
+Layout (room coordinates, 1440 × 1000):
+
+- **Walls and window:** ink-green panelled walls under a sloped timber roof, with a strip of skylight stars. A round brass porthole window replaces the arched window and curtains. The window worlds are still painted into `#ew-window-slot`, which is now clipped to a circle.
+- **Left wall:** the "Beyond" door is now an arched wooden hatch with a brass ring. The femur engraving and the plant sit between the title and the porthole, with the plant on its own brass ledge.
+- **Desk:** a banker's lamp sits on the left. Next to it, the notebook is an open leather journal: the date, title, add-task box and progress are on the left page, and the task list is on the right page. The full notebook still opens from "Today's tasks". The focus timer is a standing brass clock with its mode, Start and Reset controls below the dial.
+- **Right wall:** a built-in bookshelf holds the six course books in one row, and the library card is pinned beneath it.
+- **Under the desk:** the four drawer handles (Apps, Study log, Resources, Settings) are a card-catalog cabinet with paper labels. Their trays slide out of the cabinet. Moth, now a black cat with brass eyes, sits on a cushion beside it.
+- **Phones held upright:** the room now starts scrolled to the desk clock instead of the window.
+
+Palette: ink `#0F1C1B`, deep green `#1E3634`, teal `#2F5D5A`, brass `#C8964A` / `#E6C07B`, parchment `#EFE4CC`, leather `#6B3F2A`, ember `#F2A65A`, and cream text `#F4ECDA`. The room dialogs, trays and enchanted dialogs use the same palette.
+
+Fonts:
+
+- Fraunces (titles), Manrope (interface) and IBM Plex Mono (timer) replace Cormorant Garamond, DM Sans and JetBrains Mono.
+- The fonts are still bundled in `fonts/` for offline use, with their OFL licences.
+- The old font files were removed.
+- The theme colour in the manifest and `index.html` is now ink.
+
+Not kept: the brass microscope drawing and the small book stack on the old second shelf. There is no shelf for them in the attic layout.
